@@ -20,21 +20,6 @@
 (use-package solarized-theme
   :init (load-theme 'solarized-dark t))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(org-projectile org-roam org-bullets org-contrib use-package solarized-theme lsp-mode yasnippet lsp-treemacs helm-lsp projectile rust-mode python-mode org-mode magit helm company markdown-mode grip-mode))
- '(warning-suppress-types '((lsp-mode) (lsp-mode) (comp))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
 (use-package lsp-mode
   :hook (prog-mode . lsp))
 
