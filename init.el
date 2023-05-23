@@ -58,7 +58,7 @@
 	'(("t" "Todo" entry (file+headline "inbox.org" "Tasks")
            "* TODO %?\n" :jump-to-captured t :kill-buffer t)
 	  ("n" "Notes" entry (file+olp+datetree "inbox.org")
-	   "* %^{Description} %^g %?\nAdded: %U" :jump-to-captured t :kill-buffer t)))
+	   "* %^{Description} %^g %?\nAdded: %U" :jump-to-captured t :kill-buffer t))))
 
 ;; Org-bullets configuration
 (use-package org-bullets
