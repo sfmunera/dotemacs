@@ -125,12 +125,12 @@
   :config
   (ivy-mode 1))
 
+;; Requires M-x nerd-icons-install-fonts to show icons correctly
+(use-package nerd-icons)
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
   :custom (doom-modeline-height 15))
-;; TODO: fix icons in modeline
-
 
 
 (use-package lsp-mode
