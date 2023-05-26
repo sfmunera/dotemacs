@@ -32,7 +32,7 @@
 
 ;; quick access to recently edited files
 (recentf-mode 1)
-;; TODO: add binding to recentf-open-files
+(global-set-key (kbd "C-c f") 'recentf-open-files)
 
 ;; save history in minibuffer
 (setq history-length 25)
@@ -146,19 +146,10 @@
   :init
   (ivy-rich-mode 1))
 
-(use-package minions
-  :hook (doom-modeline-mode . minions-mode)
-  :custom
-  (minions-mode-line-lighter "x"))
-
 ;; Requires M-x nerd-icons-install-fonts to show icons correctly
 (use-package nerd-icons)
+
 (use-package doom-modeline
-  :after eshell
-  :hook (after-init . doom-modeline-init)
-  :custom-face
-  (mode-line (t (:height 0.85)))
-  (mode-line-inactive (t (:height 0.85)))
   :init (doom-modeline-mode 1)
   :custom (doom-modeline-height 15))
 
@@ -191,34 +182,142 @@
   ("k" text-scale-decrease "out")
   ("f" nil "finished" :exit t))
 
-(use-package lsp-mode
-  :hook (prog-mode . lsp))
+;; Org-projectile configuration
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Projects")
+    (setq projectile-project-search-path '("~/Projects")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
 
 ;; Org mode configuration
 ;; Ensure the latest org version is used
+(defun sm/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
 (use-package org
+  :hook (org-mode . sm/org-mode-setup)
   :pin gnu
   :ensure org-contrib
   :bind (("C-c a" . org-agenda)
 	 ("C-c c" . org-capture))
   :config
   ;; Custom org mode settings
-  (setq org-directory "~/Dropbox/org/")
-  (setq org-hide-emphasis-markers t)
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-  (setq org-default-notes-file "inbox.org")
-  (setq org-agenda-files (list "work.org"
-			       "home.org"))
-  (setq org-capture-templates
-	'(("t" "Todo" entry (file+headline "inbox.org" "Tasks")
+  ;; Save Org buffers after refiling
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (setq org-ellipsis " ▾"
+	org-hide-emphasis-markers t
+	org-agenda-start-with-log-mode t
+	org-log-done t
+	org-log-into-drawer t
+	org-directory "~/Dropbox/org/"
+	org-default-notes-file "inbox.org"
+	org-agenda-files '("work.org" "home.org" "Test.org")
+	org-refile-targets
+	'(("archive.org" :maxlevel . 1))
+	org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
+	  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))
+	org-capture-templates
+	'(("t" "Task" entry (file+headline "inbox.org" "Tasks")
            "* TODO %?\n" :jump-to-captured t :kill-buffer t)
 	  ("n" "Notes" entry (file+olp+datetree "inbox.org")
-	   "* %^{Description} %^g %?\nAdded: %U" :jump-to-captured t :kill-buffer t))))
+	   "* %^{Description} %^g %?\nAdded: %U" :jump-to-captured t :kill-buffer t))
+	org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "NEXT"
+              ((org-agenda-overriding-header "Next Tasks")))
+            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+          ("n" "Next Tasks"
+           ((todo "NEXT"
+              ((org-agenda-overriding-header "Next Tasks")))))
+
+
+          ("W" "Work Tasks" tags-todo "+work")
+
+          ;; Low-effort next actions
+          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+           ((org-agenda-overriding-header "Low Effort Tasks")
+            (org-agenda-max-todos 20)
+            (org-agenda-files org-agenda-files)))
+
+          ("w" "Workflow Status"
+           ((todo "WAIT"
+                  ((org-agenda-overriding-header "Waiting on External")
+                   (org-agenda-files org-agenda-files)))
+            (todo "REVIEW"
+                  ((org-agenda-overriding-header "In Review")
+                   (org-agenda-files org-agenda-files)))
+            (todo "PLAN"
+                  ((org-agenda-overriding-header "In Planning")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "BACKLOG"
+                  ((org-agenda-overriding-header "Project Backlog")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "READY"
+                  ((org-agenda-overriding-header "Ready for Work")
+                   (org-agenda-files org-agenda-files)))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "COMPLETED"
+                  ((org-agenda-overriding-header "Completed Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "CANC"
+                  ((org-agenda-overriding-header "Cancelled Projects")
+                   (org-agenda-files org-agenda-files))))))))
 
 ;; Org-bullets configuration
 (use-package org-bullets
-  :hook (org-mode . org-bullets-mode))
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; Change size for different levels of org headlines
+(require 'org-indent)
+(dolist (face '((org-level-1 . 1.2)
+		(org-level-2 . 1.1)
+		(org-level-3 . 1.05)
+		(org-level-4 . 1.0)
+		(org-level-5 . 1.1)
+		(org-level-6 . 1.1)
+		(org-level-7 . 1.1)
+		(org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way.
+;; Eveything else will be variable-pitch
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+;; Add margins to Org mode docs
+(defun sm/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+	visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :defer t
+  :hook (org-mode . sm/org-mode-visual-fill))
 
 ;; Org-roam configuration
 (use-package org-roam
@@ -235,20 +334,6 @@
 
 ;; Syntax highlighting for code blocks in Org mode
 (setq org-src-fontify-natively t)
-
-;; Org-projectile configuration
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :init
-  (when (file-directory-p "~/Projects")
-    (setq projectile-project-search-path '("~/Projects")))
-  (setq projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
 
 (use-package org-projectile
   :bind (("C-c n p" . org-projectile-project-todo-completing-read))
@@ -267,6 +352,9 @@
 ;; Requires setting up a token for the Github API
 ;; TODO: Set it up
 (use-package forge)
+
+(use-package lsp-mode
+  :hook (prog-mode . lsp))
 
 (use-package yasnippet)
 (use-package lsp-treemacs)
