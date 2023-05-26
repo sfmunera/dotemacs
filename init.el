@@ -259,6 +259,11 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+;; Magit forge: allows to work with github and gitlab (e.g. pulling issues, creating pull requests, etc)
+;; Requires setting up a token for the Github API
+;; TODO: Set it up
+(use-package forge)
+
 (use-package yasnippet)
 (use-package lsp-treemacs)
 (add-hook 'python-mode-hook
