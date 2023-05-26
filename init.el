@@ -13,6 +13,10 @@
 ;; replace bell sounds by visual bell
 (setq visible-bell t)
 
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 140)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height 135)
+(set-face-attribute 'variable-pitch nil :font "Cantarell"  :height 145 :weight 'regular)
+
 ;; make line numbers visible
 (column-number-mode)
 (global-display-line-numbers-mode t)
