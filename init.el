@@ -13,10 +13,16 @@
 ;; replace bell sounds by visual bell
 (setq visible-bell t)
 
-;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 280)
-
 ;; make line numbers visible
-(global-display-line-numbers-mode 1)
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line number for some modes
+(dolist (mode '(org-mode-hook
+		term-mode-hook
+		shell-mode-hook
+		eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq blink-cursor-mode nil)
 
@@ -104,7 +110,14 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;; Counsel for fuzzy auto-completions
-(use-package counsel)
+(use-package counsel
+  :bind (("M-x" . counsel-M-x)
+	 ("C-x b" . counsel-ibuffer)
+	 ("C-x C-f" . counsel-find-file)
+	 :map minibuffer-local-map
+	 ("C-r" . counsel-minibuffer-history))
+  :config
+  (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
 ;; Ivy for completions
 (use-package ivy
@@ -125,13 +138,54 @@
   :config
   (ivy-mode 1))
 
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
+(use-package minions
+  :hook (doom-modeline-mode . minions-mode)
+  :custom
+  (minions-mode-line-lighter "x"))
+
 ;; Requires M-x nerd-icons-install-fonts to show icons correctly
 (use-package nerd-icons)
 (use-package doom-modeline
-  :ensure t
+  :after eshell
+  :hook (after-init . doom-modeline-init)
+  :custom-face
+  (mode-line (t (:height 0.85)))
+  (mode-line-inactive (t (:height 0.85)))
   :init (doom-modeline-mode 1)
   :custom (doom-modeline-height 15))
 
+;; Use different colors for nested parens
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Helpful visual auto-completion for keywords
+(use-package which-key
+  :init (which-key-mode)
+  :diminish
+  :config
+  (setq which-key-idle-delay 0.3))
+
+;; Improved helpful pages
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
+(use-package hydra)
+(defhydra hydra-zoom (global-map "<f2>")
+  "zoom"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
 
 (use-package lsp-mode
   :hook (prog-mode . lsp))
@@ -160,12 +214,10 @@
 
 ;; Org-bullets configuration
 (use-package org-bullets
-  :ensure t
   :hook (org-mode . org-bullets-mode))
 
 ;; Org-roam configuration
 (use-package org-roam
-  :ensure t
   :init
   (setq org-roam-v2-ack t)
   :custom
@@ -183,12 +235,10 @@
 
 ;; Org-projectile configuration
 (use-package projectile
-  :ensure t
   :config
   (projectile-mode))
 
 (use-package org-projectile
-  :ensure t
   :bind (("C-c n p" . org-projectile-project-todo-completing-read))
   :config
   (progn
@@ -216,21 +266,4 @@
 
 (use-package magit)
 
-(use-package markdown-mode
-  :ensure t)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("f681100b27d783fefc3b62f44f84eb7fa0ce73ec183ebea5903df506eb314077" default))
- '(package-selected-packages
-   '(markdown-preview-mode zenburn-theme yasnippet use-package solarized-theme rust-mode python-mode org-roam org-projectile org-contrib org-bullets nord-theme magit lsp-treemacs impatient-mode helm-lsp gruvbox-theme grip-mode dracula-theme company)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(use-package markdown-mode)
