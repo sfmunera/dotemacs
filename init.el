@@ -25,7 +25,8 @@
 (dolist (mode '(org-mode-hook
 		term-mode-hook
 		shell-mode-hook
-		eshell-mode-hook))
+		eshell-mode-hook
+		treemacs-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq blink-cursor-mode nil)
@@ -381,20 +382,62 @@
 ;; TODO: Set it up
 (use-package forge)
 
-(use-package lsp-mode
-  :hook (prog-mode . lsp))
+;; IDE configuration
+;; Header breadcrumb
+(defun sm/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
 
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . sm/lsp-mode-setup)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-treemacs
+  :after lsp)
+
+(use-package lsp-ivy)
+
+;; needs to install LSP for the specific languages first
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
+(use-package python-mode
+  :hook (python-mode . lsp-deferred))
+
+(use-package rust-mode)
+
+;; IDE-like auto-completions 
 (use-package company
-  :config (add-hook 'after-init-hook 'global-company-mode))
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind
+  (:map company-active-map
+	("<tab>" . company-complete-selection))
+  (:map lsp-mode-map
+	("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+;; Comment code in any language
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 (use-package yasnippet)
-(use-package lsp-treemacs)
-(use-package helm-lsp)
-(use-package rust-mode)
-(use-package python-mode)
-
-(use-package helm
-  :config (helm-mode 1))
-
 
 (use-package markdown-mode)
