@@ -13,9 +13,9 @@
 ;; replace bell sounds by visual bell
 (setq visible-bell t)
 
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 140)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height 135)
-(set-face-attribute 'variable-pitch nil :font "Cantarell"  :height 145 :weight 'regular)
+(set-face-attribute 'default nil :font "Source Code Pro" :height 110)
+(set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 105)
+(set-face-attribute 'variable-pitch nil :font "Source Sans Pro"  :height 115 :weight 'regular)
 
 ;; make line numbers visible
 (column-number-mode)
@@ -288,14 +288,14 @@
 
 ;; Change size for different levels of org headlines
 (require 'org-indent)
-(dolist (face '((org-level-1 . 1.2)
-		(org-level-2 . 1.1)
-		(org-level-3 . 1.05)
+(dolist (face '((org-level-1 . 1.1)
+		(org-level-2 . 1.05)
+		(org-level-3 . 1.02)
 		(org-level-4 . 1.0)
-		(org-level-5 . 1.1)
-		(org-level-6 . 1.1)
-		(org-level-7 . 1.1)
-		(org-level-8 . 1.1)))
+		(org-level-5 . 1.0)
+		(org-level-6 . 1.0)
+		(org-level-7 . 1.0)
+		(org-level-8 . 1.0)))
   (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
@@ -318,6 +318,34 @@
 (use-package visual-fill-column
   :defer t
   :hook (org-mode . sm/org-mode-visual-fill))
+
+;; Org babel
+(setq org-babel-python-command "python3")
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (python . t)
+   (shell . t)))
+
+(setq org-confirm-babel-evaluate nil)
+
+(push '("conf-unix" . conf-unix) org-src-lang-modes)
+
+;; Auto-tangle configuration file when saving it
+(defun sm/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+		      (expand-file-name "~/emacs.d/Emacs.org"))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'sm/org-babel-tangle-config)))
+
+
+;; shortcut for source blocks: e.g. <el TAB autocompletes the source block
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
 
 ;; Org-roam configuration
 (use-package org-roam
@@ -356,13 +384,11 @@
 (use-package lsp-mode
   :hook (prog-mode . lsp))
 
+(use-package company
+  :config (add-hook 'after-init-hook 'global-company-mode))
+
 (use-package yasnippet)
 (use-package lsp-treemacs)
-(add-hook 'python-mode-hook
-          (lambda ()
-            (unless (treemacs-get-local-window)
-              (treemacs))))
-
 (use-package helm-lsp)
 (use-package rust-mode)
 (use-package python-mode)
@@ -370,7 +396,5 @@
 (use-package helm
   :config (helm-mode 1))
 
-(use-package company
-  :config (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package markdown-mode)
