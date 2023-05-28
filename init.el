@@ -26,7 +26,8 @@
 		term-mode-hook
 		shell-mode-hook
 		eshell-mode-hook
-		treemacs-mode-hook))
+		treemacs-mode-hook
+		dired-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq blink-cursor-mode nil)
@@ -440,4 +441,45 @@
 
 (use-package yasnippet)
 
+;; Configure the terminal
+(use-package term
+  :config
+  (setq explicit-shell-fine-name "bash")
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+
+(use-package eterm-256color
+  :hook (term-mode . eterm-256color-mode))
+
+;; sudo apt-get install cmake cmake-data libtool
+;; TODO: Fix installation of dependencies
+(use-package vterm
+  :commands vterm
+  :config
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
+  ;; (setq vterm-shell "zsh")
+  (setq vterm-max-scrollback 10000))
+
+(defun sm/configure-eshell ()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+  (setq eshell-history-size 10000
+	eshell-buffer-maximum-lines 10000
+	eshell-hist-ignoredups t
+	eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt)
+
+(use-package eshell
+  :hook (eshell-first-time-mode . sm/configure-eshell)
+  :bind
+  (:map eshell-mode-map
+	("C-r" . counsel-esh-history)
+	("<home>" . eshell-bol))
+  :config
+  (eshell-git-prompt-use-theme 'powerline)
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop" "zsh" "vim" "less" "tmux" "screen"))))
 (use-package markdown-mode)
