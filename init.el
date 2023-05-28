@@ -482,4 +482,40 @@
   (with-eval-after-load 'esh-opt
     (setq eshell-destroy-buffer-when-process-dies t)
     (setq eshell-visual-commands '("htop" "zsh" "vim" "less" "tmux" "screen"))))
+
+;; Configuring dired
+;; Require to mark by extension
+(require 'dired-x)
+;; Keep only one dired buffer
+(use-package dired-single)
+
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind
+  (("C-x C-j" . dired-jump)
+   (:map dired-mode-map
+	 ("h" . dired-single-up-directory)
+	 ("l" . dired-single-buffer)))
+  :custom
+  ((dired-listing-switches "-agho --group-directories-first")))
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dired-open
+  :config
+  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+  (setq dired-open-extension '(("png" . "feh")
+			       ("mkv" . "mpv"))))
+
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :bind
+  (:map dired-mode-map
+	("H" . dired-hide-dotfiles-mode)))
+
+
+
 (use-package markdown-mode)
+
