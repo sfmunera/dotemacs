@@ -14,9 +14,9 @@
 (setq visible-bell t)
 
 (defun sm/set-font-faces ()
-  (set-face-attribute 'default nil :font "Source Code Pro" :height 120)
-  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 115)
-  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro"  :height 125 :weight 'regular))
+  (set-face-attribute 'default nil :font "Source Code Pro" :height 140)
+  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 135)
+  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro"  :height 145 :weight 'regular))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -113,23 +113,42 @@
 
 ;; Modus theme configuration
 ;; modus-themes-toggle toggles between light and dark themes
-(setq modus-themes-mode-line '(borderless)
-      modus-themes-region '(bg-only)
-      modus-themes-completions 'opinionated
-      modus-themes-bold-constructs t
-      modus-themes-italic-constructs t
-      modus-themes-fringes 'subtle
-      modus-themes-tabs-accented t
-      modus-themes-paren-match '(bold intense)
-      modus-themes-syntax '(alt-syntax)
-      modus-themes-headings
-      '((1 . (rainbow overline background 1.4))
-	(2 . (rainbow background 1.3))
-	(3 . (rainbow bold 1.2))
-	(t . (semilight 1.1)))
-      modus-themes-scale-headings t
-      modus-themes-org-blocks 'tinted-background)
-(load-theme 'modus-vivendi t)
+;; (setq modus-themes-mode-line '(borderless)
+;;       modus-themes-region '(bg-only)
+;;       modus-themes-completions 'opinionated
+;;       modus-themes-bold-constructs t
+;;       modus-themes-italic-constructs t
+;;       modus-themes-fringes 'subtle
+;;       modus-themes-tabs-accented t
+;;       modus-themes-paren-match '(bold intense)
+;;       modus-themes-syntax '(alt-syntax)
+;;       modus-themes-headings
+;;       '((1 . (rainbow overline background 1.4))
+;; 	(2 . (rainbow background 1.3))
+;; 	(3 . (rainbow bold 1.2))
+;; 	(t . (semilight 1.1)))
+;;       modus-themes-scale-headings t
+;;       modus-themes-org-blocks 'tinted-background)
+;; (load-theme 'modus-vivendi t)
+
+(use-package all-the-icons)
+
+(use-package doom-themes
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-palenight t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -167,9 +186,7 @@
   :init
   (ivy-rich-mode 1))
 
-;; Requires M-x nerd-icons-install-fonts to show icons correctly
-(use-package nerd-icons)
-
+;; Requires M-x all-the-icons-install-fonts to show icons correctly
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom (doom-modeline-height 15))
