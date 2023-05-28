@@ -13,9 +13,18 @@
 ;; replace bell sounds by visual bell
 (setq visible-bell t)
 
-(set-face-attribute 'default nil :font "Source Code Pro" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 115)
-(set-face-attribute 'variable-pitch nil :font "Source Sans Pro"  :height 125 :weight 'regular)
+(defun sm/set-font-faces ()
+  (set-face-attribute 'default nil :font "Source Code Pro" :height 120)
+  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 115)
+  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro"  :height 125 :weight 'regular))
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+	      (lambda (frame)
+		(setq doom-modeline-icon t)
+		(with-selected-frame frame
+		  (sm/set-font-faces))))
+  (sm/set-font-faces))
 
 ;; make line numbers visible
 (column-number-mode)
