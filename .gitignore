@@ -1,0 +1,16 @@
+/auto-save-list/
+/custom-vars.el
+/.cache/
+/.last-package-update-day
+/.lsp-session-v1
+/eln-cache/
+/elpa/
+/eshell/
+/forge-database.sqlite
+/history
+/org-roam.db
+/places
+/projectile-bookmarks.eld
+/projects
+/recentf
+/transient/
