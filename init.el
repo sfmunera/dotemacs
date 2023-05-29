@@ -14,9 +14,9 @@
 (setq visible-bell t)
 
 (defun sm/set-font-faces ()
-  (set-face-attribute 'default nil :font "Source Code Pro" :height 140)
-  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 135)
-  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro"  :height 145 :weight 'regular))
+  (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
+  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
+  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -326,14 +326,14 @@
 
 ;; Change size for different levels of org headlines
 (require 'org-indent)
-(dolist (face '((org-level-1 . 1.1)
-		(org-level-2 . 1.05)
-		(org-level-3 . 1.02)
-		(org-level-4 . 1.0)
-		(org-level-5 . 1.0)
-		(org-level-6 . 1.0)
-		(org-level-7 . 1.0)
-		(org-level-8 . 1.0)))
+(dolist (face '((org-level-1 . 1.5)
+		(org-level-2 . 1.4)
+		(org-level-3 . 1.3)
+		(org-level-4 . 1.2)
+		(org-level-5 . 1.2)
+		(org-level-6 . 1.2)
+		(org-level-7 . 1.2)
+		(org-level-8 . 1.2)))
   (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
