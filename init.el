@@ -16,7 +16,7 @@
 (defun sm/set-font-faces ()
   (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
   (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
-  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150))
+  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -451,7 +451,14 @@
   (setq typescript-indent-level 2))
 
 (use-package python-mode
-  :hook (python-mode . lsp-deferred))
+  :ensure nil
+  :hook (python-mode . lsp-deferred)
+  :custom
+  (python-shell-interpreter "python3")
+  (dap-python-executable "python3")
+  (dap-python-debugger 'debugpy)
+  :config
+  (require 'dap-python))
 
 (use-package rust-mode)
 
