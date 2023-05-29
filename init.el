@@ -326,9 +326,9 @@
 
 ;; Change size for different levels of org headlines
 (require 'org-indent)
-(dolist (face '((org-level-1 . 1.5)
-		(org-level-2 . 1.4)
-		(org-level-3 . 1.3)
+(dolist (face '((org-level-1 . 1.25)
+		(org-level-2 . 1.25)
+		(org-level-3 . 1.22)
 		(org-level-4 . 1.2)
 		(org-level-5 . 1.2)
 		(org-level-6 . 1.2)
