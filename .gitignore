@@ -15,3 +15,5 @@
 /recentf
 /transient/
 *~
+/var/
+/flycheck_init.el
