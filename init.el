@@ -43,6 +43,24 @@
 ;; keep folders clean
 (setq user-emacs-directory (expand-file-name "~/.cache/emacs")
       url-history-file (expand-file-name "url/history" user-emacs-directory))
+
+(use-package no-littering)
+
+(setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+;; auto-save-mode doesn't create the path automatically
+(make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+(setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+      auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+(setq create-locksfiles nil)
+
+;; Auto-Saving Changed Files
+(use-package super-save
+  :defer 1
+  :diminish super-save-mode
+  :config
+  (super-save-mode +1)
+  (setq super-save-auto-save-when-idle t))
+
 (defun sm/set-font-faces ()
   (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
   (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
