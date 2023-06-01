@@ -1,5 +1,26 @@
 ;; TODO: Transform this into a Org config file
 
+;; Make startup faster by reducing the frequency of garbage collection
+;; and then use a hook to measure Emacs startup time.
+
+;; The default is 800 kilobytes.  Measured in bytes.
+(setq gc-cons-threshold (* 50 1000 1000))
+
+;; Default coding system
+(set-default-coding-systems 'utf-8)
+
+;; Only use spaces for indentation
+(setq-default indent-tabs-mode nil)
+
+;; Profile emacs startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+
 (server-start)
 
 ;; Don't show the splash screen
@@ -15,6 +36,13 @@
 ;; replace bell sounds by visual bell
 (setq visible-bell t)
 
+;; maximize windows by default
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; keep folders clean
+(setq user-emacs-directory (expand-file-name "~/.cache/emacs")
+      url-history-file (expand-file-name "url/history" user-emacs-directory))
 (defun sm/set-font-faces ()
   (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
   (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
