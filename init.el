@@ -76,15 +76,14 @@
 
 ;; make line numbers visible
 (column-number-mode)
-(global-display-line-numbers-mode t)
+;;(global-display-line-numbers-mode t)
 
 ;; Disable line number for some modes
-(dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook
-		treemacs-mode-hook
-		dired-mode-hook))
+(dolist (mode '(text-mode-hook
+		prog-mode-hook
+		conf-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+(dolist (mode '(org-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq blink-cursor-mode nil)
@@ -112,6 +111,44 @@
 
 ;; Revert Dired and other buffers
 (setq global-auto-revert-non-file-buffers t)
+
+(use-package undo-tree
+ :init
+ (global-undo-tree-mode 1))
+
+;; Frame Scaling / Zooming
+;; The keybindings for this are C+M+- and C+M+=.
+
+(use-package default-text-scale
+  :defer 1
+  :config
+  (default-text-scale-mode))
+
+;; winner-mode to undo/redo window layouts
+(use-package winner
+  :config
+  (winner-mode))
+
+;; Jump easily between windows
+(use-package ace-window
+  :bind (("M-o" . ace-window))
+  :custom
+  (aw-scope 'frame)
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (aw-minibuffer-flag t)
+  :config
+  (ace-window-display-mode 1))
+
+;; Default buffer placement options
+;; Reuse existing windows especially those with the same mode
+(setq display-buffer-base-action
+      '((display-buffer-reuse-window
+	 display-buffer-reuse-mode-window
+	 display-buffer-same-window
+	 display-buffer-in-previous-window)))
+
+;; TODO: tab-bar-mode
+
 
 ;; Package system and settings
 (require 'package)
@@ -184,8 +221,8 @@
 (use-package doom-themes
   :config
   ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  ;; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+  ;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-palenight t)
 
   ;; Enable flashing mode-line on errors
@@ -195,9 +232,7 @@
   ;; or for treemacs users
   (setq doom-themes-treemacs-theme "doom-colors") ; use "doom-atom" for more minimal icon theme
   (doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  ;; (doom-themes-org-config)
-  )
+  (doom-themes-org-config))
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -235,7 +270,39 @@
   :init
   (ivy-rich-mode 1))
 
+;; prescient.el
+;; Sorting and filtering selections based on use recency, frequency and configurable rules
+(use-package prescient
+  :after counsel
+  :config
+  (setq prescient-sort-length-enable nil)
+  (prescient-persist-mode 1))
+
+(use-package ivy-prescient
+  :after counsel
+  :config
+  (ivy-prescient-mode 1)
+  (setq ivy-prescient-retain-classic-highlighting t))
+
+(use-package company-prescient
+  :after company
+  :config
+  (company-prescient-mode 1))
+
+(use-package avy
+  :commands (avy-goto-char avy-goto-word-0 avy-goto-line)
+  :bind
+  ("C-: c" . avy-goto-char)
+  ("C-: w" . avy-goto-word-0)
+  ("C-: l" . avy-goto-line))
+
+
+(use-package expand-region
+  :bind (("M-[" . er/expand-region)
+         ("C-(" . er/mark-outside-pairs)))
+
 ;; Requires M-x all-the-icons-install-fonts to show icons correctly
+
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom (doom-modeline-height 15))
@@ -243,6 +310,16 @@
 ;; Use different colors for nested parens
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package smartparens
+  :hook (prog-mode . smartparens-mode))
+
+;; sets the text background to the color mentioned. For example: #0000ff, #ff0000
+(use-package rainbow-mode
+  :defer t
+  :hook (org-mode
+         emacs-lisp-mode
+         web-mode))
 
 ;; Helpful visual auto-completion for keywords
 (use-package which-key
@@ -396,6 +473,9 @@
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
+(use-package org-appear
+  :hook (org-mode . org-appear-mode))
+
 ;; Add margins to Org mode docs
 (defun sm/org-mode-visual-fill ()
   (setq visual-fill-column-width 100
@@ -459,9 +539,76 @@
     (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
     (push (org-projectile-project-todo-entry) org-capture-templates)))
 
+;; Set default connection mode to SSH
+(setq tramp-default-method "ssh")
+
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package git-gutter-fringe)
+(use-package git-gutter
+  :diminish
+  :hook ((text-mode . git-gutter-mode)
+         (prog-mode . git-gutter-mode))
+  :config
+  (setq git-gutter:update-interval 2)
+  (require 'git-gutter-fringe)
+  (set-face-foreground 'git-gutter-fr:added "LightGreen")
+  (fringe-helper-define 'git-gutter-fr:added nil
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		".........."
+        		".........."
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		".........."
+        		".........."
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX")
+  
+  (set-face-foreground 'git-gutter-fr:modified "LightGoldenrod")
+  (fringe-helper-define 'git-gutter-fr:modified nil
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		".........."
+        		".........."
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		".........."
+        		".........."
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX")
+  
+  (set-face-foreground 'git-gutter-fr:deleted "LightCoral")
+  (fringe-helper-define 'git-gutter-fr:deleted nil
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		".........."
+        		".........."
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		".........."
+        		".........."
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"
+        		"XXXXXXXXXX"))
+
+  ;; These characters are used in terminal mode
+  (setq git-gutter:modified-sign "≡")
+  (setq git-gutter:added-sign "≡")
+  (setq git-gutter:deleted-sign "≡")
+  (set-face-foreground 'git-gutter:added "LightGreen")
+  (set-face-foreground 'git-gutter:modified "LightGoldenrod")
+  (set-face-foreground 'git-gutter:deleted "LightCoral")
 
 ;; Magit forge: allows to work with github and gitlab (e.g. pulling issues, creating pull requests, etc)
 ;; Requires setting up a token for the Github API
@@ -481,6 +628,10 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
+
+(use-package flycheck
+  :defer t
+  :hook (lsp-mode . flycheck-mode))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -510,6 +661,9 @@
   (require 'dap-python))
 
 (use-package rust-mode)
+
+(add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+
 
 ;; IDE-like auto-completions 
 (use-package company
@@ -607,4 +761,19 @@
   (:map dired-mode-map
 	("H" . dired-hide-dotfiles-mode)))
 
-(use-package markdown-mode)
+(use-package markdown-mode
+  :mode "\\.md\\'"
+  :config
+  (setq markdown-command "marked")
+  (defun sm/set-markdown-header-font-sizes ()
+    (dolist (face '((markdown-header-face-1 . 1.3)
+                    (markdown-header-face-2 . 1.25)
+                    (markdown-header-face-3 . 1.2)
+                    (markdown-header-face-4 . 1.2)
+                    (markdown-header-face-5 . 1.2)))
+      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+
+  (defun sm/markdown-mode-hook ()
+    (sm/set-markdown-header-font-sizes))
+
+  (add-hook 'markdown-mode-hook 'sm/markdown-mode-hook))
