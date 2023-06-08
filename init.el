@@ -744,7 +744,12 @@
 	 ("h" . dired-single-up-directory)
 	 ("l" . dired-single-buffer)))
   :custom
-  ((dired-listing-switches "-agho --group-directories-first")))
+  ;; ;; In MacOS run this: brew install coreutils
+  ;; https://stackoverflow.com/questions/25125200/emacs-error-ls-does-not-support-dired
+  ((when (string= system-type "darwin")
+     (setq dired-use-ls-dired t
+           insert-directory-program "/usr/local/bin/gls"))
+   (setq dired-listing-switches "-agho --group-directories-first")))
 
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
