@@ -372,7 +372,12 @@
   :pin gnu
   :ensure org-contrib
   :bind (("C-c a" . org-agenda)
-	 ("C-c c" . org-capture))
+	 ("C-c c" . org-capture)
+         (:map org-mode-map
+               ("C-j" . org-next-visible-heading)
+               ("C-k" . org-previous-visible-heading)
+               ("M-j" . org-metadown)
+               ("M-k" . org-metaup)))
   :config
   ;; Custom org mode settings
   ;; Save Org buffers after refiling
@@ -380,10 +385,16 @@
   (setq org-ellipsis " ▾"
 	org-hide-emphasis-markers t
 	org-agenda-start-with-log-mode t
-	org-log-done t
+        org-src-fontify-natively t
+        org-fontify-quote-and-verse-blocks t
+        org-src-tab-acts-natively t
+        org-edit-src-content-indentation 2
+        org-startup-folded 'content
+      	org-log-done t
 	org-log-into-drawer t
+        
 	org-directory "~/Dropbox/org/"
-	org-default-notes-file "inbox.org"
+	org-default-notes-file "Inbox.org"
 	org-agenda-files '("work.org" "home.org" "Test.org")
 	org-refile-targets
 	'(("archive.org" :maxlevel . 1))
@@ -444,11 +455,12 @@
                    (org-agenda-files org-agenda-files))))))))
 
 ;; Org-bullets configuration
-(use-package org-bullets
+(use-package org-superstar
   :after org
-  :hook (org-mode . org-bullets-mode)
+  :hook (org-mode . org-superstar-mode)
   :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (org-superstar-remove-leading-stars t)
+  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 ;; Change size for different levels of org headlines
 (require 'org-indent)
@@ -468,6 +480,7 @@
 (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
 (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-formula nil :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
@@ -475,6 +488,30 @@
 
 (use-package org-appear
   :hook (org-mode . org-appear-mode))
+
+;; ;; Send notifications for org mode tasks
+;; (use-package org-alert
+;;   :custom (alert-default-style 'message)
+;;   :config
+;;   (setq org-alert-interval 300
+;;         org-alert-notification-title "Org Alert Reminder!")
+;;   (org-alert-enable))
+
+;; (use-package org-wild-notifier
+;;   :after org
+;;   :config
+;;   ;; Make sure we receive notifications for non-TODO events
+;;   ;; like those synced from Google Calendar
+;;   (setq org-wild-notifier-keyword-whitelist nil)
+;;   (setq org-wild-notifier-notification-title "Agenda Reminder")
+;;   (setq org-wild-notifier-alert-time 15)
+;;   (org-wild-notifier-mode))
+
+;; (use-package org-notify
+;;   :ensure nil
+;;   :after org
+;;   :config
+;;   (org-notify-start))
 
 ;; Add margins to Org mode docs
 (defun sm/org-mode-visual-fill ()
@@ -513,6 +550,14 @@
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+(add-to-list 'org-structure-template-alist '("go" . "src go"))
+(add-to-list 'org-structure-template-alist '("rs" . "src rust"))
+(add-to-list 'org-structure-template-alist '("json" . "src json"))
+
+;; Update table of contents on save
+(use-package org-make-toc
+  :hook (org-mode . org-make-toc-mode))
 
 ;; Org-roam configuration
 (use-package org-roam
@@ -526,9 +571,6 @@
   :config
   (org-roam-setup)
   (require 'org-roam-protocol))
-
-;; Syntax highlighting for code blocks in Org mode
-(setq org-src-fontify-natively t)
 
 (use-package org-projectile
   :bind (("C-c n p" . org-projectile-project-todo-completing-read))
