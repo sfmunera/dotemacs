@@ -395,16 +395,16 @@
         
 	org-directory "~/Dropbox/org/"
 	org-default-notes-file "Inbox.org"
-	org-agenda-files '("work.org" "home.org" "Test.org")
+	org-agenda-files '("Work.org" "Home.org")
 	org-refile-targets
 	'(("archive.org" :maxlevel . 1))
 	org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
 	  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))
 	org-capture-templates
-	'(("t" "Task" entry (file+headline "inbox.org" "Tasks")
+	'(("t" "Task" entry (file+headline "Inbox.org" "Tasks")
            "* TODO %?\n" :jump-to-captured t :kill-buffer t)
-	  ("n" "Notes" entry (file+olp+datetree "inbox.org")
+	  ("n" "Notes" entry (file+olp+datetree "Inbox.org")
 	   "* %^{Description} %^g %?\nAdded: %U" :jump-to-captured t :kill-buffer t))
 	org-agenda-custom-commands
         '(("d" "Dashboard"
