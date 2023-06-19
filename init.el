@@ -374,14 +374,16 @@
   :bind (("C-c a" . org-agenda)
 	 ("C-c c" . org-capture)
          (:map org-mode-map
-               ("C-j" . org-next-visible-heading)
-               ("C-k" . org-previous-visible-heading)
+               ("C-M-j" . org-next-visible-heading)
+               ("C-M-k" . org-previous-visible-heading)
                ("M-j" . org-metadown)
                ("M-k" . org-metaup)))
   :config
   ;; Custom org mode settings
-  ;; Save Org buffers after refiling
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+  
   (setq org-ellipsis " ▾"
 	org-hide-emphasis-markers t
 	org-agenda-start-with-log-mode t
@@ -390,69 +392,105 @@
         org-src-tab-acts-natively t
         org-edit-src-content-indentation 2
         org-startup-folded 'content
-      	org-log-done t
+      	org-log-done 'time
 	org-log-into-drawer t
         
 	org-directory "~/Dropbox/org/"
 	org-default-notes-file "Inbox.org"
-	org-agenda-files '("Work.org" "Home.org")
+	org-agenda-files '("Work.org" "Personal.org" "Habits.org")
 	org-refile-targets
-	'(("archive.org" :maxlevel . 1))
-	org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
-	  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))
-	org-capture-templates
-	'(("t" "Task" entry (file+headline "Inbox.org" "Tasks")
-           "* TODO %?\n" :jump-to-captured t :kill-buffer t)
-	  ("n" "Notes" entry (file+olp+datetree "Inbox.org")
-	   "* %^{Description} %^g %?\nAdded: %U" :jump-to-captured t :kill-buffer t))
-	org-agenda-custom-commands
+	'(("Archive.org" :maxlevel . 1))
+
+        org-tag-alist
+        '((:startgroup)
+         ; Put mutually exclusive tags here
+          (:endgroup)
+          ("@home" . ?h)
+          ("@work" . ?w))
+
+        org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "DOING(i)" "|" "DONE(d)")
+          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+	 ;; (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))
+
+        org-todo-keyword-faces
+        '(("NEXT" :foreground "orange" :weight bold)
+          ("DOING" :foreground "blue" :weight bold)
+          ("WAITING" :foreground "orange" :weight bold)
+          ("HOLD" :foreground "magenta" :weight bold))
+
+        ;; allows changing the from any task state to any other state with C-c C-r KEY
+        org-use-fast-todo-selection t
+        
+        org-capture-templates
+	`(("c" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
+           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
+          ("t" "Tasks / Projects")
+          ("tw" "Work Task" entry (file+olp "Work.org" "Tasks")
+           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
+          ("tp" "Personal Task" entry (file+olp "Personal.org" "Tasks")
+           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
+	  ("n" "Notes" entry (file+olp+datetree "Notes.org")
+	   "* %^{Description} %^g %?\nAdded: %U" :empty-lines 1 :kill-buffer t)
+          ("j" "Journal" entry (file+olp+datetree "Journal.org")
+           "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+           :clock-in :clock-resume :empty-lines 1)
+          ("m" "Meeting" entry (file+olp+datetree "Notes.org")
+           "\n* %<%I:%M %p> - %^{Meeting title} :meeting:\n\n%?\n\n"
+           :clock-in :clock-resume :empty-lines 1)
+          ("b" "Books" entry (file+headline "Books.org" "Books")
+           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t))
+
+        org-agenda-custom-commands
         '(("d" "Dashboard"
            ((agenda "" ((org-deadline-warning-days 7)))
             (todo "NEXT"
               ((org-agenda-overriding-header "Next Tasks")))
-            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+            (tags-todo "agenda/DOING" ((org-agenda-overriding-header "Active Projects")))))
 
           ("n" "Next Tasks"
            ((todo "NEXT"
               ((org-agenda-overriding-header "Next Tasks")))))
 
 
-          ("W" "Work Tasks" tags-todo "+work")
+          ;; ("W" "Work Tasks" tags-todo "+work")
 
           ;; Low-effort next actions
-          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-           ((org-agenda-overriding-header "Low Effort Tasks")
-            (org-agenda-max-todos 20)
-            (org-agenda-files org-agenda-files)))
+          ;; ("e;; " tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+           ;; ((org-agenda-overriding-header "Low Effort Tasks")
+           ;;  (org-agenda-max-todos 20)
+           ;;  (org-agenda-files org-agenda-files)))
 
-          ("w" "Workflow Status"
-           ((todo "WAIT"
-                  ((org-agenda-overriding-header "Waiting on External")
-                   (org-agenda-files org-agenda-files)))
-            (todo "REVIEW"
-                  ((org-agenda-overriding-header "In Review")
-                   (org-agenda-files org-agenda-files)))
-            (todo "PLAN"
-                  ((org-agenda-overriding-header "In Planning")
-                   (org-agenda-todo-list-sublevels nil)
-                   (org-agenda-files org-agenda-files)))
-            (todo "BACKLOG"
-                  ((org-agenda-overriding-header "Project Backlog")
-                   (org-agenda-todo-list-sublevels nil)
-                   (org-agenda-files org-agenda-files)))
-            (todo "READY"
-                  ((org-agenda-overriding-header "Ready for Work")
-                   (org-agenda-files org-agenda-files)))
-            (todo "ACTIVE"
-                  ((org-agenda-overriding-header "Active Projects")
-                   (org-agenda-files org-agenda-files)))
-            (todo "COMPLETED"
-                  ((org-agenda-overriding-header "Completed Projects")
-                   (org-agenda-files org-agenda-files)))
-            (todo "CANC"
-                  ((org-agenda-overriding-header "Cancelled Projects")
-                   (org-agenda-files org-agenda-files))))))))
+          ;; ("w" "Workflow Status"
+          ;;  ((todo "WAIT"
+          ;;         ((org-agenda-overriding-header "Waiting on External")
+          ;;          (org-agenda-files org-agenda-files)))
+          ;;   (todo "REVIEW"
+          ;;         ((org-agenda-overriding-header "In Review")
+          ;;          (org-agenda-files org-agenda-files)))
+          ;;   (todo "PLAN"
+          ;;         ((org-agenda-overriding-header "In Planning")
+          ;;          (org-agenda-todo-list-sublevels nil)
+          ;;          (org-agenda-files org-agenda-files)))
+          ;;   (todo "BACKLOG"
+          ;;         ((org-agenda-overriding-header "Project Backlog")
+          ;;          (org-agenda-todo-list-sublevels nil)
+          ;;          (org-agenda-files org-agenda-files)))
+          ;;   (todo "READY"
+          ;;         ((org-agenda-overriding-header "Ready for Work")
+          ;;          (org-agenda-files org-agenda-files)))
+          ;;   (todo "ACTIVE"
+          ;;         ((org-agenda-overriding-header "Active Projects")
+          ;;          (org-agenda-files org-agenda-files)))
+          ;;   (todo "COMPLETED"
+          ;;         ((org-agenda-overriding-header "Completed Projects")
+          ;;          (org-agenda-files org-agenda-files)))
+          ;;   (todo "CANC"
+          ;;         ((org-agenda-overriding-header "Cancelled Projects")
+          ;;          (org-agenda-files org-agenda-files)))))
+          ))
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  )
 
 ;; Org-bullets configuration
 (use-package org-superstar
