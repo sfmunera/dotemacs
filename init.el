@@ -801,8 +801,8 @@
   :hook (eshell-first-time-mode . sm/configure-eshell)
   :bind
   (:map eshell-mode-map
-	("C-r" . counsel-esh-history)
-	("<home>" . eshell-bol))
+        ("C-r" . counsel-esh-history)
+        ("<home>" . eshell-bol))
   :config
   (eshell-git-prompt-use-theme 'powerline)
   (with-eval-after-load 'esh-opt
