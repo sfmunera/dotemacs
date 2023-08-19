@@ -6,6 +6,9 @@
 ;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
 
+;; Silence compiler warnings as they are pretty noisy
+(setq comp-async-report-warnings-errors nil)
+
 ;; Default coding system
 (set-default-coding-systems 'utf-8)
 
