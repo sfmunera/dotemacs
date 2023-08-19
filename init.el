@@ -46,6 +46,53 @@
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; ;; Package system and settings
+;; (require 'package)
+;; (setq package-archives '(("melpa"        . "https://melpa.org/packages/")
+;; 			 ("melpa-stable" . "https://stable.melpa.org/packages/")
+;;                          ("org"          . "https://orgmode.org/elpa/")
+;;                          ("gnu"          . "https://elpa.gnu.org/packages/")
+;; 			 ("nongnu"       . "https://elpa.nongnu.org/nongnu/")))
+;; (package-initialize)
+
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
+
+;; ;; Bootstrap 'use-package'
+;; (unless (package-installed-p 'use-package)
+;;   (package-install 'use-package))
+
+;; (require 'use-package)
+;; (setq use-package-always-ensure t)
+
+;; ;; Auto package upgrades
+;; (use-package auto-package-update
+;;   :custom
+;;   (auto-package-update-interval 7)
+;;   (auto-package-update-prompt-before-update t)
+;;   (auto-package-update-hide-results t)
+;;   :config
+;;   (auto-package-update-maybe)
+;;   (auto-package-update-at-time "09:00"))
+
+;; Bootstrap straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(setq straight-use-package-by-default t)
+
+;; Use straight.el for use-package expressions
+(straight-use-package 'use-package)
 
 ;; keep folders clean
 (setq user-emacs-directory (expand-file-name "~/.cache/emacs")
@@ -156,35 +203,6 @@
 
 ;; TODO: tab-bar-mode
 
-
-;; Package system and settings
-(require 'package)
-(setq package-archives '(("melpa"        . "https://melpa.org/packages/")
-			 ("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ("org"          . "https://orgmode.org/elpa/")
-                         ("gnu"          . "https://elpa.gnu.org/packages/")
-			 ("nongnu"       . "https://elpa.nongnu.org/nongnu/")))
-(package-initialize)
-
-(unless package-archive-contents
-  (package-refresh-contents))
-
-;; Bootstrap 'use-package'
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
-;; Auto package upgrades
-(use-package auto-package-update
-  :custom
-  (auto-package-update-interval 7)
-  (auto-package-update-prompt-before-update t)
-  (auto-package-update-hide-results t)
-  :config
-  (auto-package-update-maybe)
-  (auto-package-update-at-time "09:00"))
 
 ;; Solarized theme
 ;; (use-package solarized-theme
@@ -378,8 +396,7 @@
 
 (use-package org
   :hook (org-mode . sm/org-mode-setup)
-  :pin gnu
-  :ensure org-contrib
+  :straight org-contrib
   :bind (("C-c a" . org-agenda)
 	 ("C-c c" . org-capture)
          (:map org-mode-map
@@ -555,7 +572,7 @@
 ;;   (org-wild-notifier-mode))
 
 ;; (use-package org-notify
-;;   :ensure nil
+;;   :straight nil
 ;;   :after org
 ;;   :config
 ;;   (org-notify-start))
@@ -740,7 +757,7 @@
   (setq typescript-indent-level 2))
 
 (use-package python-mode
-  :ensure nil
+  :straight nil
   :hook (python-mode . lsp-deferred)
   :custom
   (python-shell-interpreter "python3")
@@ -825,7 +842,7 @@
 (use-package dired-single)
 
 (use-package dired
-  :ensure nil
+  :straight nil
   :commands (dired dired-jump)
   :bind
   (("C-x C-j" . dired-jump)
