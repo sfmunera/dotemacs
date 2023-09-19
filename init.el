@@ -24,7 +24,7 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
-(server-start)
+;; (server-start)
 
 ;; Don't show the splash screen
 (setq inhibit-startup-message t)
