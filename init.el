@@ -46,6 +46,10 @@
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Remap listing buffers to ibuffer
+(global-set-key [remap list-buffers] 'ibuffer)
+
+
 ;; ;; Package system and settings
 ;; (require 'package)
 ;; (setq package-archives '(("melpa"        . "https://melpa.org/packages/")
