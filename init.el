@@ -1,5 +1,3 @@
-;; TODO: Transform this into a Org config file
-
 ;; Make startup faster by reducing the frequency of garbage collection
 ;; and then use a hook to measure Emacs startup time.
 
@@ -40,14 +38,14 @@
 (setq visible-bell t)
 
 ;; Set frame transparency
-(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+;; (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+;; (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
 ;; maximize windows by default
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Remap listing buffers to ibuffer
-(global-set-key [remap list-buffers] 'ibuffer)
+(global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
 
 ;; ;; Package system and settings
@@ -97,6 +95,8 @@
 
 ;; Use straight.el for use-package expressions
 (straight-use-package 'use-package)
+
+(straight-use-package 'org)
 
 ;; keep folders clean
 (setq user-emacs-directory (expand-file-name "~/.cache/emacs")
@@ -170,9 +170,14 @@
 ;; Revert Dired and other buffers
 (setq global-auto-revert-non-file-buffers t)
 
-(use-package undo-tree
- :init
- (global-undo-tree-mode 1))
+;; (use-package undo-tree
+;;  :init
+;;  (global-undo-tree-mode 1))
+
+(use-package vundo
+  :commands (vundo)
+  :bind (("C-x u" . vundo))
+  :straight (vundo :type git :host github :repo "casouri/vundo"))
 
 ;; Frame Scaling / Zooming
 ;; The keybindings for this are C+M+- and C+M+=.
@@ -229,7 +234,7 @@
 ;; modus-themes-toggle toggles between light and dark themes
 ;; (setq modus-themes-mode-line '(borderless)
 ;;       modus-themes-region '(bg-only)
-;;       modus-themes-completions 'opinionated
+;; ;      modus-themes-completions 'opinionated
 ;;       modus-themes-bold-constructs t
 ;;       modus-themes-italic-constructs t
 ;;       modus-themes-fringes 'subtle
@@ -245,80 +250,224 @@
 ;;       modus-themes-org-blocks 'tinted-background)
 ;; (load-theme 'modus-vivendi t)
 
-(use-package all-the-icons)
-
-(use-package doom-themes
+(use-package modus-themes
   :config
-  ;; Global settings (defaults)
-  ;; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-  ;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-palenight t)
+  (load-theme 'modus-vivendi t))
 
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-colors") ; use "doom-atom" for more minimal icon theme
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config))
+;; (use-package ef-themes
+;;   :config
+;;   (load-theme 'ef-maris-dark t))
+
+;; (use-package all-the-icons)
+(use-package nerd-icons)
+
+;; (use-package doom-themes
+;;   :config
+;;   ;; Global settings (defaults)
+;;   ;; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+;;   ;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
+;;   (load-theme 'doom-palenight t)
+
+;;   ;; Enable flashing mode-line on errors
+;;   (doom-themes-visual-bell-config)
+;;   ;; Enable custom neotree theme (all-the-icons must be installed!)
+;;   (doom-themes-neotree-config)
+;;   ;; or for treemacs users
+;;   (setq doom-themes-treemacs-theme "doom-colors") ; use "doom-atom" for more minimal icon theme
+;;   (doom-themes-treemacs-config)
+;;   (doom-themes-org-config))
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;; Counsel for fuzzy auto-completions
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-r" . counsel-minibuffer-history))
-  :config
-  (setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
-  :custom
-  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
+;; (use-package counsel
+;;   :bind (("M-x" . counsel-M-x)
+;; 	 ("C-x b" . counsel-ibuffer)
+;; 	 ("C-x C-f" . counsel-find-file)
+;; 	 :map minibuffer-local-map
+;; 	 ("C-r" . counsel-minibuffer-history))
+;;   :config
+;;   (setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
+;;   :custom
+;;   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
+
+;; Example configuration for Consult
+(use-package consult
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c h" . consult-history)
+         ("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s D" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode))
 
 ;; Ivy for completions
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-	 :map ivy-minibuffer-map
-	 ("TAB" . ivy-alt-done)
-	 ("C-l" . ivy-alt-done)
-	 ("C-j" . ivy-next-line)
-	 ("C-k" . ivy-previous-line)
-	 :map ivy-switch-buffer-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-l" . ivy-done)
-	 ("C-d" . ivy-switch-buffer-kill)
-	 :map ivy-reverse-i-search-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
+;; (use-package ivy
+;;   :diminish
+;;   :bind (("C-s" . swiper)
+;; 	 :map ivy-minibuffer-map
+;; 	 ("TAB" . ivy-alt-done)
+;; 	 ("C-l" . ivy-alt-done)
+;; 	 ("C-j" . ivy-next-line)
+;; 	 ("C-k" . ivy-previous-line)
+;; 	 :map ivy-switch-buffer-map
+;; 	 ("C-k" . ivy-previous-line)
+;; 	 ("C-l" . ivy-done)
+;; 	 ("C-d" . ivy-switch-buffer-kill)
+;; 	 :map ivy-reverse-i-search-map
+;; 	 ("C-k" . ivy-previous-line)
+;; 	 ("C-d" . ivy-reverse-i-search-kill))
+;;   :config
+;;   (ivy-mode 1))
 
-(use-package ivy-rich
+;; (use-package ivy-rich
+;;   :init
+;;   (ivy-rich-mode 1))
+
+;; ;; prescient.el
+;; ;; Sorting and filtering selections based on use recency, frequency and configurable rules
+;; (use-package prescient
+;;   :after counsel
+;;   :config
+;;   (setq prescient-sort-length-enable nil)
+;;   (prescient-persist-mode 1))
+
+;; (use-package ivy-prescient
+;;   :after counsel
+;;   :config
+;;   (ivy-prescient-mode 1)
+;;   (setq ivy-prescient-retain-classic-highlighting t))
+
+;; (use-package company-prescient
+;;   :after company
+;;   :config
+;;   (company-prescient-mode 1))
+
+(use-package vertico
   :init
-  (ivy-rich-mode 1))
+  (vertico-mode)
+  :bind (("C-s" . consult-line))
 
-;; prescient.el
-;; Sorting and filtering selections based on use recency, frequency and configurable rules
-(use-package prescient
-  :after counsel
-  :config
-  (setq prescient-sort-length-enable nil)
-  (prescient-persist-mode 1))
+  ;; Different scroll margin
+  ;; (setq vertico-scroll-margin 0)
 
-(use-package ivy-prescient
-  :after counsel
-  :config
-  (ivy-prescient-mode 1)
-  (setq ivy-prescient-retain-classic-highlighting t))
+  ;; Show more candidates
+  ;; (setq vertico-count 20)
 
-(use-package company-prescient
-  :after company
+  ;; Grow and shrink the Vertico minibuffer
+  ;; (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  ;; (setq vertico-cycle t)
+  )
+
+
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+;; Enable rich annotations using the Marginalia package
+(use-package marginalia
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init section is always executed.
+  :init
+
+  ;; Marginalia must be activated in the :init section of use-package such that
+  ;; the mode gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
+
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
+  ;; strategy, if you want to see the documentation from multiple providers.
+  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
   :config
-  (company-prescient-mode 1))
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package avy
   :commands (avy-goto-char avy-goto-word-0 avy-goto-line)
@@ -328,9 +477,9 @@
   ("C-: l" . avy-goto-line))
 
 
-(use-package expand-region
-  :bind (("M-[" . er/expand-region)
-         ("C-(" . er/mark-outside-pairs)))
+;; (use-package expand-region ; `expreg', `combobulate' for tree-sitter integration
+;;   :bind (("M-[" . er/expand-region)
+;;          ("C-(" . er/mark-outside-pairs)))
 
 ;; Requires M-x all-the-icons-install-fonts to show icons correctly
 
@@ -377,19 +526,21 @@
   ("k" text-scale-decrease "out")
   ("f" nil "finished" :exit t))
 
-;; Org-projectile configuration
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :init
-  (when (file-directory-p "~/Projects")
-    (setq projectile-project-search-path '("~/Projects")))
-  (setq projectile-switch-project-action #'projectile-dired))
+;; ;; Org-projectile configuration
+;; (use-package projectile
+;;   :diminish projectile-mode
+;;   :config (projectile-mode)
+;;   :custom ((projectile-completion-system 'ivy))
+;;   :bind-keymap ("C-c p" . projectile-command-map)
+;;   :init
+;;   (when (file-directory-p "~/Projects")
+;;     (setq projectile-project-search-path '("~/Projects")))
+;;   (setq projectile-switch-project-action #'projectile-dired))
 
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
+;; (use-package counsel-projectile
+;;   :config (counsel-projectile-mode))
+
+(use-package project)
 
 ;; Org mode configuration
 ;; Ensure the latest org version is used
@@ -523,12 +674,15 @@
   )
 
 ;; Org-bullets configuration
-(use-package org-superstar
-  :after org
-  :hook (org-mode . org-superstar-mode)
-  :custom
-  (org-superstar-remove-leading-stars t)
-  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+;; (use-package org-superstar
+;;   :after org
+;;   :hook (org-mode . org-superstar-mode)
+;;   :custom
+;;   (org-superstar-remove-leading-stars t)
+;;   (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(use-package org-modern)
+(with-eval-after-load 'org (global-org-modern-mode))
 
 ;; Change size for different levels of org headlines
 (require 'org-indent)
@@ -542,20 +696,26 @@
 		(org-level-8 . 1.2)))
   (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
 
-;; Ensure that anything that should be fixed-pitch in Org files appears that way.
-;; Eveything else will be variable-pitch
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-formula nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+;; ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
+;; ;; Eveything else will be variable-pitch
+;; (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+;; (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+;; (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+;; (set-face-attribute 'org-formula nil :inherit '(shadow fixed-pitch))
+;; (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+;; (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+;; (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+;; (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(use-package mixed-pitch
+  :hook
+  ;; If you want it in all text modes:
+  (text-mode . mixed-pitch-mode))
 
 (use-package org-appear
   :hook (org-mode . org-appear-mode))
+(setq org-hide-emphasis-markers t)
+
 
 ;; ;; Send notifications for org mode tasks
 ;; (use-package org-alert
@@ -596,8 +756,10 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
-   (python . t)
+;;   (python . t)
    (shell . t)))
+
+(require 'ob-python)
 
 (setq org-confirm-babel-evaluate nil)
 
@@ -655,6 +817,9 @@
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 (use-package git-gutter-fringe)
 (use-package git-gutter
@@ -739,6 +904,11 @@
   :config
   (lsp-enable-which-key-integration t))
 
+(use-package python
+  :hook (python-mode . eglot-ensure))
+
+(use-package breadcrumb)
+
 (use-package flycheck
   :defer t
   :hook (lsp-mode . flycheck-mode))
@@ -775,21 +945,45 @@
 (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 
 
-;; IDE-like auto-completions 
-(use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind
-  (:map company-active-map
-	("<tab>" . company-complete-selection))
-  (:map lsp-mode-map
-	("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+;; ;; IDE-like auto-completions 
+;; (use-package company
+;;   :after lsp-mode
+;;   :hook (lsp-mode . company-mode)
+;;   :bind
+;;   (:map company-active-map
+;; 	("<tab>" . company-complete-selection))
+;;   (:map lsp-mode-map
+;; 	("<tab>" . company-indent-or-complete-common))
+;;   :custom
+;;   (company-minimum-prefix-length 1)
+;;   (company-idle-delay 0.0))
 
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
+
+(use-package corfu
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+  ;; be used globally (M-/).  See also the customization variable
+  ;; `global-corfu-modes' to exclude certain modes.
+  :init
+  (global-corfu-mode))
 
 ;; Comment code in any language
 (use-package evil-nerd-commenter
@@ -798,16 +992,6 @@
 (use-package yasnippet)
 
 ;; Configure the terminal
-(use-package term
-  :config
-  (setq explicit-shell-fine-name "bash")
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-
-(use-package eterm-256color
-  :hook (term-mode . eterm-256color-mode))
-
-;; sudo apt-get install cmake cmake-data libtool
-;; TODO: Fix installation of dependencies
 (use-package vterm
   :commands vterm
   :config
@@ -864,11 +1048,13 @@
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 
-(use-package dired-open
-  :config
-  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
-  (setq dired-open-extension '(("png" . "feh")
-			       ("mkv" . "mpv"))))
+;; (use-package dired-open
+;;   :config
+;;   ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+;;   (setq dired-open-extension '(("png" . "feh")
+;; 			       ("mkv" . "mpv"))))
+(setq dired-guess-shell-alist-user '(("\\.png" "feh")
+                                     ("\\.mkv" "mpv")))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
@@ -925,222 +1111,222 @@
   (interactive)
   (start-process-shell-command "feh" nil "feh --bg-scale /usr/share/backgrounds/System76-Robot-by_Kate_Hazen_of_System76.png"))
 
-;; Configure polybar
-;; # Install dependencies on Ubuntu 20.04
-;; sudo apt update
-;; sudo apt install build-essential git cmake cmake-data pkg-config \
-;;       python3-sphinx libcairo2-dev libxcb1-dev libxcb-util0-dev \
-;;       libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto \
-;;       libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev
+;; ;; Configure polybar
+;; ;; # Install dependencies on Ubuntu 20.04
+;; ;; sudo apt update
+;; ;; sudo apt install build-essential git cmake cmake-data pkg-config \
+;; ;;       python3-sphinx libcairo2-dev libxcb1-dev libxcb-util0-dev \
+;; ;;       libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto \
+;; ;;       libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev
 
-;; # Clone the repo and compile version
-;; git clone --recursive https://github.com/polybar/polybar
-;; cd polybar
-;; git checkout 3.6.3
-;; ./build.sh
+;; ;; # Clone the repo and compile version
+;; ;; git clone --recursive https://github.com/polybar/polybar
+;; ;; cd polybar
+;; ;; git checkout 3.6.3
+;; ;; ./build.sh
 
-;;  Also install some icon fonts:
+;; ;;  Also install some icon fonts:
 
-;; sudo apt install fonts-font-awesome fonts-material-design-icons-iconfont
+;; ;; sudo apt install fonts-font-awesome fonts-material-design-icons-iconfont
 
-;; polybar config goes in ~/.config/polybar/config.ini
+;; ;; polybar config goes in ~/.config/polybar/config.ini
 
-(defvar sm/polybar-process nil
-  "Holds the process of the running Polybar instance, if any")
+;; (defvar sm/polybar-process nil
+;;   "Holds the process of the running Polybar instance, if any")
 
-(defun sm/kill-panel ()
-  (interactive)
-  (when sm/polybar-process
-    (ignore-errors
-      (kill-process sm/polybar-process)))
-  (setq sm/polybar-process nil))
+;; (defun sm/kill-panel ()
+;;   (interactive)
+;;   (when sm/polybar-process
+;;     (ignore-errors
+;;       (kill-process sm/polybar-process)))
+;;   (setq sm/polybar-process nil))
 
-(defun sm/start-panel ()
-  (interactive)
-  (sm/kill-panel)
-  (setq sm/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
+;; (defun sm/start-panel ()
+;;   (interactive)
+;;   (sm/kill-panel)
+;;   (setq sm/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
 
-(defun sm/polybar-exwm-workspace ()
-  (pcase exwm-workspace-current-index
-    (0 "")
-    (1 "")
-    (2 "")
-    (3 "")
-    (4 "")))
+;; (defun sm/polybar-exwm-workspace ()
+;;   (pcase exwm-workspace-current-index
+;;     (0 "")
+;;     (1 "")
+;;     (2 "")
+;;     (3 "")
+;;     (4 "")))
 
-(defun sm/send-polybar-hook (module-name hook-index)
-  (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
+;; (defun sm/send-polybar-hook (module-name hook-index)
+;;   (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
 
-(defun sm/send-polybar-exwm-workspace ()
-  (sm/send-polybar-hook "exwm-workspace" 1))
+;; (defun sm/send-polybar-exwm-workspace ()
+;;   (sm/send-polybar-hook "exwm-workspace" 1))
 
-; Update panel indicator when workspace changes
-(add-hook 'exwm-workspace-switch-hook #'sm/send-polybar-exwm-workspace)
+;; ; Update panel indicator when workspace changes
+;; (add-hook 'exwm-workspace-switch-hook #'sm/send-polybar-exwm-workspace)
 
-(defun sm/exwm-init-hook ()
-  ;; Make workspace 1 the one where we land on startup
-  (exwm-workspace-switch-create 1)
+;; (defun sm/exwm-init-hook ()
+;;   ;; Make workspace 1 the one where we land on startup
+;;   (exwm-workspace-switch-create 1)
 
-  ;; Open eshell by default
-  ;; (eshell)
-  ;; Show battery status in mode line
-  ;; (display-battery-mode 1)
+;;   ;; Open eshell by default
+;;   ;; (eshell)
+;;   ;; Show battery status in mode line
+;;   ;; (display-battery-mode 1)
 
-  ;; Show time and date in mode line
-  ;; (setq display-time-day-and-date t)
-  ;; (display-time-mode 1)
+;;   ;; Show time and date in mode line
+;;   ;; (setq display-time-day-and-date t)
+;;   ;; (display-time-mode 1)
   
-  ;; Start the Polybar panel
-  (sm/start-panel)
+;;   ;; Start the Polybar panel
+;;   (sm/start-panel)
 
-  ;;Launch apps that will run in the background
-  ;; sudo apt install blueman pavucontrol pasystray nm-applet
-  (sm/run-in-background "dunst")
-  (sm/run-in-background "nm-applet")
-  (sm/run-in-background "pasystray")
-  (sm/run-in-background "blueman-applet"))
+;;   ;;Launch apps that will run in the background
+;;   ;; sudo apt install blueman pavucontrol pasystray nm-applet
+;;   (sm/run-in-background "dunst")
+;;   (sm/run-in-background "nm-applet")
+;;   (sm/run-in-background "pasystray")
+;;   (sm/run-in-background "blueman-applet"))
 
-(use-package exwm
-  :config
-  ;; Set the default number of workspaces
-  (setq exwm-workspace-number 5)
+;; (use-package exwm
+;;   :config
+;;   ;; Set the default number of workspaces
+;;   (setq exwm-workspace-number 5)
 
-  ;; When window "class" updates, use it to set the buffer name
-  (add-hook 'exwm-update-class-hook #'sm/exwm-update-class)
+;;   ;; When window "class" updates, use it to set the buffer name
+;;   (add-hook 'exwm-update-class-hook #'sm/exwm-update-class)
 
-  ;; When window title updates, use it to set the buffer name
-  (add-hook 'exwm-update-title-hook #'sm/exwm-update-title)
+;;   ;; When window title updates, use it to set the buffer name
+;;   (add-hook 'exwm-update-title-hook #'sm/exwm-update-title)
 
-  ;; Configure windows as they're created
-  (add-hook 'exwm-manage-finish-hook #'sm/configure-window-by-class)
+;;   ;; Configure windows as they're created
+;;   (add-hook 'exwm-manage-finish-hook #'sm/configure-window-by-class)
 
-  ;; Extra configuration When EXWM starts up
-  (add-hook 'exwm-init-hook #'sm/exwm-init-hook)
+;;   ;; Extra configuration When EXWM starts up
+;;   (add-hook 'exwm-init-hook #'sm/exwm-init-hook)
 
-  ;; (start-process-shell-command "xmodmap" nil "xmodmap ~/.emacs.d/exwm/Xmodmap")
-  ;; This screwed up my keyboard configuration. To fix it, ran setxkbmap -option in the terminal
+;;   ;; (start-process-shell-command "xmodmap" nil "xmodmap ~/.emacs.d/exwm/Xmodmap")
+;;   ;; This screwed up my keyboard configuration. To fix it, ran setxkbmap -option in the terminal
 
-  ;; Automatically move EXWM buffer to current workspace when selected
-  (setq exwm-layout-show-all-buffers t)
+;;   ;; Automatically move EXWM buffer to current workspace when selected
+;;   (setq exwm-layout-show-all-buffers t)
 
-  ;; Display all EXWM buffers in every workspace buffer list
-  (setq exwm-workspace-show-all-buffers t)
+;;   ;; Display all EXWM buffers in every workspace buffer list
+;;   (setq exwm-workspace-show-all-buffers t)
 
-  ;; Detach the minibuffer (show it with exwm-workspace-toggle-minibuffer)
-  ;; (setq exwm-workspace-minibuffer-position 'bottom)
+;;   ;; Detach the minibuffer (show it with exwm-workspace-toggle-minibuffer)
+;;   ;; (setq exwm-workspace-minibuffer-position 'bottom)
 
-  ;; Set the screen resolution
-  (require 'exwm-randr)
-  (exwm-randr-enable)
-  ;; (start-process-shell-command "xrandr" nil "xrandr --output eDP-1 --mode 1920x1080 --pos 0x1080 --rotate normal --output DP-1 --off --output HDMI-1 --off --output HDMI-2 --primary --mode 3840x2160 --pos 1920x0 --rotate normal")
+;;   ;; Set the screen resolution
+;;   (require 'exwm-randr)
+;;   (exwm-randr-enable)
+;;   ;; (start-process-shell-command "xrandr" nil "xrandr --output eDP-1 --mode 1920x1080 --pos 0x1080 --rotate normal --output DP-1 --off --output HDMI-1 --off --output HDMI-2 --primary --mode 3840x2160 --pos 1920x0 --rotate normal")
 
-  (setq exwm-randr-workspace-monitor-plist '(4 "eDP-1"))
+;;   (setq exwm-randr-workspace-monitor-plist '(4 "eDP-1"))
 
-  ;; sudo apt install autorandr
-  ;; autorandr --save mobile
-  ;; autorandr --save mobile
-  ;; React to display connectivity changes, do initial display update
-  (add-hook 'exwm-randr-screen-change-hook #'sm/update-displays)
-  (sm/update-displays)
+;;   ;; sudo apt install autorandr
+;;   ;; autorandr --save mobile
+;;   ;; autorandr --save mobile
+;;   ;; React to display connectivity changes, do initial display update
+;;   (add-hook 'exwm-randr-screen-change-hook #'sm/update-displays)
+;;   (sm/update-displays)
   
-  ;; Set background
-  ;; sudo apt install compton
-  ;; compton &
-  ;; sudo apt install feh
-  ;; feh --bg-scale /usr/share/backgrounds/System76-Robot-by_Kate_Hazen_of_System76.png
-  (sm/set-wallpaper)
+;;   ;; Set background
+;;   ;; sudo apt install compton
+;;   ;; compton &
+;;   ;; sudo apt install feh
+;;   ;; feh --bg-scale /usr/share/backgrounds/System76-Robot-by_Kate_Hazen_of_System76.png
+;;   (sm/set-wallpaper)
   
-  ;; Load system tray
-  ;; (require 'exwm-systemtray)
-  ;; (setq exwm-systemtray-height 32)
-  ;; (exwm-systemtray-enable)
+;;   ;; Load system tray
+;;   ;; (require 'exwm-systemtray)
+;;   ;; (setq exwm-systemtray-height 32)
+;;   ;; (exwm-systemtray-enable)
 
-  (setq exwm-workspace-warp-cursor t)
-  (setq mouse-autoselect-window t
-        focus-follows-mouse t)
+;;   (setq exwm-workspace-warp-cursor t)
+;;   (setq mouse-autoselect-window t
+;;         focus-follows-mouse t)
   
-  ;; These keys should always pass through to Emacs
-  (setq exwm-input-prefix-keys
-    '(?\C-x
-      ?\C-u
-      ?\C-h
-      ?\M-x
-      ?\M-`
-      ?\M-&
-      ?\M-:
-      ?\C-\M-j  ;; Buffer list
-      ?\C-\ ))  ;; Ctrl+Space
+;;   ;; These keys should always pass through to Emacs
+;;   (setq exwm-input-prefix-keys
+;;     '(?\C-x
+;;       ?\C-u
+;;       ?\C-h
+;;       ?\M-x
+;;       ?\M-`
+;;       ?\M-&
+;;       ?\M-:
+;;       ?\C-\M-j  ;; Buffer list
+;;       ?\C-\ ))  ;; Ctrl+Space
 
-  ;; Ctrl+Q will enable the next key to be sent directly
-  (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+;;   ;; Ctrl+Q will enable the next key to be sent directly
+;;   (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
 
-  ;; Set up global key bindings.  These always work, no matter the input state!
-  ;; Keep in mind that changing this list after EXWM initializes has no effect.
-  (setq exwm-input-global-keys
-        `(
-          ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
-          ([?\s-r] . exwm-reset)
+;;   ;; Set up global key bindings.  These always work, no matter the input state!
+;;   ;; Keep in mind that changing this list after EXWM initializes has no effect.
+;;   (setq exwm-input-global-keys
+;;         `(
+;;           ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
+;;           ([?\s-r] . exwm-reset)
 
-          ;; Move between windows
-          ([s-left] . windmove-left)
-          ([s-right] . windmove-right)
-          ([s-up] . windmove-up)
-          ([s-down] . windmove-down)
+;;           ;; Move between windows
+;;           ([s-left] . windmove-left)
+;;           ([s-right] . windmove-right)
+;;           ([s-up] . windmove-up)
+;;           ([s-down] . windmove-down)
 
-          ;; Launch applications via shell command
-          ([?\s-&] . (lambda (command)
-                       (interactive (list (read-shell-command "> ")))
-                       (start-process-shell-command command nil command)))
+;;           ;; Launch applications via shell command
+;;           ([?\s-&] . (lambda (command)
+;;                        (interactive (list (read-shell-command "> ")))
+;;                        (start-process-shell-command command nil command)))
 
-          ;; Switch workspace
-          ([?\s-w] . exwm-workspace-switch)
-          ([?\s-`] . (lambda () (interactive)
-                       (exwm-workspace-switch-create 0)))
+;;           ;; Switch workspace
+;;           ([?\s-w] . exwm-workspace-switch)
+;;           ([?\s-`] . (lambda () (interactive)
+;;                        (exwm-workspace-switch-create 0)))
 
-          ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
-          ,@(mapcar (lambda (i)
-                      `(,(kbd (format "s-%d" i)) .
-                        (lambda ()
-                          (interactive)
-                          (exwm-workspace-switch-create ,i))))
-                     (number-sequence 0 9))))
+;;           ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
+;;           ,@(mapcar (lambda (i)
+;;                       `(,(kbd (format "s-%d" i)) .
+;;                         (lambda ()
+;;                           (interactive)
+;;                           (exwm-workspace-switch-create ,i))))
+;;                      (number-sequence 0 9))))
 
-  (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
+;;   (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
 
-  (exwm-enable))
+;;   (exwm-enable))
 
-;; sudo apt install scrot brightnessctl playerctl
-(use-package desktop-environment
-  :after exwm
-  :config (desktop-environment-mode)
-  :custom
-  (desktop-environment-brightness-small-increment "2%+")
-  (desktop-environment-brightness-small-decrement "2%-")
-  (desktop-environment-brightness-normal-increment "5%+")
-  (desktop-environment-brightness-normal-decrement "5%-"))
+;; ;; sudo apt install scrot brightnessctl playerctl
+;; (use-package desktop-environment
+;;   :after exwm
+;;   :config (desktop-environment-mode)
+;;   :custom
+;;   (desktop-environment-brightness-small-increment "2%+")
+;;   (desktop-environment-brightness-small-decrement "2%-")
+;;   (desktop-environment-brightness-normal-increment "5%+")
+;;   (desktop-environment-brightness-normal-decrement "5%-"))
 
-;; Locking the screen
-;; sudo apt install slock xss-lock
+;; ;; Locking the screen
+;; ;; sudo apt install slock xss-lock
 
-;; Notifications with Dunst
-;; sudo apt install dunst
+;; ;; Notifications with Dunst
+;; ;; sudo apt install dunst
 
-;; Dunst config goes in ~/.config/dunst/dunstrc
-(defun sm/dunstctl (command)
-  (start-process-shell-command "dunstctl" nil (concat "dunstctl " command)))
+;; ;; Dunst config goes in ~/.config/dunst/dunstrc
+;; (defun sm/dunstctl (command)
+;;   (start-process-shell-command "dunstctl" nil (concat "dunstctl " command)))
 
-(exwm-input-set-key (kbd "s-n") (lambda () (interactive) (sm/dunstctl "history-pop")))
-(exwm-input-set-key (kbd "s-N") (lambda () (interactive) (sm/dunstctl "close-all")))
+;; (exwm-input-set-key (kbd "s-n") (lambda () (interactive) (sm/dunstctl "history-pop")))
+;; (exwm-input-set-key (kbd "s-N") (lambda () (interactive) (sm/dunstctl "close-all")))
 
-(defun sm/disable-desktop-notifications ()
-  (interactive)
-  (start-process-shell-command "notify-send" nil "notify-send \"DUNST_COMMAND_PAUSE\""))
+;; (defun sm/disable-desktop-notifications ()
+;;   (interactive)
+;;   (start-process-shell-command "notify-send" nil "notify-send \"DUNST_COMMAND_PAUSE\""))
 
-(defun sm/enable-desktop-notifications ()
-  (interactive)
-  (start-process-shell-command "notify-send" nil "notify-send \"DUNST_COMMAND_RESUME\""))
+;; (defun sm/enable-desktop-notifications ()
+;;   (interactive)
+;;   (start-process-shell-command "notify-send" nil "notify-send \"DUNST_COMMAND_RESUME\""))
 
-(defun sm/toggle-desktop-notifications ()
-  (interactive)
-  (start-process-shell-command "notify-send" nil "notify-send \"DUNST_COMMAND_TOGGLE\""))
+;; (defun sm/toggle-desktop-notifications ()
+;;   (interactive)
+;;   (start-process-shell-command "notify-send" nil "notify-send \"DUNST_COMMAND_TOGGLE\""))
 
