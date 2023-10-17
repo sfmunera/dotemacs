@@ -1,17 +1,9 @@
+;;; Basic configuration
+
+;;;; Basic system configuration
+
 ;; Make startup faster by reducing the frequency of garbage collection
-;; and then use a hook to measure Emacs startup time.
-
-;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
-
-;; Silence native compiling warnings as they are pretty noisy
-(setq native-comp-async-report-warnings-errors nil)
-
-;; Default coding system
-(set-default-coding-systems 'utf-8)
-
-;; Only use spaces for indentation
-(setq-default indent-tabs-mode nil)
 
 ;; Profile emacs startup
 (add-hook 'emacs-startup-hook
@@ -22,81 +14,17 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+;; Silence native compiling warnings as they are pretty noisy
+(setq native-comp-async-report-warnings-errors nil)
+
+;; Leaving this commented out as the emacs daemon is now started by the system
 ;; (server-start)
 
-;; Don't show the splash screen
-(setq inhibit-startup-message t)
-
-;; turn off some unneeded UI elements
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-(set-fringe-mode 10)
-(menu-bar-mode -1)
-
-;; replace bell sounds by visual bell
-(setq visible-bell t)
-
-;; Set frame transparency
-;; (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-;; (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
-;; maximize windows by default
-(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; Default coding system
+(set-default-coding-systems 'utf-8)
 
 ;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
-
-
-;; ;; Package system and settings
-;; (require 'package)
-;; (setq package-archives '(("melpa"        . "https://melpa.org/packages/")
-;; 			 ("melpa-stable" . "https://stable.melpa.org/packages/")
-;;                          ("org"          . "https://orgmode.org/elpa/")
-;;                          ("gnu"          . "https://elpa.gnu.org/packages/")
-;; 			 ("nongnu"       . "https://elpa.nongnu.org/nongnu/")))
-;; (package-initialize)
-
-;; (unless package-archive-contents
-;;   (package-refresh-contents))
-
-;; ;; Bootstrap 'use-package'
-;; (unless (package-installed-p 'use-package)
-;;   (package-install 'use-package))
-
-;; (require 'use-package)
-;; (setq use-package-always-ensure t)
-
-;; ;; Auto package upgrades
-;; (use-package auto-package-update
-;;   :custom
-;;   (auto-package-update-interval 7)
-;;   (auto-package-update-prompt-before-update t)
-;;   (auto-package-update-hide-results t)
-;;   :config
-;;   (auto-package-update-maybe)
-;;   (auto-package-update-at-time "09:00"))
-
-;; Bootstrap straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-        'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(setq straight-use-package-by-default t)
-
-;; Use straight.el for use-package expressions
-(straight-use-package 'use-package)
-
-(straight-use-package 'org)
 
 ;; keep folders clean
 (setq user-emacs-directory (expand-file-name "~/.cache/emacs")
@@ -119,18 +47,59 @@
   (super-save-mode +1)
   (setq super-save-auto-save-when-idle t))
 
-(defun sm/set-font-faces ()
-  (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
-  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
-  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
+;; move customization variable to a separate file and load it
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(load custom-file 'noerror 'nomessage)
 
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-	      (lambda (frame)
-		(setq doom-modeline-icon t)
-		(with-selected-frame frame
-		  (sm/set-font-faces))))
-  (sm/set-font-faces))
+;; quick access to recently edited files
+(recentf-mode 1)
+(global-set-key (kbd "C-c f") 'recentf-open-files)
+
+;; save history in minibuffer
+(setq history-length 25)
+(savehist-mode 1)
+
+;; remember and restore the last cursor location of opened files
+(save-place-mode 1)
+
+;; Revert buffers when the underlying file has changed
+(global-auto-revert-mode 1)
+
+;; Revert Dired and other buffers
+(setq global-auto-revert-non-file-buffers t)
+
+;; Make ESC quit prompts
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; Visual undo
+(use-package vundo
+  :commands (vundo)
+  :bind (("C-x u" . vundo))
+  :straight (vundo :type git :host github :repo "casouri/vundo"))
+
+
+
+;;;; Basic UI configuration
+
+;; turn off some unneeded UI elements
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(tooltip-mode -1)
+(set-fringe-mode 10)
+(menu-bar-mode -1)
+
+;; Don't show UI dialogs when prompting
+(setq use-dialog-box nil)
+
+;; Don't show the splash screen
+(setq inhibit-startup-message t)
+
+;; replace bell sounds by visual bell
+(setq visible-bell t)
+
+;; maximize windows by default
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; make line numbers visible
 (column-number-mode)
@@ -146,38 +115,90 @@
 
 (setq blink-cursor-mode nil)
 
-;; quick access to recently edited files
-(recentf-mode 1)
-(global-set-key (kbd "C-c f") 'recentf-open-files)
+;; Only use spaces for indentation
+(setq-default indent-tabs-mode nil)
 
-;; save history in minibuffer
-(setq history-length 25)
-(savehist-mode 1)
 
-;; remember and restore the last cursor location of opened files
-(save-place-mode 1)
+;;; Package manager
 
-;; move customization variable to a separate file and load it
-(setq custom-file (locate-user-emacs-file "custom-vars.el"))
-(load custom-file 'noerror 'nomessage)
+;; Bootstrap straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; Don't show UI dialogs when prompting
-(setq use-dialog-box nil)
+(setq straight-use-package-by-default t)
 
-;; Revert buffers when the underlying file has changed
-(global-auto-revert-mode 1)
+;; Use straight.el for use-package expressions
+(straight-use-package 'use-package)
 
-;; Revert Dired and other buffers
-(setq global-auto-revert-non-file-buffers t)
+(straight-use-package 'org)
 
-;; (use-package undo-tree
-;;  :init
-;;  (global-undo-tree-mode 1))
 
-(use-package vundo
-  :commands (vundo)
-  :bind (("C-x u" . vundo))
-  :straight (vundo :type git :host github :repo "casouri/vundo"))
+;;; Look and feel
+
+(defun sm/set-font-faces ()
+  (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
+  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
+  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+	      (lambda (frame)
+		(setq doom-modeline-icon t)
+		(with-selected-frame frame
+		  (sm/set-font-faces))))
+  (sm/set-font-faces))
+
+;; TODO: not needed with modus-themes
+(use-package mixed-pitch
+  :hook
+  ;; If you want it in all text modes:
+  (text-mode . mixed-pitch-mode))
+
+;; You can use this with M-x variable-pitch-mode
+(set-face-attribute 'variable-pitch nil :family "San Francisco")
+(setq modus-themes-mixed-fonts t)
+
+;; TODO: github.com/protesilaos/iosevka-comfy
+
+;; TODO: check spacious-padding
+
+(use-package modus-themes
+  :config
+  (load-theme 'modus-vivendi t))
+
+;; (use-package ef-themes
+;;   :config
+;;   (load-theme 'ef-maris-dark t))
+
+(use-package nerd-icons)
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom (doom-modeline-height 15))
+
+;; Use different colors for nested parens
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; sets the text background to the color mentioned. For example: #0000ff, #ff0000
+(use-package rainbow-mode
+  :defer t
+  :hook (org-mode
+         emacs-lisp-mode
+         web-mode))
+
+
+;;; Window management
 
 ;; Frame Scaling / Zooming
 ;; The keybindings for this are C+M+- and C+M+=.
@@ -210,87 +231,9 @@
 	 display-buffer-same-window
 	 display-buffer-in-previous-window)))
 
-;; TODO: tab-bar-mode
 
 
-;; Solarized theme
-;; (use-package solarized-theme
-;;   :init (load-theme 'solarized-dark t))
-;; Gruvbox theme
-;; (use-package gruvbox-theme
-;;   :init (load-theme 'gruvbox-dark-hard t))
-;; Dracula theme
-;; (use-package dracula-theme
-;;   :init (load-theme 'dracula t))
-;; Nord theme
-;; (use-package nord-theme
-;;   :init (load-theme 'nord t))
-;; Zenburn theme
-;; (use-package zenburn-theme
-;;   :init (load-theme 'zenburn t))
-;; (load-theme 'deeper-blue t)
-
-;; Modus theme configuration
-;; modus-themes-toggle toggles between light and dark themes
-;; (setq modus-themes-mode-line '(borderless)
-;;       modus-themes-region '(bg-only)
-;; ;      modus-themes-completions 'opinionated
-;;       modus-themes-bold-constructs t
-;;       modus-themes-italic-constructs t
-;;       modus-themes-fringes 'subtle
-;;       modus-themes-tabs-accented t
-;;       modus-themes-paren-match '(bold intense)
-;;       modus-themes-syntax '(alt-syntax)
-;;       modus-themes-headings
-;;       '((1 . (rainbow overline background 1.4))
-;; 	(2 . (rainbow background 1.3))
-;; 	(3 . (rainbow bold 1.2))
-;; 	(t . (semilight 1.1)))
-;;       modus-themes-scale-headings t
-;;       modus-themes-org-blocks 'tinted-background)
-;; (load-theme 'modus-vivendi t)
-
-(use-package modus-themes
-  :config
-  (load-theme 'modus-vivendi t))
-
-;; (use-package ef-themes
-;;   :config
-;;   (load-theme 'ef-maris-dark t))
-
-;; (use-package all-the-icons)
-(use-package nerd-icons)
-
-;; (use-package doom-themes
-;;   :config
-;;   ;; Global settings (defaults)
-;;   ;; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-;;   ;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
-;;   (load-theme 'doom-palenight t)
-
-;;   ;; Enable flashing mode-line on errors
-;;   (doom-themes-visual-bell-config)
-;;   ;; Enable custom neotree theme (all-the-icons must be installed!)
-;;   (doom-themes-neotree-config)
-;;   ;; or for treemacs users
-;;   (setq doom-themes-treemacs-theme "doom-colors") ; use "doom-atom" for more minimal icon theme
-;;   (doom-themes-treemacs-config)
-;;   (doom-themes-org-config))
-
-;; Make ESC quit prompts
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
-;; Counsel for fuzzy auto-completions
-;; (use-package counsel
-;;   :bind (("M-x" . counsel-M-x)
-;; 	 ("C-x b" . counsel-ibuffer)
-;; 	 ("C-x C-f" . counsel-find-file)
-;; 	 :map minibuffer-local-map
-;; 	 ("C-r" . counsel-minibuffer-history))
-;;   :config
-;;   (setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
-;;   :custom
-;;   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
+;;; Completions
 
 ;; Example configuration for Consult
 (use-package consult
@@ -325,6 +268,7 @@
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
+         
          ;; M-s bindings in `search-map'
          ("M-s d" . consult-find)                  ;; Alternative: consult-fd
          ("M-s D" . consult-locate)
@@ -347,56 +291,28 @@
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
          ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
+  ;; (prot-emacs-keybind global-map
+  ;;   "M-g M-g" #'consult-goto-line
+  ;;   "M-K" #'consult-keep-lines ; M-S-k is similar to M-S-5 (M-%)
+  ;;   "M-F" #'consult-focus-lines ; same principle
+  ;;   "M-s M-b" #'consult-buffer
+  ;;   "M-s M-f" #'consult-find
+  ;;   "M-s M-g" #'consult-grep
+  ;;   "M-s M-h" #'consult-history
+  ;;   "M-s M-i" #'consult-imenu
+  ;;   "M-s M-l" #'consult-line
+  ;;   "M-s M-m" #'consult-mark
+  ;;   "M-s M-y" #'consult-yank-pop
+  ;;   "M-s M-s" #'consult-outline) 
+
   ;; Enable automatic preview at point in the *Completions* buffer. This is
   ;; relevant when you use the default completion UI.
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
-;; Ivy for completions
-;; (use-package ivy
-;;   :diminish
-;;   :bind (("C-s" . swiper)
-;; 	 :map ivy-minibuffer-map
-;; 	 ("TAB" . ivy-alt-done)
-;; 	 ("C-l" . ivy-alt-done)
-;; 	 ("C-j" . ivy-next-line)
-;; 	 ("C-k" . ivy-previous-line)
-;; 	 :map ivy-switch-buffer-map
-;; 	 ("C-k" . ivy-previous-line)
-;; 	 ("C-l" . ivy-done)
-;; 	 ("C-d" . ivy-switch-buffer-kill)
-;; 	 :map ivy-reverse-i-search-map
-;; 	 ("C-k" . ivy-previous-line)
-;; 	 ("C-d" . ivy-reverse-i-search-kill))
-;;   :config
-;;   (ivy-mode 1))
-
-;; (use-package ivy-rich
-;;   :init
-;;   (ivy-rich-mode 1))
-
-;; ;; prescient.el
-;; ;; Sorting and filtering selections based on use recency, frequency and configurable rules
-;; (use-package prescient
-;;   :after counsel
-;;   :config
-;;   (setq prescient-sort-length-enable nil)
-;;   (prescient-persist-mode 1))
-
-;; (use-package ivy-prescient
-;;   :after counsel
-;;   :config
-;;   (ivy-prescient-mode 1)
-;;   (setq ivy-prescient-retain-classic-highlighting t))
-
-;; (use-package company-prescient
-;;   :after company
-;;   :config
-;;   (company-prescient-mode 1))
-
 (use-package vertico
   :init
   (vertico-mode)
-  :bind (("C-s" . consult-line))
+  :bind (("C-s" . consult-line)) ;; TODO: put this in the consult binds
 
   ;; Different scroll margin
   ;; (setq vertico-scroll-margin 0)
@@ -411,6 +327,26 @@
   ;; (setq vertico-cycle t)
   )
 
+;; This works with `file-name-shadow-mode' enabled.  When you are in
+  ;; a sub-directory and use, say, `find-file' to go to your home '~/'
+  ;; or root '/' directory, Vertico will clear the old path to keep
+  ;; only your current input.
+(add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
+
+(setq completion-category-overrides
+        ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
+        ;; default for some contexts.  Read:
+        ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=50387>.
+        ;;
+        ;; `partial-completion' is a killer app for files, because it
+        ;; can expand ~/.l/s/fo to ~/.local/share/fonts.
+        ;;
+        ;; If `basic' cannot match my current input, Emacs tries the
+        ;; next completion style in the given order.  In other words,
+        ;; `orderless' kicks in as soon as I input a space or one of its
+        ;; style dispatcher characters.
+        '((file (styles . (basic partial-completion orderless)))))
+
 
 (use-package orderless
   :init
@@ -419,7 +355,7 @@
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+        completion-category-overrides '((file (styles partial-completion))))) ;; TODO: same line as 447
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
@@ -469,6 +405,14 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+
+
+;;; Improved search tools
+
+(use-package smartparens
+  :hook (prog-mode . smartparens-mode))
+
+
 (use-package avy
   :commands (avy-goto-char avy-goto-word-0 avy-goto-line)
   :bind
@@ -483,23 +427,8 @@
 
 ;; Requires M-x all-the-icons-install-fonts to show icons correctly
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1)
-  :custom (doom-modeline-height 15))
 
-;; Use different colors for nested parens
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-(use-package smartparens
-  :hook (prog-mode . smartparens-mode))
-
-;; sets the text background to the color mentioned. For example: #0000ff, #ff0000
-(use-package rainbow-mode
-  :defer t
-  :hook (org-mode
-         emacs-lisp-mode
-         web-mode))
+;;; Improved help tools
 
 ;; Helpful visual auto-completion for keywords
 (use-package which-key
@@ -526,21 +455,12 @@
   ("k" text-scale-decrease "out")
   ("f" nil "finished" :exit t))
 
-;; ;; Org-projectile configuration
-;; (use-package projectile
-;;   :diminish projectile-mode
-;;   :config (projectile-mode)
-;;   :custom ((projectile-completion-system 'ivy))
-;;   :bind-keymap ("C-c p" . projectile-command-map)
-;;   :init
-;;   (when (file-directory-p "~/Projects")
-;;     (setq projectile-project-search-path '("~/Projects")))
-;;   (setq projectile-switch-project-action #'projectile-dired))
 
-;; (use-package counsel-projectile
-;;   :config (counsel-projectile-mode))
+
+;;; Org mode
 
 (use-package project)
+;; TODO: check beframe, tab-bar-mode for project separation.
 
 ;; Org mode configuration
 ;; Ensure the latest org version is used
@@ -673,14 +593,6 @@
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   )
 
-;; Org-bullets configuration
-;; (use-package org-superstar
-;;   :after org
-;;   :hook (org-mode . org-superstar-mode)
-;;   :custom
-;;   (org-superstar-remove-leading-stars t)
-;;   (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
-
 (use-package org-modern)
 (with-eval-after-load 'org (global-org-modern-mode))
 
@@ -707,10 +619,7 @@
 ;; (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 ;; (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 ;; (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-(use-package mixed-pitch
-  :hook
-  ;; If you want it in all text modes:
-  (text-mode . mixed-pitch-mode))
+
 
 (use-package org-appear
   :hook (org-mode . org-appear-mode))
@@ -802,17 +711,14 @@
   (org-roam-setup)
   (require 'org-roam-protocol))
 
-(use-package org-projectile
-  :bind (("C-c n p" . org-projectile-project-todo-completing-read))
-  :config
-  (progn
-    (setq org-projectile-projects-file
-          (concat org-directory "projects.org"))
-    (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
-    (push (org-projectile-project-todo-entry) org-capture-templates)))
+
+;;; TRAMP
 
 ;; Set default connection mode to SSH
 (setq tramp-default-method "ssh")
+
+
+;;; Magit
 
 (use-package magit
   :custom
@@ -885,12 +791,9 @@
   (set-face-foreground 'git-gutter:modified "LightGoldenrod")
   (set-face-foreground 'git-gutter:deleted "LightCoral")
 
-;; Magit forge: allows to work with github and gitlab (e.g. pulling issues, creating pull requests, etc)
-;; Requires setting up a token for the Github API
-;; TODO: Set it up
-(use-package forge)
 
-;; IDE configuration
+
+;;; IDE configuration
 ;; Header breadcrumb
 (defun sm/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -944,23 +847,6 @@
 
 (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 
-
-;; ;; IDE-like auto-completions 
-;; (use-package company
-;;   :after lsp-mode
-;;   :hook (lsp-mode . company-mode)
-;;   :bind
-;;   (:map company-active-map
-;; 	("<tab>" . company-complete-selection))
-;;   (:map lsp-mode-map
-;; 	("<tab>" . company-indent-or-complete-common))
-;;   :custom
-;;   (company-minimum-prefix-length 1)
-;;   (company-idle-delay 0.0))
-
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
-
 (use-package corfu
   ;; Optional customizations
   ;; :custom
@@ -991,7 +877,10 @@
 
 (use-package yasnippet)
 
-;; Configure the terminal
+
+
+;;; Terminal
+
 (use-package vterm
   :commands vterm
   :config
@@ -1023,7 +912,10 @@
     (setq eshell-destroy-buffer-when-process-dies t)
     (setq eshell-visual-commands '("htop" "zsh" "vim" "less" "tmux" "screen"))))
 
-;; Configuring dired
+
+
+
+;;; Configuring dired
 ;; Require to mark by extension
 (require 'dired-x)
 ;; Keep only one dired buffer
@@ -1048,11 +940,6 @@
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 
-;; (use-package dired-open
-;;   :config
-;;   ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
-;;   (setq dired-open-extension '(("png" . "feh")
-;; 			       ("mkv" . "mpv"))))
 (setq dired-guess-shell-alist-user '(("\\.png" "feh")
                                      ("\\.mkv" "mpv")))
 
@@ -1061,6 +948,9 @@
   :bind
   (:map dired-mode-map
 	("H" . dired-hide-dotfiles-mode)))
+
+
+;;; Misc
 
 (use-package markdown-mode
   :mode "\\.md\\'"
@@ -1079,37 +969,39 @@
 
   (add-hook 'markdown-mode-hook 'sm/markdown-mode-hook))
 
-;; Window management
-(defun sm/exwm-update-class ()
-  (exwm-workspace-rename-buffer exwm-class-name))
 
-(defun sm/exwm-update-title ()
-  (pcase exwm-class-name
-    ("firefox" (exwm-workspace-rename-buffer (format "Firefox: %s" exwm-title)))
-    ("Chromium-browser" (exwm-workspace-rename-buffer (format "Chromium: %s" exwm-title)))))
 
-(defun sm/configure-window-by-class ()
-  (interactive)
-  (message "Window '%s' appeared!" exwm-class-name)
-  (pcase exwm-class-name
-    ("firefox" (exwm-workspace-move-window 2))
-    ;; Use the exwm-floating-toggle-floating command (C-c C-t C-f)
-    ("mpv" (exwm-floating-toggle-floating)
-     (exwm-layout-toggle-mode-line))))
+;;; EXWM
+;; (defun sm/exwm-update-class ()
+;;   (exwm-workspace-rename-buffer exwm-class-name))
 
-(defun sm/update-displays ()
-  (sm/run-in-background "autorandr --change --force")
-  (sm/set-wallpaper)
-  (message "Display config: %s"
-           (string-trim (shell-command-to-string "autorandr --current"))))
+;; (defun sm/exwm-update-title ()
+;;   (pcase exwm-class-name
+;;     ("firefox" (exwm-workspace-rename-buffer (format "Firefox: %s" exwm-title)))
+;;     ("Chromium-browser" (exwm-workspace-rename-buffer (format "Chromium: %s" exwm-title)))))
 
-(defun sm/run-in-background (command)
-  (let ((command-parts (split-string command "[ ]+")))
-    (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
+;; (defun sm/configure-window-by-class ()
+;;   (interactive)
+;;   (message "Window '%s' appeared!" exwm-class-name)
+;;   (pcase exwm-class-name
+;;     ("firefox" (exwm-workspace-move-window 2))
+;;     ;; Use the exwm-floating-toggle-floating command (C-c C-t C-f)
+;;     ("mpv" (exwm-floating-toggle-floating)
+;;      (exwm-layout-toggle-mode-line))))
 
-(defun sm/set-wallpaper ()
-  (interactive)
-  (start-process-shell-command "feh" nil "feh --bg-scale /usr/share/backgrounds/System76-Robot-by_Kate_Hazen_of_System76.png"))
+;; (defun sm/update-displays ()
+;;   (sm/run-in-background "autorandr --change --force")
+;;   (sm/set-wallpaper)
+;;   (message "Display config: %s"
+;;            (string-trim (shell-command-to-string "autorandr --current"))))
+
+;; (defun sm/run-in-background (command)
+;;   (let ((command-parts (split-string command "[ ]+")))
+;;     (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
+
+;; (defun sm/set-wallpaper ()
+;;   (interactive)
+;;   (start-process-shell-command "feh" nil "feh --bg-scale /usr/share/backgrounds/System76-Robot-by_Kate_Hazen_of_System76.png"))
 
 ;; ;; Configure polybar
 ;; ;; # Install dependencies on Ubuntu 20.04
