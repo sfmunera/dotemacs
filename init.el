@@ -23,12 +23,39 @@
 ;; Default coding system
 (set-default-coding-systems 'utf-8)
 
+(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
+
 ;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
+
+;;;; Package manager
+
+;; Bootstrap straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(setq straight-use-package-by-default t)
+
+;; Use straight.el for use-package expressions
+(straight-use-package 'use-package)
+
+(straight-use-package 'org)
+
+;;;; System files
+
 ;; keep folders clean
-(setq user-emacs-directory (expand-file-name "~/.cache/emacs")
-      url-history-file (expand-file-name "url/history" user-emacs-directory))
+(setq url-history-file (expand-file-name "url/history" user-emacs-directory))
 
 (use-package no-littering)
 
@@ -117,30 +144,6 @@
 
 ;; Only use spaces for indentation
 (setq-default indent-tabs-mode nil)
-
-
-;;; Package manager
-
-;; Bootstrap straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-        'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(setq straight-use-package-by-default t)
-
-;; Use straight.el for use-package expressions
-(straight-use-package 'use-package)
-
-(straight-use-package 'org)
 
 
 ;;; Look and feel
@@ -823,8 +826,6 @@
 
 (use-package lsp-treemacs
   :after lsp)
-
-(use-package lsp-ivy)
 
 ;; needs to install LSP for the specific languages first
 (use-package typescript-mode
