@@ -178,7 +178,7 @@
 (use-package modus-themes
   :config
   (setq modus-themes-common-palette-overrides '((builtin red-cooler)))
-  (load-theme 'modus-vivendi t))
+  (load-theme 'modus-vivendi-tinted t))
 
 ;; (use-package ef-themes
 ;;   :config
