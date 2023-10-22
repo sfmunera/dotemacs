@@ -479,13 +479,10 @@
 
 ;; Improved helpful pages
 (use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
   :bind
-  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-function] . helpful-callable)
   ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
 
 (use-package hydra)
@@ -1006,6 +1003,3 @@
     (sm/set-markdown-header-font-sizes))
 
   (add-hook 'markdown-mode-hook 'sm/markdown-mode-hook))
-
-
-
