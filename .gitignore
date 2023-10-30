@@ -17,3 +17,7 @@
 *~
 /var/
 /flycheck_init.el
+/straight/
+/.mc-lists.*
+/bookmarks
+/.emacs.desktop
