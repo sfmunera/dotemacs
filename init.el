@@ -1,6 +1,8 @@
-;;; Basic configuration
+;; -*- lexical-binding: t; -*-
 
-;;;; Basic system configuration
+;;; Basic configurations
+
+;;;; Performance optimizations
 
 ;; Make startup faster by reducing the frequency of garbage collection
 (setq gc-cons-threshold (* 50 1000 1000))
@@ -14,22 +16,36 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+;;;; Emacs directory
+(setq user-emacs-directory (expand-file-name "~/.emacs.d"))
+
+;;;; Native compilation
+
 ;; Silence native compiling warnings as they are pretty noisy
 (setq native-comp-async-report-warnings-errors nil)
+
+;; Set the right directory to store the native comp cache
+(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
+
+;;;; Personal information
+(setq user-full-name "Sebastian Munera")
 
 ;; Leaving this commented out as the emacs daemon is now started by the system
 ;; (server-start)
 
-;; Default coding system
+;;;; Default coding system
 (set-default-coding-systems 'utf-8)
 
-(setq user-emacs-directory (expand-file-name "~/.emacs.d"))
 
-;; Remap listing buffers to ibuffer
+;;;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
 
+;;;; When asked a yes or no question, just typing y or n should be enough.
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 ;;;; Package manager
+(setq package-enable-at-startup nil)
 
 ;; Bootstrap straight.el
 (defvar bootstrap-version)
@@ -52,7 +68,7 @@
 
 (straight-use-package 'org)
 
-;;;; System files
+;;;; Organize files
 
 ;; keep folders clean
 (setq url-history-file (expand-file-name "url/history" user-emacs-directory))
@@ -149,9 +165,12 @@
 ;;; Look and feel
 
 (defun sm/set-font-faces ()
-  (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
-  (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
-  (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
+  ;; (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
+  ;; (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
+  ;; (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
+  (set-face-attribute 'default nil :family "Iosevka" :height 130)
+  (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height 125)
+  (set-face-attribute 'variable-pitch nil :family "Iosevka Aile" :height 130 :weight 'regular))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -161,15 +180,6 @@
 		  (sm/set-font-faces))))
   (sm/set-font-faces))
 
-;; TODO: not needed with modus-themes
-(use-package mixed-pitch
-  :hook
-  ;; If you want it in all text modes:
-  (text-mode . mixed-pitch-mode))
-
-;; You can use this with M-x variable-pitch-mode
-(set-face-attribute 'variable-pitch nil :family "San Francisco")
-(setq modus-themes-mixed-fonts t)
 
 ;; TODO: github.com/protesilaos/iosevka-comfy
 
@@ -177,8 +187,15 @@
 
 (use-package modus-themes
   :config
-  (setq modus-themes-common-palette-overrides '((builtin red-cooler)))
-  (load-theme 'modus-vivendi-tinted t))
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-common-palette-overrides '((builtin red-cooler))
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui nil
+        modus-themes-disable-other-themes t
+        modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+  (load-theme 'modus-vivendi-tinted)
+  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
 ;; (use-package ef-themes
 ;;   :config
@@ -500,202 +517,109 @@
 ;; TODO: check beframe, tab-bar-mode for project separation.
 
 ;; Org mode configuration
-;; Ensure the latest org version is used
 (defun sm/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
   (visual-line-mode 1))
-
+ 
 (use-package org
   :hook (org-mode . sm/org-mode-setup)
-  :straight org-contrib
   :bind (("C-c a" . org-agenda)
-	 ("C-c c" . org-capture)
-         (:map org-mode-map
-               ("C-M-j" . org-next-visible-heading)
-               ("C-M-k" . org-previous-visible-heading)
-               ("M-j" . org-metadown)
-               ("M-k" . org-metaup)))
+	 ("C-c c" . org-capture))
   :config
   ;; Custom org mode settings
-  (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit)
-  (setq org-habit-graph-column 60)
-  
-  (setq org-ellipsis " ▾"
-	org-hide-emphasis-markers t
-	org-agenda-start-with-log-mode t
-        org-src-fontify-natively t
-        org-fontify-quote-and-verse-blocks t
-        org-src-tab-acts-natively t
-        org-edit-src-content-indentation 2
-        org-startup-folded 'content
-      	org-log-done 'time
-	org-log-into-drawer t
-        
-	org-directory "~/Dropbox/org/"
-	org-default-notes-file "Inbox.org"
-	org-agenda-files '("Work.org" "Personal.org" "Habits.org")
-	org-refile-targets
-	'(("Archive.org" :maxlevel . 1))
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-fold-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
 
-        org-tag-alist
-        '((:startgroup)
-         ; Put mutually exclusive tags here
-          (:endgroup)
-          ("@home" . ?h)
-          ("@work" . ?w))
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-ellipsis " ▾"
+   org-startup-folded 'content
 
-        org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "DOING(i)" "|" "DONE(d)")
-          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
-	 ;; (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))
+   ;; Agenda styling
+   org-agenda-tags-column 0
+   org-agenda-block-separator ?─
+   org-agenda-time-grid
+   '((daily today require-timed)
+     (800 1000 1200 1400 1600 1800 2000)
+     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "◀── now ─────────────────────────────────────────────────"
 
-        org-todo-keyword-faces
-        '(("NEXT" :foreground "orange" :weight bold)
-          ("DOING" :foreground "blue" :weight bold)
-          ("WAITING" :foreground "orange" :weight bold)
-          ("HOLD" :foreground "magenta" :weight bold))
+   ;; Code blocks config
+   org-src-fontify-natively t
+   org-src-tab-acts-natively t
+   org-edit-src-content-indentation 2
 
-        ;; allows changing the from any task state to any other state with C-c C-r KEY
-        org-use-fast-todo-selection t
-        
-        org-capture-templates
-	`(("c" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
-           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
-          ("t" "Tasks / Projects")
-          ("tw" "Work Task" entry (file+olp "Work.org" "Tasks")
-           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
-          ("tp" "Personal Task" entry (file+olp "Personal.org" "Tasks")
-           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
-	  ("n" "Notes" entry (file+olp+datetree "Notes.org")
-	   "* %^{Description} %^g %?\nAdded: %U" :empty-lines 1 :kill-buffer t)
-          ("j" "Journal" entry (file+olp+datetree "Journal.org")
-           "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-           :clock-in :clock-resume :empty-lines 1)
-          ("m" "Meeting" entry (file+olp+datetree "Notes.org")
-           "\n* %<%I:%M %p> - %^{Meeting title} :meeting:\n\n%?\n\n"
-           :clock-in :clock-resume :empty-lines 1)
-          ("b" "Books" entry (file+headline "Books.org" "Books")
-           "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t))
+   ;; Org files
+   org-directory "~/Dropbox/org/"
+   org-default-notes-file "Inbox.org"
+   org-agenda-files '("Work.org" "Personal.org")
 
-        org-agenda-custom-commands
-        '(("d" "Dashboard"
-           ((agenda "" ((org-deadline-warning-days 7)))
-            (todo "NEXT"
-              ((org-agenda-overriding-header "Next Tasks")))
-            (tags-todo "agenda/DOING" ((org-agenda-overriding-header "Active Projects")))))
+   ;; Tags, TODO keywords
+   org-log-done 'time
+   org-log-into-drawer t
+   org-use-fast-todo-selection t
+   org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "DOING(i)" "|" "DONE(d)")
+     (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
 
-          ("n" "Next Tasks"
-           ((todo "NEXT"
-              ((org-agenda-overriding-header "Next Tasks")))))
+   ;; Capture configurations
+   org-capture-templates
+   `(("c" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
+      "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
+     ("j" "Journal" entry (file+olp+datetree "Journal.org")
+      "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+      :clock-in :clock-resume :empty-lines 1)))
 
+  ;; Change size for different levels of org headlines
+  (dolist (face '((org-level-1 . 1.25)
+		  (org-level-2 . 1.25)
+		  (org-level-3 . 1.22)
+		  (org-level-4 . 1.2)
+		  (org-level-5 . 1.2)
+		  (org-level-6 . 1.2)
+		  (org-level-7 . 1.2)
+		  (org-level-8 . 1.2)))
+    (set-face-attribute (car face) nil :family "Iosevka Aile" :weight 'regular :height (cdr face)))
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
+  ;; Eveything else will be variable-pitch
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  ;(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-formula nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
-          ;; ("W" "Work Tasks" tags-todo "+work")
+(use-package org-modern
+  :after org
+  :bind
+  :custom-face
+  (org-modern-label
+   ((t :height 0.8 :width condensed :weight regular
+       :underline nil :inherit fixed-pitch)))
+  :config
+  (global-org-modern-mode))
 
-          ;; Low-effort next actions
-          ;; ("e;; " tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-           ;; ((org-agenda-overriding-header "Low Effort Tasks")
-           ;;  (org-agenda-max-todos 20)
-           ;;  (org-agenda-files org-agenda-files)))
-
-          ;; ("w" "Workflow Status"
-          ;;  ((todo "WAIT"
-          ;;         ((org-agenda-overriding-header "Waiting on External")
-          ;;          (org-agenda-files org-agenda-files)))
-          ;;   (todo "REVIEW"
-          ;;         ((org-agenda-overriding-header "In Review")
-          ;;          (org-agenda-files org-agenda-files)))
-          ;;   (todo "PLAN"
-          ;;         ((org-agenda-overriding-header "In Planning")
-          ;;          (org-agenda-todo-list-sublevels nil)
-          ;;          (org-agenda-files org-agenda-files)))
-          ;;   (todo "BACKLOG"
-          ;;         ((org-agenda-overriding-header "Project Backlog")
-          ;;          (org-agenda-todo-list-sublevels nil)
-          ;;          (org-agenda-files org-agenda-files)))
-          ;;   (todo "READY"
-          ;;         ((org-agenda-overriding-header "Ready for Work")
-          ;;          (org-agenda-files org-agenda-files)))
-          ;;   (todo "ACTIVE"
-          ;;         ((org-agenda-overriding-header "Active Projects")
-          ;;          (org-agenda-files org-agenda-files)))
-          ;;   (todo "COMPLETED"
-          ;;         ((org-agenda-overriding-header "Completed Projects")
-          ;;          (org-agenda-files org-agenda-files)))
-          ;;   (todo "CANC"
-          ;;         ((org-agenda-overriding-header "Cancelled Projects")
-          ;;          (org-agenda-files org-agenda-files)))))
-          ))
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
-  )
-
-(use-package org-modern)
-(with-eval-after-load 'org (global-org-modern-mode))
-
-;; Change size for different levels of org headlines
 (require 'org-indent)
-(dolist (face '((org-level-1 . 1.25)
-		(org-level-2 . 1.25)
-		(org-level-3 . 1.22)
-		(org-level-4 . 1.2)
-		(org-level-5 . 1.2)
-		(org-level-6 . 1.2)
-		(org-level-7 . 1.2)
-		(org-level-8 . 1.2)))
-  (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
 
-;; ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
-;; ;; Eveything else will be variable-pitch
-;; (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-;; (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-;; (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-;; (set-face-attribute 'org-formula nil :inherit '(shadow fixed-pitch))
-;; (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-;; (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-;; (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-;; (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(use-package org-modern-indent
+  :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
+  :config
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
 
 (use-package org-appear
   :hook (org-mode . org-appear-mode))
-(setq org-hide-emphasis-markers t)
-
-
-;; ;; Send notifications for org mode tasks
-;; (use-package org-alert
-;;   :custom (alert-default-style 'message)
-;;   :config
-;;   (setq org-alert-interval 300
-;;         org-alert-notification-title "Org Alert Reminder!")
-;;   (org-alert-enable))
-
-;; (use-package org-wild-notifier
-;;   :after org
-;;   :config
-;;   ;; Make sure we receive notifications for non-TODO events
-;;   ;; like those synced from Google Calendar
-;;   (setq org-wild-notifier-keyword-whitelist nil)
-;;   (setq org-wild-notifier-notification-title "Agenda Reminder")
-;;   (setq org-wild-notifier-alert-time 15)
-;;   (org-wild-notifier-mode))
-
-;; (use-package org-notify
-;;   :straight nil
-;;   :after org
-;;   :config
-;;   (org-notify-start))
-
-;; Add margins to Org mode docs
-(defun sm/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-	visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :defer t
-  :hook (org-mode . sm/org-mode-visual-fill))
 
 ;; Org babel
 (setq org-babel-python-command "python3")
@@ -711,16 +635,6 @@
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
-;; Auto-tangle configuration file when saving it
-(defun sm/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-		      (expand-file-name "~/emacs.d/Emacs.org"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'sm/org-babel-tangle-config)))
-
-
 ;; shortcut for source blocks: e.g. <el TAB autocompletes the source block
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -734,19 +648,6 @@
 ;; Update table of contents on save
 (use-package org-make-toc
   :hook (org-mode . org-make-toc-mode))
-
-;; Org-roam configuration
-(use-package org-roam
-  :init
-  (setq org-roam-v2-ack t)
-  :custom
-  (org-roam-directory (concat org-directory "roam/"))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert))
-  :config
-  (org-roam-setup)
-  (require 'org-roam-protocol))
 
 
 ;;; TRAMP
@@ -836,36 +737,85 @@
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
 
-(setq treesit-language-source-alist
-   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-     (cmake "https://github.com/uyha/tree-sitter-cmake")
-     (css "https://github.com/tree-sitter/tree-sitter-css")
-     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-     (go "https://github.com/tree-sitter/tree-sitter-go")
-     (html "https://github.com/tree-sitter/tree-sitter-html")
-     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-     (json "https://github.com/tree-sitter/tree-sitter-json")
-     (make "https://github.com/alemuller/tree-sitter-make")
-     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-     (python "https://github.com/tree-sitter/tree-sitter-python")
-     (toml "https://github.com/tree-sitter/tree-sitter-toml")
-     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-     (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-     (java "https://github.com/tree-sitter/tree-sitter-java")
-     (rust "https://github.com/tree-sitter/tree-sitter-rust")))
 
-(setq major-mode-remap-alist
- '((yaml-mode . yaml-ts-mode)
-   (bash-mode . bash-ts-mode)
-   (js2-mode . js-ts-mode)
-   (typescript-mode . typescript-ts-mode)
-   (json-mode . json-ts-mode)
-   (css-mode . css-ts-mode)
-   (elisp-mode . elisp-ts-mode)
-   (java-mode . java-ts-mode)
-   (rust-mode . rust-ts-mode)
-   (python-mode . python-ts-mode)))
+;; `M-x combobulate' (default: `C-c o o') to start using Combobulate
+;; (use-package treesit
+;;   :preface
+;;   (defun mp-setup-install-grammars ()
+;;     "Install Tree-sitter grammars if they are absent."
+;;     (interactive)
+;;     (dolist (grammar
+;;              '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+;;                (cmake "https://github.com/uyha/tree-sitter-cmake")
+;;                (css "https://github.com/tree-sitter/tree-sitter-css")
+;;                (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+;;                (go "https://github.com/tree-sitter/tree-sitter-go")
+;;                (html "https://github.com/tree-sitter/tree-sitter-html")
+;;                (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+;;                (json "https://github.com/tree-sitter/tree-sitter-json")
+;;                (make "https://github.com/alemuller/tree-sitter-make")
+;;                (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+;;                (python "https://github.com/tree-sitter/tree-sitter-python")
+;;                (toml "https://github.com/tree-sitter/tree-sitter-toml")
+;;                (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+;;                (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+;;                (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+;;                (java "https://github.com/tree-sitter/tree-sitter-java")
+;;                (rust "https://github.com/tree-sitter/tree-sitter-rust")))
+;;       (add-to-list 'treesit-language-source-alist grammar)
+;;       ;; Only install `grammar' if we don't already have it
+;;       ;; installed. However, if you want to *update* a grammar then
+;;       ;; this obviously prevents that from happening.
+;;       (unless (treesit-language-available-p (car grammar))
+;;         (treesit-install-language-grammar (car grammar)))))
+
+;;   ;; Optional, but recommended. Tree-sitter enabled major modes are
+;;   ;; distinct from their ordinary counterparts.
+;;   ;;
+;;   ;; You can remap major modes with `major-mode-remap-alist'. Note
+;;   ;; that this does *not* extend to hooks! Make sure you migrate them
+;;   ;; also
+;;   (dolist (mapping '((yaml-mode . yaml-ts-mode)
+;;                      (bash-mode . bash-ts-mode)
+;;                      (js2-mode . js-ts-mode)
+;;                      (typescript-mode . typescript-ts-mode)
+;;                      (json-mode . json-ts-mode)
+;;                      (css-mode . css-ts-mode)
+;;                      (elisp-mode . elisp-ts-mode)
+;;                      (java-mode . java-ts-mode)
+;;                      (rust-mode . rust-ts-mode)
+;;                      (python-mode . python-ts-mode)))
+;;     (add-to-list 'major-mode-remap-alist mapping))
+
+;;   :config
+;;   (mp-setup-install-grammars)
+;;   ;; Do not forget to customize Combobulate to your liking:
+;;   ;;
+;;   ;;  M-x customize-group RET combobulate RET
+;;   ;;
+;;   (use-package combobulate
+;;     :preface
+;;     ;; You can customize Combobulate's key prefix here.
+;;     ;; Note that you may have to restart Emacs for this to take effect!
+;;     (setq combobulate-key-prefix "C-c o")
+
+;;     ;; Optional, but recommended.
+;;     ;;
+;;     ;; You can manually enable Combobulate with `M-x
+;;     ;; combobulate-mode'.
+;;     :hook ((yaml-mode . combobulate-mode)
+;;            (bash-mode . combobulate-mode)
+;;            (js2-mode . combobulate-mode)
+;;            (typescript-mode . combobulate-mode)
+;;            (json-mode . combobulate-mode)
+;;            (css-mode . combobulate-mode)
+;;            (elisp-mode . combobulate-mode)
+;;            (java-mode . combobulate-mode)
+;;            (rust-mode . combobulate-mode)
+;;            (python-mode . combobulate-mode))
+;;     ;; Amend this to the directory where you keep Combobulate's source
+;;     ;; code.
+;;     :load-path ("~/.emacs.d/combobulate")))
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
