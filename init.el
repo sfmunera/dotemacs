@@ -168,9 +168,9 @@
   ;; (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
   ;; (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
   ;; (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
-  (set-face-attribute 'default nil :family "Iosevka" :height 130)
-  (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height 125)
-  (set-face-attribute 'variable-pitch nil :family "Iosevka Aile" :height 130 :weight 'regular))
+  (set-face-attribute 'default nil :family "Iosevka Comfy" :height 130)
+  (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 125)
+  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height 130 :weight 'regular))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -587,7 +587,7 @@
 		  (org-level-6 . 1.2)
 		  (org-level-7 . 1.2)
 		  (org-level-8 . 1.2)))
-    (set-face-attribute (car face) nil :family "Iosevka Aile" :weight 'regular :height (cdr face)))
+    (set-face-attribute (car face) nil :family "Iosevka Comfy Duo" :weight 'regular :height (cdr face)))
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
   ;; Eveything else will be variable-pitch
   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
