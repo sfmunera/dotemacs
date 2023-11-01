@@ -168,9 +168,9 @@
   ;; (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
   ;; (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
   ;; (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
-  (set-face-attribute 'default nil :family "Iosevka Comfy" :height 130)
-  (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 125)
-  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height 130 :weight 'regular))
+  (set-face-attribute 'default nil :family "Iosevka Comfy" :height 150)
+  (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 150)
+  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height 150 :weight 'regular))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
