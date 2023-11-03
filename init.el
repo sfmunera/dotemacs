@@ -66,8 +66,6 @@
 ;; Use straight.el for use-package expressions
 (straight-use-package 'use-package)
 
-(straight-use-package 'org)
-
 ;;;; Organize files
 
 ;; keep folders clean
@@ -161,6 +159,12 @@
 ;; Only use spaces for indentation
 (setq-default indent-tabs-mode nil)
 
+;; Merge C-a with M-m to go to beginning-of-line or back-to-indentation alternatively
+(defun back-to-indentation-or-beginning () (interactive)
+   (if (= (point) (progn (back-to-indentation) (point)))
+       (beginning-of-line)))
+
+(global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
 ;;; Look and feel
 
@@ -181,45 +185,10 @@
   (sm/set-font-faces))
 
 
-;; TODO: github.com/protesilaos/iosevka-comfy
-
 ;; TODO: check spacious-padding
 
-(use-package modus-themes
-  :config
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-common-palette-overrides '((builtin red-cooler))
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui nil
-        modus-themes-disable-other-themes t
-        modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-  (load-theme 'modus-vivendi-tinted)
-  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
-
-;; (use-package ef-themes
-;;   :config
-;;   (load-theme 'ef-maris-dark t))
-
-(use-package nerd-icons)
-
-(use-package doom-modeline
-  :init (doom-modeline-mode 1)
-  :custom (doom-modeline-height 15))
-
-;; Use different colors for nested parens
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-;; sets the text background to the color mentioned. For example: #0000ff, #ff0000
-(use-package rainbow-mode
-  :defer t
-  :hook (org-mode
-         emacs-lisp-mode
-         web-mode))
 
 ;;;; Subtle mode line style
-
 (defun prot-modeline-set-faces (_theme)
   "Make THEME mode lines subtle."
   (let ((subtle (face-foreground 'shadow)))
@@ -253,6 +222,40 @@
       (prot-modeline--enable-mode)
     (prot-modeline--disable-mode)))
 
+(prot-modeline-subtle-mode)
+
+(use-package modus-themes
+  :config
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-common-palette-overrides '((builtin red-cooler))
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui nil
+        modus-themes-disable-other-themes t
+        modus-themes-to-toggle '(modus-operandi modus-vivendi))
+  (load-theme 'modus-vivendi)
+  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
+
+;; (use-package ef-themes
+;;   :config
+;;   (load-theme 'ef-maris-dark t))
+
+(use-package nerd-icons)
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom (doom-modeline-height 15))
+
+;; Use different colors for nested parens
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; sets the text background to the color mentioned. For example: #0000ff, #ff0000
+(use-package rainbow-mode
+  :defer t
+  :hook (org-mode
+         emacs-lisp-mode
+         web-mode))
 
 
 ;;; Window management
