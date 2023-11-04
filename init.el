@@ -581,6 +581,13 @@
       "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
       :clock-in :clock-resume :empty-lines 1)))
 
+  ;; set C-a and C-e explicitly because back-to-indentation-or-beginning conflicts with org-special-ctrl-a/e
+  (define-key org-mode-map "\C-a" 'org-beginning-of-line)
+  (define-key org-mode-map "\C-e" 'org-end-of-line)
+
+  (setq org-refile-targets '((org-agenda-files . (:maxlevel . 2)) (nil . (:maxlevel . 2))))
+  ;; (setq bookmark-fringe-mark nil) ; Emacs 29 to hide bookmark fringe icon 
+
   ;; Change size for different levels of org headlines
   (dolist (face '((org-level-1 . 1.25)
 		  (org-level-2 . 1.25)
