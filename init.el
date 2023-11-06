@@ -187,9 +187,9 @@
 		  (sm/set-font-faces))))
   (sm/set-font-faces))
 
-
-;; TODO: check spacious-padding
-
+(use-package spacious-padding
+  :hook
+  (text-mode . spacious-padding-mode))
 
 ;;;; Subtle mode line style
 (defun prot-modeline-set-faces (_theme)
