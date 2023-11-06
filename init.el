@@ -41,7 +41,7 @@
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
 ;;; Enable auto-fill-mode
-(setq-default fill-column 120)
+(setq-default fill-column 100)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
 ;;;; When asked a yes or no question, just typing y or n should be enough.
