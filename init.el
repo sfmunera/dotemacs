@@ -40,6 +40,9 @@
 ;;;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
+;;; Enable auto-fill-mode
+(setq fill-column 120)
+(auto-fill-mode 1)
 
 ;;;; When asked a yes or no question, just typing y or n should be enough.
 (defalias 'yes-or-no-p 'y-or-n-p)
