@@ -145,17 +145,12 @@
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-;; make line numbers visible
+;; make line numbers visible only for programming modes
 (column-number-mode)
-;;(global-display-line-numbers-mode t)
-
-;; Disable line number for some modes
-(dolist (mode '(text-mode-hook
-		prog-mode-hook
-		conf-mode-hook))
+(global-display-line-numbers-mode 0)
+(dolist (mode '(prog-mode-hook
+                confg-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
-(dolist (mode '(org-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq blink-cursor-mode nil)
 
