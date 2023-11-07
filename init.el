@@ -149,7 +149,7 @@
 (column-number-mode)
 (global-display-line-numbers-mode 0)
 (dolist (mode '(prog-mode-hook
-                confg-mode-hook))
+                conf-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (setq blink-cursor-mode nil)
@@ -167,9 +167,6 @@
 ;;; Look and feel
 
 (defun sm/set-font-faces ()
-  ;; (set-face-attribute 'default nil :font "Source Code Pro" :height 130)
-  ;; (set-face-attribute 'fixed-pitch nil :font "Source Code Pro" :height 125)
-  ;; (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 150 :weight 'regular))
   (set-face-attribute 'default nil :family "Iosevka Comfy" :height 150)
   (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 150)
   (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height 150 :weight 'regular))
@@ -233,10 +230,6 @@
         modus-themes-to-toggle '(modus-operandi modus-vivendi))
   (load-theme 'modus-vivendi)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
-
-;; (use-package ef-themes
-;;   :config
-;;   (load-theme 'ef-maris-dark t))
 
 (use-package nerd-icons)
 
