@@ -985,3 +985,5 @@
     (sm/set-markdown-header-font-sizes))
 
   (add-hook 'markdown-mode-hook 'sm/markdown-mode-hook))
+
+(use-package olivetti)
