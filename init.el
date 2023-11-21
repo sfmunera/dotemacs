@@ -1024,4 +1024,7 @@
 (use-package olivetti
   :ensure t
   :bind
-  ("C-c x o" . olivetti-mode))
+  ("C-c x o" . olivetti-mode)
+  :custom
+  (olivetti-body-width 100))
+
