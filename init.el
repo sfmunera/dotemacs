@@ -40,10 +40,6 @@
 ;;;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
-;;; Enable auto-fill-mode
-(setq-default fill-column 100)
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
-
 ;;;; Disable prompts
 (setq use-short-answers t)
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -120,8 +116,13 @@
 (load custom-file 'noerror 'nomessage)
 
 ;; quick access to recently edited files
-(recentf-mode 1)
-(global-set-key (kbd "C-c f") 'recentf-open-files)
+(use-package recentf
+  :bind
+  (("C-x C-r" . consult-recent-file))
+  :init
+  (recentf-mode t)
+  :custom
+  (recentf-max-saved-items 50))
 
 ;; save history in minibuffer
 (setq history-length 25)
@@ -975,7 +976,7 @@
      (setq dired-use-ls-dired t
            insert-directory-program "/usr/local/bin/gls"))
    (setq dired-listing-switches "-agho --group-directories-first")))
-
+ 
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 
