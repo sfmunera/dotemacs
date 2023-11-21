@@ -44,8 +44,32 @@
 (setq-default fill-column 100)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
-;;;; When asked a yes or no question, just typing y or n should be enough.
-(defalias 'yes-or-no-p 'y-or-n-p)
+;;;; Disable prompts
+(setq use-short-answers t)
+(setq confirm-nonexistent-file-or-buffer nil)
+;; Don't show the splash screen
+(setq inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
+;; Don't ask when killing a buffer with a live process attached to it
+(setq kill-buffer-query-functions
+  (remq 'process-kill-buffer-query-function
+        kill-buffer-query-functions))
+
+;; Mark location at point without activating region 
+(defun sm/push-mark-no-activate ()
+  "Pushes `point' to `mark-ring' and does not activate the region
+   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
+(global-set-key (kbd "C-`") 'sm/push-mark-no-activate)
+
+(defun sm/jump-to-mark ()
+  "Jumps to the local mark, respecting the `mark-ring' order.
+  This is the same as using \\[set-mark-command] with the prefix argument."
+  (interactive)
+  (set-mark-command 1))
+(global-set-key (kbd "M-`") 'sm/jump-to-mark)
 
 ;;;; Package manager
 (setq package-enable-at-startup nil)
@@ -135,8 +159,6 @@
 ;; Don't show UI dialogs when prompting
 (setq use-dialog-box nil)
 
-;; Don't show the splash screen
-(setq inhibit-startup-message t)
 
 ;; replace bell sounds by visual bell
 (setq visible-bell t)
