@@ -986,4 +986,7 @@
 
   (add-hook 'markdown-mode-hook 'sm/markdown-mode-hook))
 
-(use-package olivetti)
+(use-package olivetti
+  :ensure t
+  :bind
+  ("C-c x o" . olivetti-mode))
