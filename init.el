@@ -285,7 +285,19 @@
 ;; winner-mode to undo/redo window layouts
 (use-package winner
   :config
-  (winner-mode))
+  (winner-mode 1)
+  :bind
+  (("M-[" . winner-undo)
+   ("M-]" . winner-redo)))
+
+(use-package windmove
+  :config
+  (windmove-mode 1)
+  :bind
+  (("s-<left>" . windmove-left)
+   ("s-<right>" . windmove-right)
+   ("s-<up>" . windmove-up)
+   ("s-<down>" . windmove-down)))
 
 ;; Jump easily between windows
 (use-package ace-window
