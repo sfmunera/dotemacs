@@ -1025,6 +1025,9 @@
   :ensure t
   :bind
   ("C-c x o" . olivetti-mode)
+  :hook
+  ((org-mode . olivetti-mode)
+   (markdown-mode . olivetti-mode))
   :custom
   (olivetti-body-width 100))
 
