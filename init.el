@@ -274,9 +274,11 @@
 
 ;;; Window management
 
+;; Treat manual buffer switching the same as programmatic buffer switching
+(setq switch-to-buffer-obey-display-actions t)
+
 ;; Frame Scaling / Zooming
 ;; The keybindings for this are C+M+- and C+M+=.
-
 (use-package default-text-scale
   :defer 1
   :config
@@ -589,7 +591,7 @@
    ;; Org files
    org-directory "~/Dropbox/org/"
    org-default-notes-file "Inbox.org"
-   org-agenda-files '("Work.org" "Personal.org")
+   org-agenda-files '("Work.org")
 
    ;; Tags, TODO keywords
    org-log-done 'time
@@ -600,10 +602,99 @@
      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
 
    ;; Capture configurations
+   ;; Work
+   ;;  [X] Work inbox: timestamp, what
+   ;;  [-] Meeting notes: timestamp, clock, attendees, notes, action items. Refile action items to inbox
+   ;;  [X] Daily journal: date. Refile some things to work log.
+   ;;  [-] Weekly plan: date, template with goals, sub-headers with days of the week
+   ;;  [X] Daily plan: meant to use with agenda side by side. Date, goals.
+   ;;  [X] New project: date, project name, project description, sub-headers for tasks
+   ;;  [-] Weekly work log: refine the items that are refiled from daily journal. Template: deliveries, who I helped, feedback received, important artifacts, important discussions, how I influenced, important meetings, important decisions, what did I learn.
    org-capture-templates
-   `(("c" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
-      "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
-     ("j" "Journal" entry (file+olp+datetree "Journal.org")
+   `(
+     ("w" "Work")
+     ("wi" "Work Inbox" entry
+      (file+headline "Work.org" "Inbox")
+      ,(mapconcat
+        #'identity
+        '("* TODO %? :inbox:"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :empty-lines 1)
+     ("wm" "Meeting Notes" entry
+      (file+olp+datetree "Work.org" "Meetings")
+      ,(mapconcat
+        #'identity
+        '("* Meeting: \"%?\" :meeting:"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :prepend t
+      :empty-lines 1
+      :tree-type week)
+     ("wj" "Daily Journal" plain
+      (file+olp+datetree "Work.org" "Daily Journal")
+      ,(mapconcat
+        #'identity
+        '("%?"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :empty-lines 1
+      :prepend t)
+     ("ww" "Weekly Plan" plain
+      (file+olp+datetree "Work.org" "Weekly Plan")
+      ,(mapconcat
+        #'identity
+        '("%?"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :empty-lines 1
+      :prepend t
+      :tree-type week)
+     ("wd" "Daily Plan" plain
+      (file+olp+datetree "Work.org" "Daily Plan")
+      ,(mapconcat
+        #'identity
+        '("%?"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :prepend t
+      :empty-lines 1)
+     ("wp" "New Project" entry
+      (file+headline "Work.org" "Projects")
+      ,(mapconcat
+        #'identity
+        '("* TODO %? :project:"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :prepend t
+      :empty-lines 1)
+     ("wl" "Work Log Entry" plain
+      (file+olp+datetree "Work.org" "Work Log")
+      ,(mapconcat
+        #'identity
+        '("%?"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :empty-lines 1)
+     
+     ("p" "Personal")
+     ("pi" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
+        "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
+     ("pj" "Journal" entry (file+olp+datetree "Journal.org")
       "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
       :clock-in :clock-resume :empty-lines 1)))
 
@@ -658,6 +749,7 @@
   :hook (org-mode . org-appear-mode))
 
 ;; Org babel
+;; TODO: Organize into org-mode config
 (setq org-babel-python-command "python3")
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -765,6 +857,8 @@
   (set-face-foreground 'git-gutter:modified "LightGoldenrod")
   (set-face-foreground 'git-gutter:deleted "LightCoral")
 
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 
 ;;; IDE configuration
