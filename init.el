@@ -619,20 +619,20 @@
       (file+headline "Work.org" "Inbox")
       ,(mapconcat
         #'identity
-        '("* TODO %? :inbox:"
-          ":PROPERTIES:"
+        '(":PROPERTIES:"
           ":CAPTURED: %U"
-          ":END:")
+          ":END:"
+          "* TODO %? :inbox:")
         "\n")
       :empty-lines 1)
      ("wm" "Meeting Notes" entry
       (file+olp+datetree "Work.org" "Meetings")
       ,(mapconcat
         #'identity
-        '("* Meeting: \"%?\" :meeting:"
-          ":PROPERTIES:"
+        '(":PROPERTIES:"
           ":CAPTURED: %U"
-          ":END:")
+          ":END:"
+          "* Meeting: \"%?\" :meeting:")
         "\n")
       :prepend t
       :empty-lines 1
@@ -641,10 +641,10 @@
       (file+olp+datetree "Work.org" "Daily Journal")
       ,(mapconcat
         #'identity
-        '("%?"
-          ":PROPERTIES:"
+        '(":PROPERTIES:"
           ":CAPTURED: %U"
-          ":END:")
+          ":END:"
+          "%?")
         "\n")
       :empty-lines 1
       :prepend t)
@@ -652,10 +652,10 @@
       (file+olp+datetree "Work.org" "Weekly Plan")
       ,(mapconcat
         #'identity
-        '("%?"
-          ":PROPERTIES:"
+        '(":PROPERTIES:"
           ":CAPTURED: %U"
-          ":END:")
+          ":END:"
+          "%?")
         "\n")
       :empty-lines 1
       :prepend t
@@ -664,10 +664,10 @@
       (file+olp+datetree "Work.org" "Daily Plan")
       ,(mapconcat
         #'identity
-        '("%?"
-          ":PROPERTIES:"
+        '(":PROPERTIES:"
           ":CAPTURED: %U"
-          ":END:")
+          ":END:"
+          "%?")
         "\n")
       :prepend t
       :empty-lines 1)
@@ -675,10 +675,10 @@
       (file+headline "Work.org" "Projects")
       ,(mapconcat
         #'identity
-        '("* TODO %? :project:"
-          ":PROPERTIES:"
+        '(":PROPERTIES:"
           ":CAPTURED: %U"
-          ":END:")
+          ":END:"
+          "* TODO %? :project:")
         "\n")
       :prepend t
       :empty-lines 1)
@@ -686,10 +686,10 @@
       (file+olp+datetree "Work.org" "Work Log")
       ,(mapconcat
         #'identity
-        '("%?"
-          ":PROPERTIES:"
+        '(":PROPERTIES:"
           ":CAPTURED: %U"
-          ":END:")
+          ":END:"
+          "%?")
         "\n")
       :empty-lines 1)
      
