@@ -250,9 +250,11 @@
         modus-themes-mixed-fonts t
         modus-themes-variable-pitch-ui nil
         modus-themes-disable-other-themes t
-        modus-themes-to-toggle '(modus-operandi modus-vivendi))
-  (load-theme 'modus-vivendi)
-  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
+        modus-themes-to-toggle '(modus-operandi modus-vivendi)
+        modus-themes-headings '((1 1.3) (2 1.2) (3 1.1)))
+  (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+  :init
+  (load-theme 'modus-vivendi))
 
 (use-package nerd-icons)
 
@@ -705,16 +707,6 @@
   (setq org-refile-targets '((org-agenda-files . (:maxlevel . 2)) (nil . (:maxlevel . 2))))
   ;; (setq bookmark-fringe-mark nil) ; Emacs 29 to hide bookmark fringe icon 
 
-  ;; Change size for different levels of org headlines
-  (dolist (face '((org-level-1 . 1.25)
-		  (org-level-2 . 1.25)
-		  (org-level-3 . 1.22)
-		  (org-level-4 . 1.2)
-		  (org-level-5 . 1.2)
-		  (org-level-6 . 1.2)
-		  (org-level-7 . 1.2)
-		  (org-level-8 . 1.2)))
-    (set-face-attribute (car face) nil :family "Iosevka Comfy Duo" :weight 'regular :height (cdr face)))
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
   ;; Eveything else will be variable-pitch
   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -1101,19 +1093,7 @@
 (use-package markdown-mode
   :mode "\\.md\\'"
   :config
-  (setq markdown-command "marked")
-  (defun sm/set-markdown-header-font-sizes ()
-    (dolist (face '((markdown-header-face-1 . 1.3)
-                    (markdown-header-face-2 . 1.25)
-                    (markdown-header-face-3 . 1.2)
-                    (markdown-header-face-4 . 1.2)
-                    (markdown-header-face-5 . 1.2)))
-      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
-
-  (defun sm/markdown-mode-hook ()
-    (sm/set-markdown-header-font-sizes))
-
-  (add-hook 'markdown-mode-hook 'sm/markdown-mode-hook))
+  (setq markdown-command "marked"))
 
 (use-package olivetti
   :ensure t
