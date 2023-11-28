@@ -283,6 +283,9 @@
 ;; The keybindings for this are C+M+- and C+M+=.
 (use-package default-text-scale
   :defer 1
+  :bind
+  (("s--" . default-text-scale-decrease)
+   ("s-=" . default-text-scale-increase))
   :config
   (default-text-scale-mode))
 
