@@ -276,8 +276,75 @@
 
 ;;; Window management
 
+;; Apply some settings from https://www.masteringemacs.org/article/demystifying-emacs-window-manager
+(defun make-display-buffer-matcher-function (major-modes)
+  (lambda (buffer-name action)
+    (with-current-buffer buffer-name (apply #'derived-mode-p major-modes))))
+
 ;; Treat manual buffer switching the same as programmatic buffer switching
 (setq switch-to-buffer-obey-display-actions t)
+
+(setq switch-to-buffer-in-dedicated-window 'pop)
+
+(setq switch-to-buffer-obey-display-actions t)
+
+(add-to-list 'display-buffer-alist
+  '("\\*compilation\\*"
+    display-buffer-reuse-window))
+
+(add-to-list 'display-buffer-alist
+ '("\\*info\\*"
+   (display-buffer-in-side-window)
+   (side . right)
+   (slot . 0)
+   (window-width . 80)
+   (window-parameters
+    (no-delete-other-windows . t))))
+
+(add-to-list 'display-buffer-alist
+ '("\\*helpful.*\\*"
+   (display-buffer-reuse-window display-buffer-pop-up-window)
+   (inhibit-same-window . t)))
+
+(add-to-list 'display-buffer-alist
+     '("\\*vterm\\*" display-buffer-reuse-mode-window
+       (inhibit-same-window . t)
+       (mode vterm-mode vterm-copy-mode)))
+
+(add-to-list 'display-buffer-alist
+  '("\\*e?shell\\*" display-buffer-in-direction
+    (direction . bottom)
+    (window . root)
+    (window-height . 0.3)))
+
+(add-to-list 'display-buffer-alist
+          `(,(rx (| "*xref*"
+                    "*grep*"
+                    "*Occur*"))
+            display-buffer-reuse-window
+            (inhibit-same-window . nil)))
+
+(setq magit-display-buffer-function #'display-buffer)
+
+(add-to-list 'display-buffer-alist
+          `(,(make-display-buffer-matcher-function '(magit-mode))
+            (display-buffer-reuse-mode-window
+             display-buffer-in-direction)
+            (mode magit-mode)
+            (window . root)
+            (window-width . 0.30)
+            (direction . right)))
+
+;; left, top, right, bottom
+(setq window-sides-slots '(0 0 1 0))
+
+(add-to-list 'display-buffer-alist
+          `(,(rx (| "*compilation*" "*grep*"))
+            display-buffer-in-side-window
+            (side . right)
+            (slot . 0)
+            (window-parameters . ((no-delete-other-windows . t)))
+            (window-width . 80)))
 
 ;; Frame Scaling / Zooming
 ;; The keybindings for this are C+M+- and C+M+=.
