@@ -634,9 +634,6 @@
 
 ;;; Org mode
 
-(use-package project)
-;; TODO: check beframe, tab-bar-mode for project separation.
-
 ;; Org mode configuration
 (defun sm/org-mode-setup ()
   (org-indent-mode)
@@ -864,7 +861,9 @@
 (setq tramp-default-method "ssh")
 
 
-;;; Magit
+;;; Programming
+
+;;;; Git
 
 (use-package magit
   :custom
@@ -941,7 +940,13 @@
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 
-;;; IDE configuration
+;;;; Project management
+(use-package project)
+;; TODO: check beframe, tab-bar-mode for project separation.
+
+
+;;;; Languages
+
 ;; Header breadcrumb
 (defun sm/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -1077,7 +1082,7 @@
 
 
 
-;;; Terminal
+;;; Terminal/Shell
 
 (use-package vterm
   :commands vterm
@@ -1111,9 +1116,7 @@
     (setq eshell-visual-commands '("htop" "zsh" "vim" "less" "tmux" "screen"))))
 
 
-
-
-;;; Configuring dired
+;;; Dired
 ;; Require to mark by extension
 (require 'dired-x)
 ;; Keep only one dired buffer
