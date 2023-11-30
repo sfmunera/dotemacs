@@ -941,96 +941,62 @@
 
 
 ;;;; Project management
+
 (use-package project)
 ;; TODO: check beframe, tab-bar-mode for project separation.
 
 
-;;;; Languages
+;;;; Tree sitter
+
+;; Grammar libraries are installed in ~/.emacs.d/tree-sitter/ and
+;; downloaded from
+;; https://github.com/emacs-tree-sitter/tree-sitter-langs/releases for
+;; all platforms
+(dolist (mapping '((yaml-mode . yaml-ts-mode)
+                   (bash-mode . bash-ts-mode)
+                   (js2-mode . js-ts-mode)
+                   (typescript-mode . typescript-ts-mode)
+                   (json-mode . json-ts-mode)
+                   (css-mode . css-ts-mode)
+                   (elisp-mode . elisp-ts-mode)
+                   (java-mode . java-ts-mode)
+                   (rust-mode . rust-ts-mode)
+                   (python-mode . python-ts-mode)))
+  (add-to-list 'major-mode-remap-alist mapping))
+
+(setq treesit-font-lock-level 4)
+
+(use-package combobulate
+  :preface
+  ;; You can customize Combobulate's key prefix here.
+  ;; Note that you may have to restart Emacs for this to take effect!
+  (setq combobulate-key-prefix "C-c o")
+
+  ;; Optional, but recommended.
+  ;;
+  ;; You can manually enable Combobulate with `M-x
+  ;; combobulate-mode'.
+  :hook ((yaml-mode . combobulate-mode)
+         (bash-mode . combobulate-mode)
+         (js2-mode . combobulate-mode)
+         (typescript-mode . combobulate-mode)
+         (json-mode . combobulate-mode)
+         (css-mode . combobulate-mode)
+         (elisp-mode . combobulate-mode)
+         (java-mode . combobulate-mode)
+         (rust-mode . combobulate-mode)
+         (python-mode . combobulate-mode))
+  ;; Amend this to the directory where you keep Combobulate's source
+  ;; code.
+  :load-path ("~/.emacs.d/combobulate"))
+
+;;;; LSP
 
 ;; Header breadcrumb
 (defun sm/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
 
-
-;; `M-x combobulate' (default: `C-c o o') to start using Combobulate
-;; (use-package treesit
-;;   :preface
-;;   (defun mp-setup-install-grammars ()
-;;     "Install Tree-sitter grammars if they are absent."
-;;     (interactive)
-;;     (dolist (grammar
-;;              '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-;;                (cmake "https://github.com/uyha/tree-sitter-cmake")
-;;                (css "https://github.com/tree-sitter/tree-sitter-css")
-;;                (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-;;                (go "https://github.com/tree-sitter/tree-sitter-go")
-;;                (html "https://github.com/tree-sitter/tree-sitter-html")
-;;                (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-;;                (json "https://github.com/tree-sitter/tree-sitter-json")
-;;                (make "https://github.com/alemuller/tree-sitter-make")
-;;                (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-;;                (python "https://github.com/tree-sitter/tree-sitter-python")
-;;                (toml "https://github.com/tree-sitter/tree-sitter-toml")
-;;                (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-;;                (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-;;                (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-;;                (java "https://github.com/tree-sitter/tree-sitter-java")
-;;                (rust "https://github.com/tree-sitter/tree-sitter-rust")))
-;;       (add-to-list 'treesit-language-source-alist grammar)
-;;       ;; Only install `grammar' if we don't already have it
-;;       ;; installed. However, if you want to *update* a grammar then
-;;       ;; this obviously prevents that from happening.
-;;       (unless (treesit-language-available-p (car grammar))
-;;         (treesit-install-language-grammar (car grammar)))))
-
-;;   ;; Optional, but recommended. Tree-sitter enabled major modes are
-;;   ;; distinct from their ordinary counterparts.
-;;   ;;
-;;   ;; You can remap major modes with `major-mode-remap-alist'. Note
-;;   ;; that this does *not* extend to hooks! Make sure you migrate them
-;;   ;; also
-;;   (dolist (mapping '((yaml-mode . yaml-ts-mode)
-;;                      (bash-mode . bash-ts-mode)
-;;                      (js2-mode . js-ts-mode)
-;;                      (typescript-mode . typescript-ts-mode)
-;;                      (json-mode . json-ts-mode)
-;;                      (css-mode . css-ts-mode)
-;;                      (elisp-mode . elisp-ts-mode)
-;;                      (java-mode . java-ts-mode)
-;;                      (rust-mode . rust-ts-mode)
-;;                      (python-mode . python-ts-mode)))
-;;     (add-to-list 'major-mode-remap-alist mapping))
-
-;;   :config
-;;   (mp-setup-install-grammars)
-;;   ;; Do not forget to customize Combobulate to your liking:
-;;   ;;
-;;   ;;  M-x customize-group RET combobulate RET
-;;   ;;
-;;   (use-package combobulate
-;;     :preface
-;;     ;; You can customize Combobulate's key prefix here.
-;;     ;; Note that you may have to restart Emacs for this to take effect!
-;;     (setq combobulate-key-prefix "C-c o")
-
-;;     ;; Optional, but recommended.
-;;     ;;
-;;     ;; You can manually enable Combobulate with `M-x
-;;     ;; combobulate-mode'.
-;;     :hook ((yaml-mode . combobulate-mode)
-;;            (bash-mode . combobulate-mode)
-;;            (js2-mode . combobulate-mode)
-;;            (typescript-mode . combobulate-mode)
-;;            (json-mode . combobulate-mode)
-;;            (css-mode . combobulate-mode)
-;;            (elisp-mode . combobulate-mode)
-;;            (java-mode . combobulate-mode)
-;;            (rust-mode . combobulate-mode)
-;;            (python-mode . combobulate-mode))
-;;     ;; Amend this to the directory where you keep Combobulate's source
-;;     ;; code.
-;;     :load-path ("~/.emacs.d/combobulate")))
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
@@ -1040,8 +1006,6 @@
   :config
   (lsp-enable-which-key-integration t))
 
-(use-package python
-  :hook (python-mode . eglot-ensure))
 
 (use-package breadcrumb)
 
@@ -1056,6 +1020,8 @@
 
 (use-package lsp-treemacs
   :after lsp)
+
+;;;; Languages
 
 ;; needs to install LSP for the specific languages first
 (use-package typescript-mode
@@ -1073,6 +1039,9 @@
   (dap-python-debugger 'debugpy)
   :config
   (require 'dap-python))
+
+(use-package python
+  :hook (python-mode . eglot-ensure))
 
 (use-package rust-mode)
 
