@@ -790,7 +790,10 @@
   (define-key org-mode-map "\C-e" 'org-end-of-line)
 
   (setq org-refile-targets '((org-agenda-files . (:maxlevel . 2)) (nil . (:maxlevel . 2))))
-  ;; (setq bookmark-fringe-mark nil) ; Emacs 29 to hide bookmark fringe icon 
+  (setq org-refile-use-outline-path 'file)
+  ;; makes org-refile outline working with completion framework
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
   ;; Eveything else will be variable-pitch
