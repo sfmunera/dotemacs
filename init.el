@@ -274,6 +274,7 @@
          web-mode))
 
 
+
 ;;; Window management
 
 ;; Apply some settings from https://www.masteringemacs.org/article/demystifying-emacs-window-manager
@@ -289,10 +290,6 @@
 (setq switch-to-buffer-obey-display-actions t)
 
 (add-to-list 'display-buffer-alist
-  '("\\*compilation\\*"
-    display-buffer-reuse-window))
-
-(add-to-list 'display-buffer-alist
  '("\\*info\\*"
    (display-buffer-in-side-window)
    (side . right)
@@ -302,9 +299,10 @@
     (no-delete-other-windows . t))))
 
 (add-to-list 'display-buffer-alist
- '("\\*helpful.*\\*"
-   (display-buffer-reuse-window display-buffer-pop-up-window)
-   (inhibit-same-window . t)))
+             `(,(rx (| "\\*helpful.*\\*"
+                       "\\*Help\\*"))
+               (display-buffer-reuse-window display-buffer-pop-up-window)
+               (inhibit-same-window . t)))
 
 (add-to-list 'display-buffer-alist
      '("\\*vterm\\*" display-buffer-reuse-mode-window
@@ -332,7 +330,7 @@
              display-buffer-in-direction)
             (mode magit-mode)
             (window . root)
-            (window-width . 0.30)
+            (window-width . 0.40)
             (direction . right)))
 
 ;; left, top, right, bottom
@@ -341,6 +339,7 @@
 (add-to-list 'display-buffer-alist
           `(,(rx (| "*compilation*" "*grep*"))
             display-buffer-in-side-window
+            display-buffer-reuse-window
             (side . right)
             (slot . 0)
             (window-parameters . ((no-delete-other-windows . t)))
@@ -391,6 +390,20 @@
 	 display-buffer-same-window
 	 display-buffer-in-previous-window)))
 
+;; tab-bar-mode
+(use-package tab-bar
+  :init
+  (tab-bar-mode 1)
+  :custom
+  (tab-bar-show 1)                      ;; hide bar if <= 1 tabs open
+  (tab-bar-close-button-show nil)       ;; hide tab close / X button
+  (tab-bar-tab-hints t)                 ;; show tab numbers
+  (tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+  :bind
+  ("s-{" . tab-bar-switch-to-prev-tab)
+  ("s-}" . tab-bar-switch-to-next-tab)
+  ("s-t" . tab-bar-new-tab)
+  ("s-w" . tab-bar-close-tab))
 
 
 ;;; Completions
