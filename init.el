@@ -992,16 +992,16 @@
   ;;
   ;; You can manually enable Combobulate with `M-x
   ;; combobulate-mode'.
-  :hook ((yaml-mode . combobulate-mode)
-         (bash-mode . combobulate-mode)
-         (js2-mode . combobulate-mode)
-         (typescript-mode . combobulate-mode)
-         (json-mode . combobulate-mode)
-         (css-mode . combobulate-mode)
-         (elisp-mode . combobulate-mode)
-         (java-mode . combobulate-mode)
-         (rust-mode . combobulate-mode)
-         (python-mode . combobulate-mode))
+  :hook ((yaml-ts-mode . combobulate-mode)
+         (bash-ts-mode . combobulate-mode)
+         (js2-ts-mode . combobulate-mode)
+         (typescript-ts-mode . combobulate-mode)
+         (json-ts-mode . combobulate-mode)
+         (css-ts-mode . combobulate-mode)
+         (elisp-ts-mode . combobulate-mode)
+         (java-ts-mode . combobulate-mode)
+         (rust-ts-mode . combobulate-mode)
+         (python-ts-mode . combobulate-mode))
   ;; Amend this to the directory where you keep Combobulate's source
   ;; code.
   :load-path ("~/.emacs.d/combobulate"))
@@ -1042,22 +1042,14 @@
 ;; needs to install LSP for the specific languages first
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
+  :hook (typescript-ts-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
 
-(use-package python-mode
-  :straight nil
-  :hook (python-mode . lsp-deferred)
-  :custom
-  (python-shell-interpreter "python3")
-  (dap-python-executable "python3")
-  (dap-python-debugger 'debugpy)
-  :config
-  (require 'dap-python))
-
 (use-package python
-  :hook (python-mode . eglot-ensure))
+  :hook (python-mode . eglot-ensure)
+  :custom
+  (python-shell-interpreter "python3"))
 
 (use-package rust-mode)
 
