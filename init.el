@@ -285,18 +285,13 @@
 (setq switch-to-buffer-obey-display-actions t)
 
 (add-to-list 'display-buffer-alist
- '("\\*info\\*"
-   (display-buffer-in-side-window)
-   (side . right)
-   (slot . 0)
-   (window-width . 80)
-   (window-parameters
-    (no-delete-other-windows . t))))
+             '("\\*helpful.*\\*"
+             (display-buffer-reuse-window display-buffer-pop-up-window)
+               (inhibit-same-window . t)))
 
 (add-to-list 'display-buffer-alist
-             `(,(rx (| "\\*helpful.*\\*"
-                       "\\*Help\\*"))
-               (display-buffer-reuse-window display-buffer-pop-up-window)
+             '("\\*Help\\*"
+             (display-buffer-reuse-window display-buffer-pop-up-window)
                (inhibit-same-window . t)))
 
 (add-to-list 'display-buffer-alist
@@ -332,7 +327,7 @@
 (setq window-sides-slots '(0 0 1 0))
 
 (add-to-list 'display-buffer-alist
-          `(,(rx (| "*compilation*" "*grep*"))
+          `(,(rx (| "*compilation*" "*grep* *info*"))
             display-buffer-in-side-window
             display-buffer-reuse-window
             (side . right)
