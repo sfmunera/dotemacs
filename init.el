@@ -517,8 +517,7 @@
   ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion))))) ;; TODO: same line as 447
+        completion-category-defaults nil))
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
@@ -569,29 +568,58 @@
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (setq tab-always-indent 'complete)
+
+;; Use Dabbrev with Corfu!
+(use-package dabbrev
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand))
+  ;; Other useful Dabbrev configurations.
+  :custom
+  (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
+
 (use-package corfu
+  :straight (corfu :type git :files (:defaults "extensions/*.el"))
   ;; Optional customizations
   :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion, check corfu-auto-{prefix,delay}
-  ;; (corfu-separator ?\s)          ;; Orderless field separator
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
-  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
-
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
-  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
-  ;; be used globally (M-/).  See also the customization variable
-  ;; `global-corfu-modes' to exclude certain modes.
+  (corfu-cycle t)                       ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                        ;; Enable auto completion, check corfu-auto-{prefix,delay}
+  (corfu-auto-delay 0.3)
+  (corfu-auto-prefix 3)
+  (corfu-separator ?\s)                 ;; Orderless field separator
+  (corfu-quit-at-boundary 'separator)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)             ;; Never quit, even if there is no match
+  (corfu-preview-current 'insert)       ;; Disable current candidate preview
+  (corfu-preselect 'prompt)             ;; Preselect the prompt
+  (corfu-on-exact-match nil)            ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)               ;; Use scroll margin
+  (corfu-popupinfo-delay 0)
+  :config
+  (add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq-local corfu-auto nil)
+            (corfu-mode)))
+  :bind
+  (:map corfu-map
+        ("C-n" . #'corfu-next)
+        ("C-p" . #'corfu-previous)
+        ("<escape>" . #'corfu-quit)
+        ("<return>" . #'corfu-insert)
+        ("<return>" . #'corfu-complete)
+        ("C-<tab>" . corfu-insert-separator))
   :init
-  (global-corfu-mode))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
+
+(use-package kind-icon
+  :after corfu
+  :custom
+  (kind-icon-use-icons t)
+  (kind-icon-default-face 'corfu-default)
+  (kind-icon-blend-background nil)
+  (kind-icon-blend-frac 0.08)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 
 ;;; Improved search tools
