@@ -37,9 +37,6 @@
 (set-default-coding-systems 'utf-8)
 
 
-;;;; Remap listing buffers to ibuffer
-(global-set-key [remap list-buffers] 'ibuffer); C-x C-b
-
 ;;;; Disable prompts
 (setq use-short-answers t)
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -137,16 +134,11 @@
 ;; Revert Dired and other buffers
 (setq global-auto-revert-non-file-buffers t)
 
-;; Make ESC quit prompts
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
 ;; Visual undo
 (use-package vundo
   :commands (vundo)
   :bind (("C-x u" . vundo))
   :straight (vundo :type git :host github :repo "casouri/vundo"))
-
-(setq tab-always-indent 'complete)
 
 ;;;; Basic UI configuration
 
@@ -276,6 +268,9 @@
 
 
 ;;; Window management
+
+;;;; Remap listing buffers to ibuffer
+(global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
 ;; Apply some settings from https://www.masteringemacs.org/article/demystifying-emacs-window-manager
 (defun make-display-buffer-matcher-function (major-modes)
@@ -578,6 +573,7 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(setq tab-always-indent 'complete)
 (use-package corfu
   ;; Optional customizations
   :custom
@@ -617,21 +613,17 @@
   ("C-: l" . avy-goto-line))
 
 
-;; (use-package expand-region ; `expreg', `combobulate' for tree-sitter integration
-;;   :bind (("M-[" . er/expand-region)
-;;          ("C-(" . er/mark-outside-pairs)))
-
-;; Requires M-x all-the-icons-install-fonts to show icons correctly
-
-
 ;;; Improved help tools
 
 ;; Helpful visual auto-completion for keywords
+;; TODO: Check why it stopped working
 (use-package which-key
-  :init (which-key-mode)
+  :init (which-key-mode 1)
   :diminish
   :config
   (setq which-key-idle-delay 0.3))
+
+(use-package hydra)
 
 ;; Improved helpful pages
 (use-package helpful
@@ -640,10 +632,6 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
-
-(use-package hydra)
-
-
 
 ;;; Org mode
 
@@ -1080,6 +1068,7 @@
 
 (use-package eshell-git-prompt)
 
+;; TODO: Fix eshell
 (use-package eshell
   :hook (eshell-first-time-mode . sm/configure-eshell)
   :bind
