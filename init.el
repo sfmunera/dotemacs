@@ -1019,46 +1019,53 @@
 
 ;;;; LSP
 
+(use-package eglot
+  :ensure t
+  :hook
+  ((python-ts-mode . eglot-ensure)
+   (typescript-ts-mode . eglot-ensure)
+   (java-ts-mode . eglot-ensure)))
+
 ;; Header breadcrumb
-(defun sm/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
+;; (defun sm/lsp-mode-setup ()
+;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+;;   (lsp-headerline-breadcrumb-mode))
 
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . sm/lsp-mode-setup)
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :config
-  (lsp-enable-which-key-integration t))
+;; (use-package lsp-mode
+;;   :commands (lsp lsp-deferred)
+;;   :hook (lsp-mode . sm/lsp-mode-setup)
+;;   :init
+;;   (setq lsp-keymap-prefix "C-c l")
+;;   :config
+;;   (lsp-enable-which-key-integration t))
 
 
-(use-package breadcrumb)
+;; (use-package breadcrumb)
 
-(use-package flycheck
-  :defer t
-  :hook (lsp-mode . flycheck-mode))
+;; (use-package flycheck
+;;   :defer t
+;;   :hook (lsp-mode . flycheck-mode))
 
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
+;; (use-package lsp-ui
+;;   :hook (lsp-mode . lsp-ui-mode)
+;;   :custom
+;;   (lsp-ui-doc-position 'bottom))
 
-(use-package lsp-treemacs
-  :after lsp)
+;; (use-package lsp-treemacs
+;;   :after lsp)
 
 ;;;; Languages
 
 ;; needs to install LSP for the specific languages first
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :hook (typescript-ts-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
 
+;; LSP server installation:
+;; pip install "python-lsp-server[all]"
 (use-package python
-  :hook (python-mode . eglot-ensure)
   :custom
   (python-shell-interpreter "python3"))
 
@@ -1067,8 +1074,6 @@
 (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 
 (use-package yasnippet)
-
-
 
 ;;; Terminal/Shell
 
