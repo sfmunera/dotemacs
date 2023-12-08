@@ -246,7 +246,7 @@
         modus-themes-headings '((1 1.3) (2 1.2) (3 1.1)))
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
   :init
-  (load-theme 'modus-vivendi))
+  (load-theme 'modus-operandi))
 
 (use-package nerd-icons)
 
