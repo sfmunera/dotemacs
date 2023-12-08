@@ -161,6 +161,7 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; make line numbers visible only for programming modes
+;; TODO: check why sometimes the numbers dissapear
 (column-number-mode)
 (global-display-line-numbers-mode 0)
 (dolist (mode '(prog-mode-hook
