@@ -1166,3 +1166,5 @@
   :custom
   (olivetti-body-width 100))
 
+
+;;; Work-specific config (private)
