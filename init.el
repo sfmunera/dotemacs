@@ -1062,6 +1062,7 @@
 ;; needs to install LSP for the specific languages first
 ;; npm install -g typescript-language-server
 ;; npm install typescript-eslint-language-service -D
+;; TODO: check why LSP server keeps crashing
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :config
