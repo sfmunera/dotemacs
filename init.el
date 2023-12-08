@@ -270,6 +270,9 @@
 
 ;;; Window management
 
+;; TODO: Add dashboard
+;; TODO: Create keyboard macro to recreate all my tab and windows
+
 ;; TODO: fix some of these configurations: windmove stops working, previewing buffers screws up window layout for magit while searching for buffer
 ;;;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
