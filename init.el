@@ -663,7 +663,8 @@
   (org-indent-mode)
   (variable-pitch-mode 1)
   (visual-line-mode 1))
- 
+
+;; TODO: fix eldoc-error related to org-element-at-point
 (use-package org
   :hook (org-mode . sm/org-mode-setup)
   :bind (("C-c a" . org-agenda)
@@ -1058,6 +1059,8 @@
 ;;;; Languages
 
 ;; needs to install LSP for the specific languages first
+;; npm install -g typescript-language-server
+;; npm install typescript-eslint-language-service -D
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :config
@@ -1152,6 +1155,7 @@
   :config
   (setq markdown-command "marked"))
 
+;; TODO: fix olivetti-mode not turning on automatically for org-mode
 (use-package olivetti
   :ensure t
   :bind
