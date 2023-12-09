@@ -305,6 +305,15 @@
        (mode vterm-mode vterm-copy-mode)))
 
 (add-to-list 'display-buffer-alist
+             '("\\*Python\\*"
+               (display-buffer-reuse-mode-window
+               display-buffer-in-direction)
+               (direction . bottom)
+               (window . root)
+               (window-height . 0.3)
+               (inhibit-same-window . t)))
+
+(add-to-list 'display-buffer-alist
   '("\\*e?shell\\*" display-buffer-in-direction
     (direction . bottom)
     (window . root)
@@ -979,6 +988,8 @@
 (use-package project)
 ;; TODO: check beframe, tab-bar-mode for project separation.
 
+;;;; Flycheck
+(use-package flycheck)
 
 ;;;; Tree sitter
 
@@ -1049,10 +1060,6 @@
 
 
 ;; (use-package breadcrumb)
-
-;; (use-package flycheck
-;;   :defer t
-;;   :hook (lsp-mode . flycheck-mode))
 
 ;; (use-package lsp-ui
 ;;   :hook (lsp-mode . lsp-ui-mode)
