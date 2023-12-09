@@ -1092,6 +1092,8 @@
 
 (use-package yasnippet)
 
+(use-package yasnippet-snippets)
+
 ;;; Terminal/Shell
 
 (use-package vterm
