@@ -1083,6 +1083,7 @@
 
 ;; LSP server installation:
 ;; pip install "python-lsp-server[all]"
+;; TODO: fix python LSP server: slow and does not always show info about the thing at point
 (use-package python
   :custom
   (python-shell-interpreter "python3"))
