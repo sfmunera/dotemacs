@@ -1081,6 +1081,11 @@
   :config
   (setq typescript-indent-level 2))
 
+(use-package jest-test-mode 
+  :ensure t 
+  :commands jest-test-mode
+  :hook (typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode))
+
 ;; LSP server installation:
 ;; pip install "python-lsp-server[all]"
 ;; TODO: fix python LSP server: slow and does not always show info about the thing at point
