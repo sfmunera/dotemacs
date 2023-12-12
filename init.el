@@ -1040,10 +1040,20 @@
 
 (use-package eglot
   :ensure t
+  :bind (:map eglot-mode-map
+              ("C-c l a" . eglot-code-actions)
+              ("C-c l r" . eglot-rename))
   :hook
   ((python-ts-mode . eglot-ensure)
-   (typescript-ts-mode . eglot-ensure)
-   (java-ts-mode . eglot-ensure)))
+   (typescript-ts-mode . eglot-ensure))
+  :config
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(typescript-ts-mode . ("typescript-language-server" "--stdio"))))
+
+(use-package eglot-java
+  :ensure t
+  :defer t
+  :hook ((java-ts-mode . eglot-java-mode)))
 
 ;; Header breadcrumb
 ;; (defun sm/lsp-mode-setup ()
@@ -1087,7 +1097,7 @@
   :hook (typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode))
 
 ;; LSP server installation:
-;; pip install "python-lsp-server[all]"
+;; pip install "python-lsp-server[all]" or pip install pyright
 ;; TODO: fix python LSP server: slow and does not always show info about the thing at point
 (use-package python
   :custom
