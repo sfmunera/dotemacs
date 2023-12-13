@@ -1000,8 +1000,10 @@
 ;; all platforms
 (dolist (mapping '((yaml-mode . yaml-ts-mode)
                    (bash-mode . bash-ts-mode)
-                   (js2-mode . js-ts-mode)
+                   (js-mode . js-ts-mode)
+                   (js2-mode . js2-ts-mode)
                    (typescript-mode . typescript-ts-mode)
+                   (tsx-mode . tsx-ts-mode)
                    (json-mode . json-ts-mode)
                    (css-mode . css-ts-mode)
                    (elisp-mode . elisp-ts-mode)
@@ -1023,14 +1025,11 @@
   ;; You can manually enable Combobulate with `M-x
   ;; combobulate-mode'.
   :hook ((yaml-ts-mode . combobulate-mode)
-         (bash-ts-mode . combobulate-mode)
-         (js2-ts-mode . combobulate-mode)
+         (js-ts-mode . combobulate-mode)
          (typescript-ts-mode . combobulate-mode)
+         (tsx-ts-mode . combobulate-mode)         
          (json-ts-mode . combobulate-mode)
          (css-ts-mode . combobulate-mode)
-         (elisp-ts-mode . combobulate-mode)
-         (java-ts-mode . combobulate-mode)
-         (rust-ts-mode . combobulate-mode)
          (python-ts-mode . combobulate-mode))
   ;; Amend this to the directory where you keep Combobulate's source
   ;; code.
@@ -1045,10 +1044,13 @@
               ("C-c l r" . eglot-rename))
   :hook
   ((python-ts-mode . eglot-ensure)
-   (typescript-ts-mode . eglot-ensure))
+   (typescript-ts-mode . eglot-ensure)
+   (js-ts-mode . eglot-ensure)
+   (tsx-ts-mode . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
-  (add-to-list 'eglot-server-programs '(typescript-ts-mode . ("typescript-language-server" "--stdio"))))
+  (add-to-list 'eglot-server-programs '(typescript-ts-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio"))))
 
 (use-package eglot-java
   :ensure t
