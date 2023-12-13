@@ -988,7 +988,6 @@
 ;;;; Project management
 
 (use-package project)
-;; TODO: check beframe, tab-bar-mode for project separation.
 
 ;;;; Flycheck
 (use-package flycheck)
