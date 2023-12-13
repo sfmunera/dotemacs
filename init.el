@@ -396,7 +396,6 @@
 	 display-buffer-in-previous-window)))
 
 ;; tab-bar-mode
-;; TODO: add more keybindings: move tabs, rename, go to tab directly
 (use-package tab-bar
   :init
   (tab-bar-mode 1)
@@ -409,7 +408,10 @@
   ("s-{" . tab-bar-switch-to-prev-tab)
   ("s-}" . tab-bar-switch-to-next-tab)
   ("s-t" . tab-bar-new-tab)
-  ("s-w" . tab-bar-close-tab))
+  ("s-w" . tab-bar-close-tab)
+  ("s-r" . tab-bar-rename-tab)
+  ("s-]" . tab-bar-move-tab)
+  ("s-[" . tab-bar-select-tab))
 
 
 ;;; Completions
@@ -680,7 +682,6 @@
   (variable-pitch-mode 1)
   (visual-line-mode 1))
 
-;; TODO: fix eldoc-error related to org-element-at-point
 (use-package org
   :hook (org-mode . sm/org-mode-setup)
   :bind (("C-c a" . org-agenda)
@@ -1087,7 +1088,6 @@
 ;; needs to install LSP for the specific languages first
 ;; npm install -g typescript-language-server
 ;; npm install typescript-eslint-language-service -D
-;; TODO: check why LSP server keeps crashing
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :config
@@ -1100,7 +1100,6 @@
 
 ;; LSP server installation:
 ;; pip install "python-lsp-server[all]" or pip install pyright
-;; TODO: fix python LSP server: slow and does not always show info about the thing at point
 (use-package python
   :custom
   (python-shell-interpreter "python3"))
@@ -1190,7 +1189,6 @@
   :config
   (setq markdown-command "marked"))
 
-;; TODO: fix olivetti-mode not turning on automatically for org-mode
 (use-package olivetti
   :ensure t
   :bind
