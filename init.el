@@ -1040,8 +1040,12 @@
 (use-package eglot
   :ensure t
   :bind (:map eglot-mode-map
-              ("C-c l a" . eglot-code-actions)
-              ("C-c l r" . eglot-rename))
+              ("C-c e n" . flymake-goto-next-error)
+              ("C-c e p" . flymake-goto-prev-error)
+              ("C-c e r" . eglot-rename)
+              ("C-c e f" . eglot-format)
+              ("C-c e b" . eglot-format-buffer)
+              ("C-c e a" . eglot-code-actions))
   :hook
   ((python-ts-mode . eglot-ensure)
    (typescript-ts-mode . eglot-ensure)
