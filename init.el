@@ -45,8 +45,8 @@
       inhibit-startup-echo-area-message t)
 ;; Don't ask when killing a buffer with a live process attached to it
 (setq kill-buffer-query-functions
-  (remq 'process-kill-buffer-query-function
-        kill-buffer-query-functions))
+      (remq 'process-kill-buffer-query-function
+            kill-buffer-query-functions))
 
 ;; Mark location at point without activating region 
 (defun sm/push-mark-no-activate ()
@@ -70,13 +70,13 @@
 ;; Bootstrap straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
-      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
-        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-        'silent 'inhibit-cookies)
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
@@ -176,8 +176,8 @@
 
 ;; Merge C-a with M-m to go to beginning-of-line or back-to-indentation alternatively
 (defun back-to-indentation-or-beginning () (interactive)
-   (if (= (point) (progn (back-to-indentation) (point)))
-       (beginning-of-line)))
+       (if (= (point) (progn (back-to-indentation) (point)))
+           (beginning-of-line)))
 
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
@@ -292,63 +292,63 @@
 
 (add-to-list 'display-buffer-alist
              '("\\*helpful.*\\*"
-             (display-buffer-reuse-window display-buffer-pop-up-window)
+               (display-buffer-reuse-window display-buffer-pop-up-window)
                (inhibit-same-window . t)))
 
 (add-to-list 'display-buffer-alist
              '("\\*Help\\*"
-             (display-buffer-reuse-window display-buffer-pop-up-window)
+               (display-buffer-reuse-window display-buffer-pop-up-window)
                (inhibit-same-window . t)))
 
 (add-to-list 'display-buffer-alist
-     '("\\*vterm\\*" display-buffer-reuse-mode-window
-       (inhibit-same-window . t)
-       (mode vterm-mode vterm-copy-mode)))
+             '("\\*vterm\\*" display-buffer-reuse-mode-window
+               (inhibit-same-window . t)
+               (mode vterm-mode vterm-copy-mode)))
 
 (add-to-list 'display-buffer-alist
              '("\\*Python\\*"
                (display-buffer-reuse-mode-window
-               display-buffer-in-direction)
+                display-buffer-in-direction)
                (direction . bottom)
                (window . root)
                (window-height . 0.3)
                (inhibit-same-window . t)))
 
 (add-to-list 'display-buffer-alist
-  '("\\*e?shell\\*" display-buffer-in-direction
-    (direction . bottom)
-    (window . root)
-    (window-height . 0.3)))
+             '("\\*e?shell\\*" display-buffer-in-direction
+               (direction . bottom)
+               (window . root)
+               (window-height . 0.3)))
 
 (add-to-list 'display-buffer-alist
-          `(,(rx (| "*xref*"
-                    "*grep*"
-                    "*Occur*"))
-            display-buffer-reuse-window
-            (inhibit-same-window . nil)))
+             `(,(rx (| "*xref*"
+                       "*grep*"
+                       "*Occur*"))
+               display-buffer-reuse-window
+               (inhibit-same-window . nil)))
 
 (setq magit-display-buffer-function #'display-buffer)
 
 (add-to-list 'display-buffer-alist
-          `(,(make-display-buffer-matcher-function '(magit-mode))
-            (display-buffer-reuse-mode-window
-             display-buffer-in-direction)
-            (mode magit-mode)
-            (window . root)
-            (window-width . 0.40)
-            (direction . right)))
+             `(,(make-display-buffer-matcher-function '(magit-mode))
+               (display-buffer-reuse-mode-window
+                display-buffer-in-direction)
+               (mode magit-mode)
+               (window . root)
+               (window-width . 0.40)
+               (direction . right)))
 
 ;; left, top, right, bottom
 (setq window-sides-slots '(0 0 1 0))
 
 (add-to-list 'display-buffer-alist
-          `(,(rx (| "*compilation*" "*grep* *info*"))
-            display-buffer-in-side-window
-            display-buffer-reuse-window
-            (side . right)
-            (slot . 0)
-            (window-parameters . ((no-delete-other-windows . t)))
-            (window-width . 80)))
+             `(,(rx (| "*compilation*" "*grep* *info*"))
+               display-buffer-in-side-window
+               display-buffer-reuse-window
+               (side . right)
+               (slot . 0)
+               (window-parameters . ((no-delete-other-windows . t)))
+               (window-width . 80)))
 
 ;; Frame Scaling / Zooming
 ;; The keybindings for this are C+M+- and C+M+=.
@@ -509,24 +509,24 @@
   )
 
 ;; This works with `file-name-shadow-mode' enabled.  When you are in
-  ;; a sub-directory and use, say, `find-file' to go to your home '~/'
-  ;; or root '/' directory, Vertico will clear the old path to keep
-  ;; only your current input.
+;; a sub-directory and use, say, `find-file' to go to your home '~/'
+;; or root '/' directory, Vertico will clear the old path to keep
+;; only your current input.
 (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
 (setq completion-category-overrides
-        ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
-        ;; default for some contexts.  Read:
-        ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=50387>.
-        ;;
-        ;; `partial-completion' is a killer app for files, because it
-        ;; can expand ~/.l/s/fo to ~/.local/share/fonts.
-        ;;
-        ;; If `basic' cannot match my current input, Emacs tries the
-        ;; next completion style in the given order.  In other words,
-        ;; `orderless' kicks in as soon as I input a space or one of its
-        ;; style dispatcher characters.
-        '((file (styles . (basic partial-completion orderless)))))
+      ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
+      ;; default for some contexts.  Read:
+      ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=50387>.
+      ;;
+      ;; `partial-completion' is a killer app for files, because it
+      ;; can expand ~/.l/s/fo to ~/.local/share/fonts.
+      ;;
+      ;; If `basic' cannot match my current input, Emacs tries the
+      ;; next completion style in the given order.  In other words,
+      ;; `orderless' kicks in as soon as I input a space or one of its
+      ;; style dispatcher characters.
+      '((file (styles . (basic partial-completion orderless)))))
 
 
 (use-package orderless
@@ -543,7 +543,7 @@
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+              ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
   :init
@@ -568,7 +568,7 @@
 
   ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
   ;; strategy, if you want to see the documentation from multiple providers.
-  ;(add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+                                        ;(add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   :config
@@ -614,9 +614,9 @@
   (corfu-popupinfo-delay 0)
   :config
   (add-hook 'eshell-mode-hook
-          (lambda ()
-            (setq-local corfu-auto nil)
-            (corfu-mode)))
+            (lambda ()
+              (setq-local corfu-auto nil)
+              (corfu-mode)))
   :bind
   (:map corfu-map
         ("C-n" . #'corfu-next)
@@ -822,7 +822,7 @@
      
      ("p" "Personal")
      ("pi" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
-        "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
+      "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
      ("pj" "Journal" entry (file+olp+datetree "Journal.org")
       "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
       :clock-in :clock-resume :empty-lines 1)))
@@ -841,7 +841,7 @@
   ;; Eveything else will be variable-pitch
   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  ;(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+                                        ;(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
   (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-formula nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
@@ -876,7 +876,7 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
-;;   (python . t)
+   ;;   (python . t)
    (shell . t)))
 
 (require 'ob-python)
@@ -927,59 +927,59 @@
   (require 'git-gutter-fringe)
   (set-face-foreground 'git-gutter-fr:added "LightGreen")
   (fringe-helper-define 'git-gutter-fr:added nil
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		".........."
-        		".........."
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		".........."
-        		".........."
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX")
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    ".........."
+    ".........."
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    ".........."
+    ".........."
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX")
   
   (set-face-foreground 'git-gutter-fr:modified "LightGoldenrod")
   (fringe-helper-define 'git-gutter-fr:modified nil
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		".........."
-        		".........."
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		".........."
-        		".........."
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX")
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    ".........."
+    ".........."
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    ".........."
+    ".........."
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX")
   
   (set-face-foreground 'git-gutter-fr:deleted "LightCoral")
   (fringe-helper-define 'git-gutter-fr:deleted nil
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		".........."
-        		".........."
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		".........."
-        		".........."
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"
-        		"XXXXXXXXXX"))
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    ".........."
+    ".........."
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    ".........."
+    ".........."
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"
+    "XXXXXXXXXX"))
 
-  ;; These characters are used in terminal mode
-  (setq git-gutter:modified-sign "≡")
-  (setq git-gutter:added-sign "≡")
-  (setq git-gutter:deleted-sign "≡")
-  (set-face-foreground 'git-gutter:added "LightGreen")
-  (set-face-foreground 'git-gutter:modified "LightGoldenrod")
-  (set-face-foreground 'git-gutter:deleted "LightCoral")
+;; These characters are used in terminal mode
+(setq git-gutter:modified-sign "≡")
+(setq git-gutter:added-sign "≡")
+(setq git-gutter:deleted-sign "≡")
+(set-face-foreground 'git-gutter:added "LightGreen")
+(set-face-foreground 'git-gutter:modified "LightGoldenrod")
+(set-face-foreground 'git-gutter:deleted "LightCoral")
 
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -1064,37 +1064,72 @@
             'my-project-try-tsconfig-json nil nil)
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(typescript-ts-mode . ("typescript-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio"))))
+  (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
+  :custom
+  (eglot-events-buffer-size 0)
+  (eglot-extend-to-xref t)
+  (eglot-autoshutdown t)
+  (eglot-stay-out-of '(yasnippet)))
 
 (use-package eglot-java
   :ensure t
   :defer t
   :hook ((java-ts-mode . eglot-java-mode)))
 
-;; Header breadcrumb
-;; (defun sm/lsp-mode-setup ()
-;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-;;   (lsp-headerline-breadcrumb-mode))
-
-
 ;; (use-package lsp-mode
-;;   :commands (lsp lsp-deferred)
-;;   :hook (lsp-mode . sm/lsp-mode-setup)
-;;   :init
-;;   (setq lsp-keymap-prefix "C-c l")
-;;   :config
-;;   (lsp-enable-which-key-integration t))
-
-
-;; (use-package breadcrumb)
-
-;; (use-package lsp-ui
-;;   :hook (lsp-mode . lsp-ui-mode)
+;;   :hook ((lsp-mode . lsp-diagnostics-mode))
 ;;   :custom
-;;   (lsp-ui-doc-position 'bottom))
+;;   (lsp-keymap-prefix "C-c l")
+;;   (lsp-diagnostics-provider :flymake)
+;;   (lsp-completion-provider :capf)
+;;   (lsp-session-file (expand-file-name ".lsp-session" user-emacs-directory))
+;;   ;;  (lsp-log-io nil)
+;;   (lsp-idle-delay 0.5)
+;;   ;; core
+;;   ;; (lsp-enable-xref t)
+;;   ;; (lsp-auto-configure nil)
+;;   ;; (lsp-eldoc-enable-hover nil)
+;;   ;; (lsp-enable-dap-auto-configure nil)
+;;   ;; (lsp-enable-file-watchers nil)
+;;   ;; (lsp-enable-folding nil)
+;;   ;; (lsp-enable-imenu nil)
+;;   ;; (lsp-enable-indentation nil)
+;;   ;; (lsp-enable-links nil)
+;;   ;; (lsp-enable-on-type-formatting nil)
+;;   (lsp-enable-suggest-server-download t)
+;;   ;; (lsp-enable-symbol-highlighting nil)
+;;   ;; (lsp-enable-text-document-color nil)
+;;   ;; ;; completion
+;;   ;; (lsp-completion-enable t)
+;;   ;; (lsp-completion-enable-additional-text-edit nil)
+;;   ;; (lsp-enable-snippet nil)
+;;   ;; (lsp-completion-show-kind nil)
+;;   ;; ;; headerline
+;;   ;; (lsp-headerline-breadcrumb-enable nil)
+;;   ;; (lsp-headerline-breadcrumb-enable-diagnostics nil)
+;;   ;; (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
+;;   ;; (lsp-headerline-breadcrumb-icons-enable nil)
+;;   ;; ;; modeline
+;;   ;; (lsp-modeline-code-actions-enable nil)
+;;   ;; (lsp-modeline-diagnostics-enable nil)
+;;   ;; (lsp-modeline-workspace-status-enable nil)
+;;   ;; (lsp-signature-doc-lines 1)
+;;   ;; ;; lens
+;;   ;; (lsp-lens-enable nil)
+;;   ;; ;; semantic
+;;   ;; (lsp-semantic-tokens-enable nil)
+;;   :init
+;;   (setq lsp-use-plists t))
 
-;; (use-package lsp-treemacs
-;;   :after lsp)
+;; (use-package lsp-java
+;;   :demand t
+;;   :after lsp-mode
+;;   :custom
+;;   (lsp-java-java-path "/usr/lib/jvm/java-17-openjdk-amd64/bin/java"))
+
+;; (use-package lsp-java
+;;   :no-require
+;;   :hook ((java-mode java-ts-mode) . lsp))
 
 ;;;; Languages
 
