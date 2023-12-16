@@ -1052,6 +1052,16 @@
    (js-ts-mode . eglot-ensure)
    (tsx-ts-mode . eglot-ensure))
   :config
+  ;; I'm not sure why this is needed, but it throws an error if I remove it
+  (cl-defmethod project-root ((project (head eglot-project)))
+    (cdr project))
+
+  (defun my-project-try-tsconfig-json (dir)
+    (when-let* ((found (locate-dominating-file dir "tsconfig.json")))
+      (cons 'eglot-project found)))
+
+  (add-hook 'project-find-functions
+            'my-project-try-tsconfig-json nil nil)
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(typescript-ts-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio"))))
@@ -1095,6 +1105,13 @@
   :mode "\\.ts\\'"
   :config
   (setq typescript-indent-level 2))
+
+;; auto-format different source code files extremely intelligently
+;; https://github.com/radian-software/apheleia
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1))
 
 (use-package jest-test-mode 
   :ensure t 
@@ -1171,7 +1188,7 @@
      (setq dired-use-ls-dired t
            insert-directory-program "/usr/local/bin/gls"))
    (setq dired-listing-switches "-agho --group-directories-first")))
- 
+
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 
@@ -1202,5 +1219,6 @@
   :custom
   (olivetti-body-width 100))
 
+(use-package antlr-mode)
 
 ;;; Work-specific config (private)
