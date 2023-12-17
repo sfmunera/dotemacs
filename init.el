@@ -1038,7 +1038,6 @@
 ;;;; LSP
 
 (use-package eglot
-  :ensure t
   :bind (:map eglot-mode-map
               ("C-c e n" . flymake-goto-next-error)
               ("C-c e p" . flymake-goto-prev-error)
@@ -1048,11 +1047,14 @@
               ("C-c e a" . eglot-code-actions))
   :hook
   ((python-ts-mode . eglot-ensure)
+   (python-mode . eglot-ensure)
    (typescript-ts-mode . eglot-ensure)
+   (typescript-mode . eglot-ensure)
    (js-ts-mode . eglot-ensure)
-   (tsx-ts-mode . eglot-ensure))
+   (js-mode . eglot-ensure)
+   (tsx-ts-mode . eglot-ensure)
+   (tsx-mode . eglot-ensure))
   :config
-  ;; I'm not sure why this is needed, but it throws an error if I remove it
   (cl-defmethod project-root ((project (head eglot-project)))
     (cdr project))
 
@@ -1072,15 +1074,13 @@
   (eglot-stay-out-of '(yasnippet)))
 
 (use-package eglot-java
-  :ensure t
   :defer t
-  :hook (((java-mode java-ts-mode) . eglot-java-mode)))
+  :hook ((java-mode java-ts-mode) . eglot-java-mode))
 
 (use-package jarchive
-  :ensure t
   :after eglot
   :config
-  (jarchive-setup))
+  (jarchive-mode 1))
 
 ;; (use-package lsp-mode
 ;;   :hook ((lsp-mode . lsp-diagnostics-mode))
@@ -1147,15 +1147,14 @@
   :config
   (setq typescript-indent-level 2))
 
-;; auto-format different source code files extremely intelligently
-;; https://github.com/radian-software/apheleia
+;; smart auto-format source code files on save
 (use-package apheleia
-  :ensure t
-  :config
-  (apheleia-global-mode +1))
+  ;; :config
+  ;; (apheleia-global-mode 1)
+  :hook ((typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode) . apheleia-mode))
 
+;; js/typescript jest tests
 (use-package jest-test-mode 
-  :ensure t 
   :commands jest-test-mode
   :hook ((typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode) . jest-test-mode))
 
