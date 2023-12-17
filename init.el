@@ -1007,7 +1007,6 @@
                    (tsx-mode . tsx-ts-mode)
                    (json-mode . json-ts-mode)
                    (css-mode . css-ts-mode)
-                   (elisp-mode . elisp-ts-mode)
                    ;;(java-mode . java-ts-mode) Currently not working: error in process filter: Query pattern is malformed
                    (rust-mode . rust-ts-mode)
                    (python-mode . python-ts-mode)))
