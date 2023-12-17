@@ -1151,7 +1151,7 @@
 (use-package jest-test-mode 
   :ensure t 
   :commands jest-test-mode
-  :hook (typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode))
+  :hook ((typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode) . jest-test-mode))
 
 ;; LSP server installation:
 ;; pip install "python-lsp-server[all]" or pip install pyright
