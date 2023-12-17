@@ -85,6 +85,7 @@
 
 ;; Use straight.el for use-package expressions
 (straight-use-package 'use-package)
+(straight-use-package 'org)
 
 ;;;; Organize files
 
@@ -1007,7 +1008,7 @@
                    (json-mode . json-ts-mode)
                    (css-mode . css-ts-mode)
                    (elisp-mode . elisp-ts-mode)
-                   (java-mode . java-ts-mode)
+                   ;;(java-mode . java-ts-mode) Currently not working: error in process filter: Query pattern is malformed
                    (rust-mode . rust-ts-mode)
                    (python-mode . python-ts-mode)))
   (add-to-list 'major-mode-remap-alist mapping))
@@ -1074,7 +1075,7 @@
 (use-package eglot-java
   :ensure t
   :defer t
-  :hook ((java-ts-mode . eglot-java-mode)))
+  :hook (((java-mode java-ts-mode) . eglot-java-mode)))
 
 ;; (use-package lsp-mode
 ;;   :hook ((lsp-mode . lsp-diagnostics-mode))
