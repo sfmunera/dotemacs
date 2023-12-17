@@ -1076,6 +1076,12 @@
   :defer t
   :hook (((java-mode java-ts-mode) . eglot-java-mode)))
 
+(use-package jarchive
+  :ensure t
+  :after eglot
+  :config
+  (jarchive-setup))
+
 ;; (use-package lsp-mode
 ;;   :hook ((lsp-mode . lsp-diagnostics-mode))
 ;;   :custom
