@@ -269,7 +269,6 @@
          web-mode))
 
 
-
 ;;; Window management
 
 ;; TODO: Add dashboard
@@ -343,13 +342,13 @@
 (setq window-sides-slots '(0 0 1 0))
 
 (add-to-list 'display-buffer-alist
-             `(,(rx (| "*compilation*" "*grep* *info*"))
+             `(,(rx (| "*jest-test-compilation*" "*compilation*" "*grep* *info*"))
                display-buffer-in-side-window
                display-buffer-reuse-window
                (side . right)
                (slot . 0)
                (window-parameters . ((no-delete-other-windows . t)))
-               (window-width . 80)))
+               (window-width . 0.4)))
 
 ;; Frame Scaling / Zooming
 ;; The keybindings for this are C+M+- and C+M+=.
@@ -1260,5 +1259,10 @@
   (olivetti-body-width 100))
 
 (use-package antlr-mode)
+
+;; Add ansi colors to the compilation mode buffers
+(use-package ansi-color
+  :hook (compilation-filter . ansi-color-compilation-filter))
+
 
 ;;; Work-specific config (private)
