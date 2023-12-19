@@ -1264,5 +1264,8 @@
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
+;; compilation mode windows should scroll as ouput appears
+(setq compilation-scroll-output t) 
+
 
 ;;; Work-specific config (private)
