@@ -1268,5 +1268,19 @@
 (setq compilation-scroll-output 'first-error)
 
 
+;;; Macros
+
+(require 'kmacro)
+(defalias 'kmacro-insert-macro 'insert-kbd-macro)
+(define-key kmacro-keymap (kbd "I") #'kmacro-insert-macro)
+
+;; Personal recorded macros
+(let ((macros-file (expand-file-name "macros.el" user-emacs-directory)))
+  (when (file-exists-p macros-file)
+    (load macros-file)))
 
 ;;; Work-specific config (private)
+(let ((work-config-file (expand-file-name "work-config.el" user-emacs-directory)))
+  (when (file-exists-p work-config-file)
+    (load work-config-file)))
+
