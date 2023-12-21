@@ -1067,7 +1067,7 @@
   (add-to-list 'eglot-server-programs '(typescript-ts-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
   :custom
-  (eglot-events-buffer-size 0)
+  ;;(eglot-events-buffer-size 0)
   (eglot-extend-to-xref t)
   (eglot-autoshutdown t)
   (eglot-stay-out-of '(yasnippet)))
