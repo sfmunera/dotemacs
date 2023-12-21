@@ -198,44 +198,10 @@
   (sm/set-font-faces))
 
 (use-package spacious-padding
+  :config
+  (setq spacious-padding-subtle-mode-line t)
   :hook
   (text-mode . spacious-padding-mode))
-
-;;;; Subtle mode line style
-(defun prot-modeline-set-faces (_theme)
-  "Make THEME mode lines subtle."
-  (let ((subtle (face-foreground 'shadow)))
-    (custom-set-faces
-     `(mode-line ((t :background unspecified :box unspecified :overline ,subtle)))
-     `(mode-line-active ((t :inherit mode-line :box unspecified)))
-     `(mode-line-inactive ((t :background unspecified :foreground ,subtle :box unspecified :overline ,subtle))))))
-
-(defun prot-modeline-unset-faces ()
-  "Make window dividers for THEME invisible."
-  (custom-set-faces
-   `(mode-line (( )))
-   `(mode-line-active (( )))
-   `(mode-line-inactive (( )))))
-
-(defun prot-modeline--enable-mode ()
-  "Enable `prot-modeline-subtle-mode'."
-  (prot-modeline-set-faces nil)
-  (add-hook 'enable-theme-functions #'prot-modeline-set-faces))
-
-(defun prot-modeline--disable-mode ()
-  "Disable `prot-modeline-subtle-mode'."
-  (prot-modeline-unset-faces)
-  (remove-hook 'enable-theme-functions #'prot-modeline-set-faces))
-
-    ;;;###autoload
-(define-minor-mode prot-modeline-subtle-mode
-  "Increase the padding/spacing of frames and windows."
-  :global t
-  (if prot-modeline-subtle-mode
-      (prot-modeline--enable-mode)
-    (prot-modeline--disable-mode)))
-
-(prot-modeline-subtle-mode)
 
 (use-package modus-themes
   :config
