@@ -138,8 +138,7 @@
 ;; Visual undo
 ;; TODO: fix vundo
 (use-package vundo
-  :commands (vundo)
-  :bind (("C-x u" . vundo))
+  :bind ("C-x u" . vundo)
   :straight (vundo :type git :host github :repo "casouri/vundo"))
 
 ;;;; Basic UI configuration
