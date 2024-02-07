@@ -973,7 +973,8 @@
                    (css-mode . css-ts-mode)
                    ;;(java-mode . java-ts-mode) Currently not working: error in process filter: Query pattern is malformed
                    (rust-mode . rust-ts-mode)
-                   (python-mode . python-ts-mode)))
+                   (python-mode . python-ts-mode)
+                   (ruby-mode . ruby-ts-mode)))
   (add-to-list 'major-mode-remap-alist mapping))
 
 (setq treesit-font-lock-level 4)
@@ -1017,7 +1018,8 @@
    (js-ts-mode . eglot-ensure)
    (js-mode . eglot-ensure)
    (tsx-ts-mode . eglot-ensure)
-   (tsx-mode . eglot-ensure))
+   (tsx-mode . eglot-ensure)
+   (ruby-mode . eglot-ensure))
   :config
   (cl-defmethod project-root ((project (head eglot-project)))
     (cdr project))
@@ -1031,6 +1033,8 @@
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(typescript-ts-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
+  ;; gem install solargraph
+  (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("solargraph" "--stdio")))
   :custom
   ;;(eglot-events-buffer-size 0)
   (eglot-extend-to-xref t)
