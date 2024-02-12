@@ -4,7 +4,6 @@
 
 ;;;; Performance optimizations
 
-;; Make startup faster by reducing the frequency of garbage collection
 (setq gc-cons-threshold (* 50 1000 1000))
 
 ;; Profile emacs startup
@@ -19,6 +18,10 @@
 ;;;; Emacs directory
 (setq user-emacs-directory (expand-file-name "~/.emacs.d"))
 
+;; move customization variable to a separate file and load it
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(load custom-file 'noerror 'nomessage)
+
 ;;;; Native compilation
 
 ;; Silence native compiling warnings as they are pretty noisy
@@ -30,8 +33,9 @@
 ;;;; Personal information
 (setq user-full-name "Sebastian Munera")
 
-;; Leaving this commented out as the emacs daemon is now started by the system
-;; (server-start)
+;;;; Start emacs server
+(unless server-running-p
+  (server-start))
 
 ;;;; Default coding system
 (set-default-coding-systems 'utf-8)
@@ -99,7 +103,7 @@
 (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
 (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
       auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
-(setq create-locksfiles nil)
+(setq create-lockfiles nil)
 
 ;; Auto-Saving Changed Files
 (use-package super-save
@@ -108,10 +112,6 @@
   :config
   (super-save-mode +1)
   (setq super-save-auto-save-when-idle t))
-
-;; move customization variable to a separate file and load it
-(setq custom-file (locate-user-emacs-file "custom-vars.el"))
-(load custom-file 'noerror 'nomessage)
 
 ;; quick access to recently edited files
 (use-package recentf
@@ -123,7 +123,8 @@
   (recentf-max-saved-items 50))
 
 ;; save history in minibuffer
-(setq history-length 25)
+(setq history-length 200)
+(setq savehist-additional-variables '(register-alist kill-ring))
 (savehist-mode 1)
 
 ;; remember and restore the last cursor location of opened files
@@ -315,16 +316,6 @@
 ;;                (window-parameters . ((no-delete-other-windows . t)))
 ;;                (window-width . 0.4)))
 
-;; Frame Scaling / Zooming
-;; The keybindings for this are C+M+- and C+M+=.
-(use-package default-text-scale
-  :defer 1
-  :bind
-  (("s--" . default-text-scale-decrease)
-   ("s-=" . default-text-scale-increase))
-  :config
-  (default-text-scale-mode))
-
 ;; winner-mode to undo/redo window layouts
 (use-package winner
   :config
@@ -355,9 +346,9 @@
 ;; Default buffer placement options
 ;; Reuse existing windows especially those with the same mode
 (setq display-buffer-base-action
-      '((display-buffer-reuse-window
-	 display-buffer-reuse-mode-window
-	 display-buffer-same-window
+      '((display-buffer-reuse-mode-window
+         display-buffer-reuse-window
+         display-buffer-same-window
 	 display-buffer-in-previous-window)))
 
 ;; tab-bar-mode
@@ -1178,8 +1169,6 @@
 ;;; Dired
 ;; Require to mark by extension
 (require 'dired-x)
-;; Keep only one dired buffer
-(use-package dired-single)
 
 (use-package dired
   :straight nil
@@ -1195,7 +1184,10 @@
   ((when (string= system-type "darwin")
      (setq dired-use-ls-dired t
            insert-directory-program "/usr/local/bin/gls"))
-   (setq dired-listing-switches "-agho --group-directories-first")))
+   (setq dired-listing-switches "-agho --group-directories-first"))
+  :config
+  ;; Keep only one dired buffer
+  (setq dired-kill-when-opening-new-dired-buffer t))
 
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
