@@ -34,7 +34,7 @@
 (setq user-full-name "Sebastian Munera")
 
 ;;;; Start emacs server
-(unless server-running-p
+(unless (server-running-p)
   (server-start))
 
 ;;;; Default coding system
