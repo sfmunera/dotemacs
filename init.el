@@ -34,6 +34,7 @@
 (setq user-full-name "Sebastian Munera")
 
 ;;;; Start emacs server
+(require 'server)
 (unless (server-running-p)
   (server-start))
 
@@ -413,6 +414,7 @@
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
          ("M-s l" . consult-line)
+         ("C-s"   . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
@@ -428,6 +430,7 @@
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
          ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
+  ;; TODO: include these
   ;; (prot-emacs-keybind global-map
   ;;   "M-g M-g" #'consult-goto-line
   ;;   "M-K" #'consult-keep-lines ; M-S-k is similar to M-S-5 (M-%)
@@ -446,16 +449,16 @@
   ;; relevant when you use the default completion UI.
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
+;; TODO: check Vertico multiform
 (use-package vertico
   :init
   (vertico-mode)
-  :bind (("C-s" . consult-line)) ;; TODO: put this in the consult binds
 
   ;; Different scroll margin
-  ;; (setq vertico-scroll-margin 0)
+  (setq vertico-scroll-margin 0)
 
   ;; Show more candidates
-  ;; (setq vertico-count 20)
+  (setq vertico-count 20)
 
   ;; Grow and shrink the Vertico minibuffer
   ;; (setq vertico-resize t)
@@ -470,6 +473,14 @@
 ;; only your current input.
 (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil))
+
 (setq completion-category-overrides
       ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
       ;; default for some contexts.  Read:
@@ -482,16 +493,20 @@
       ;; next completion style in the given order.  In other words,
       ;; `orderless' kicks in as soon as I input a space or one of its
       ;; style dispatcher characters.
-      '((file (styles . (basic partial-completion orderless)))))
+      '((file (styles . (basic partial-completion orderless)))
+        (consult-location (styles . (basic substring initials orderless)))))
 
+;;; Icons
+(use-package nerd-icons-completion
+  :after (vertico marginalia)
+  :config
+  (nerd-icons-completion-marginalia-setup)
+  (nerd-icons-completion-mode 1))
 
-(use-package orderless
-  :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil))
+(use-package nerd-icons-corfu
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
@@ -1189,8 +1204,87 @@
   ;; Keep only one dired buffer
   (setq dired-kill-when-opening-new-dired-buffer t))
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
+(use-package nerd-icons-dired
+  :config
+  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
+
+;; Customizations to dired
+(defvar prot-dired--limit-hist '()
+  "Minibuffer history for `prot-dired-limit-regexp'.")
+
+;;;###autoload
+(defun prot-dired-limit-regexp (regexp omit)
+  "Limit Dired to keep files matching REGEXP.
+
+With optional OMIT argument as a prefix (\\[universal-argument]),
+exclude files matching REGEXP.
+
+Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
+  (interactive
+   (list
+    (read-regexp
+     (concat "Files "
+             (when current-prefix-arg
+               (propertize "NOT " 'face 'warning))
+             "matching PATTERN: ")
+     nil 'prot-dired--limit-hist)
+    current-prefix-arg))
+  (dired-mark-files-regexp regexp)
+  (unless omit (dired-toggle-marks))
+  (dired-do-kill-lines)
+  (add-to-history 'prot-dired--limit-hist regexp))
+
+(defvar prot-dired--find-grep-hist '()
+  "Minibuffer history for `prot-dired-grep-marked-files'.")
+
+;; Also see `prot-search-grep' from prot-search.el.
+;;;###autoload
+(defun prot-dired-grep-marked-files (regexp &optional arg)
+  "Run `find' with `grep' for REGEXP on marked files.
+When no files are marked or when just a single one is marked,
+search the entire directory instead.
+
+With optional prefix ARG target a single marked file.
+
+We assume that there is no point in marking a single file and
+running find+grep on its contents.  Visit it and call `occur' or
+run grep directly on it without the whole find part."
+  (interactive
+   (list
+    (read-string "grep for PATTERN (marked files OR current directory): " nil 'prot-dired--find-grep-hist)
+    current-prefix-arg)
+   dired-mode)
+  (when-let* ((marks (dired-get-marked-files 'no-dir))
+              (files (mapconcat #'identity marks " "))
+              (args (if (or arg (length> marks 1))
+                        ;; Thanks to Sean Whitton for pointing out an
+                        ;; earlier superfluity of mine: we do not need
+                        ;; to call grep through find when we already
+                        ;; know the files we want to search in.  Check
+                        ;; Sean's dotfiles:
+                        ;; <https://git.spwhitton.name/dotfiles>.
+                        ;;
+                        ;; Any other errors or omissions are my own.
+                        (format "grep -nH --color=auto %s %s" (shell-quote-argument regexp) files)
+                      (concat
+                       "find . -not " (shell-quote-argument "(")
+                       " -wholename " (shell-quote-argument "*/.git*")
+                       " -prune " (shell-quote-argument ")")
+                       " -type f"
+                       " -exec grep -nHE --color=auto " regexp " "
+                       (shell-quote-argument "{}")
+                       " " (shell-quote-argument ";") " "))))
+    (compilation-start
+     args
+     'grep-mode
+     (lambda (mode) (format "*prot-dired-find-%s for '%s'" mode regexp))
+     t))) 
+
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+(add-hook 'dired-mode-hook #'hl-line-mode)
+
+(setq dired-listing-switches
+        "-AGFhlv --group-directories-first --time-style=long-iso")
 
 (setq dired-guess-shell-alist-user '(("\\.png" "feh")
                                      ("\\.mkv" "mpv")))
@@ -1199,8 +1293,18 @@
   :hook (dired-mode . dired-hide-dotfiles-mode)
   :bind
   (:map dired-mode-map
-	("H" . dired-hide-dotfiles-mode)))
+	("." . dired-hide-dotfiles-mode)))
 
+;;; Grep
+;;; wgrep (writable grep)
+(use-package wgrep
+  :config
+  (setq wgrep-auto-save-buffer t)
+  (setq wgrep-change-readonly-file t)
+  :bind ( :map grep-mode-map
+          ("e" . wgrep-change-to-wgrep-mode)
+          ("C-x C-q" . wgrep-change-to-wgrep-mode)
+          ("C-c C-c" . wgrep-finish-edit)))
 
 ;;; Misc
 
