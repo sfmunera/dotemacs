@@ -841,6 +841,15 @@
 (use-package org-appear
   :hook (org-mode . org-appear-mode))
 
+(use-package org-timeblock
+  :straight (org-timeblock :type git
+              :host github
+              :repo "ichernyshovvv/org-timeblock")
+  :after org
+  :custom
+  (org-timeblock-inbox-file (concat org-directory "Work.org"))
+  )
+
 ;; Org babel
 ;; TODO: Organize into org-mode config
 (setq org-babel-python-command "python3")
