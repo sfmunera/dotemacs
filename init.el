@@ -1208,7 +1208,9 @@
   ((when (string= system-type "darwin")
      (setq dired-use-ls-dired t
            insert-directory-program "/usr/local/bin/gls"))
-   (setq dired-listing-switches "-agho --group-directories-first"))
+   ;;(setq dired-listing-switches "-agho --group-directories-first")
+   (setq dired-listing-switches
+        "-AGFhlv --group-directories-first --time-style=long-iso"))
   :config
   ;; Keep only one dired buffer
   (setq dired-kill-when-opening-new-dired-buffer t))
@@ -1292,8 +1294,7 @@ run grep directly on it without the whole find part."
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 (add-hook 'dired-mode-hook #'hl-line-mode)
 
-(setq dired-listing-switches
-        "-AGFhlv --group-directories-first --time-style=long-iso")
+
 
 (setq dired-guess-shell-alist-user '(("\\.png" "feh")
                                      ("\\.mkv" "mpv")))
