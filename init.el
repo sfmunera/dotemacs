@@ -717,7 +717,7 @@
       (file+headline "Work.org" "Inbox")
       ,(mapconcat
         #'identity
-        '("* TODO %? :inbox:"
+        '("* TODO %?"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
@@ -727,7 +727,7 @@
       (file+olp+datetree "Work.org" "Meetings")
       ,(mapconcat
         #'identity
-        '("* Meeting: \"%?\" :meeting:"
+        '("* Meeting: \"%?\""
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
@@ -740,6 +740,17 @@
       ,(mapconcat
         #'identity
         '("%?"
+          ":PROPERTIES:"
+          ":CAPTURED: %U"
+          ":END:")
+        "\n")
+      :empty-lines 1
+      :prepend t)
+     ("wn" "Notes" entry
+      (file+olp+datetree "Work.org" "Notes")
+      ,(mapconcat
+        #'identity
+        '("* Note: %?"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
