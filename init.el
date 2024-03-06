@@ -813,7 +813,7 @@
   (define-key org-mode-map "\C-a" 'org-beginning-of-line)
   (define-key org-mode-map "\C-e" 'org-end-of-line)
 
-  (setq org-refile-targets '((org-agenda-files . (:maxlevel . 2)) (nil . (:maxlevel . 2))))
+  (setq org-refile-targets '((org-agenda-files . (:maxlevel . 10)) (nil . (:maxlevel . 10))))
   (setq org-refile-use-outline-path 'file)
   ;; makes org-refile outline working with completion framework
   (setq org-outline-path-complete-in-steps nil)
