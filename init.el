@@ -750,7 +750,7 @@
       (file+olp+datetree "Work.org" "Notes")
       ,(mapconcat
         #'identity
-        '("* Note: %?"
+        '("* Note (%t): %?"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
