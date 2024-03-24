@@ -890,6 +890,39 @@
 (use-package org-make-toc
   :hook (org-mode . org-make-toc-mode))
 
+;; My agenda should show me at a glance everything I need to know for the day
+;; - Top priority tasks: anything that is marked as "drop everything until this is done"
+;; - Next items: what is next to be able to make progress on projects
+;; - Waiting: things that I need to follow up on or I'm waiting on
+;; - Figure out: Tasks that need to be clarified
+;; - Admin/short tasks: tasks that are low effort and can be batched
+;; - Learn: Things to learn
+(use-package org-super-agenda
+  :config (org-super-agenda-mode))
+
+(setq org-super-agenda-groups
+      '((:name "Top Priority"
+               :priority "A"
+               :order 1)
+        (:name "Next Items"
+               :todo ("NEXT")
+               :order 2)
+        (:name "Waiting"
+               :todo ("WAITING")
+               :order 3)
+        (:name "Mid Priority"
+         :priority<= "B"
+                     :order 3)
+        (:name "Figure Out"
+               :todo ("FIGURE-OUT")
+               :order 4)
+        (:name "Learning"
+               :tag "learning")
+        (:name "Quick Picks"
+               :effort< "0:30"
+               :tag "admin"
+               :order 10)
+        ))
 
 ;;; TRAMP
 
