@@ -747,7 +747,7 @@
       :empty-lines 1
       :prepend t)
      ("wn" "Notes" entry
-      (file+olp+datetree "Work.org" "Notes")
+      (file+headline "Work.org" "Notes")
       ,(mapconcat
         #'identity
         '("* Note (%u): %?"
