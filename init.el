@@ -724,17 +724,16 @@
         "\n")
       :empty-lines 1)
      ("wm" "Meeting Notes" entry
-      (file+olp+datetree "Work.org" "Meetings")
+      (file+headline "Work.org" "Notes")
       ,(mapconcat
         #'identity
-        '("* Meeting: \"%?\""
+        '("* Meeting %u: %? :meeting:"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
         "\n")
       :prepend t
-      :empty-lines 1
-      :tree-type week)
+      :empty-lines 1)
      ("wj" "Daily Journal" plain
       (file+olp+datetree "Work.org" "Daily Journal")
       ,(mapconcat
@@ -750,7 +749,7 @@
       (file+headline "Work.org" "Notes")
       ,(mapconcat
         #'identity
-        '("* Note (%u): %?"
+        '("* %u: %?"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
@@ -831,6 +830,13 @@
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
+(defun org-capture-inbox ()
+     (interactive)
+     (call-interactively 'org-store-link)
+     (org-capture nil "wi"))
+
+(define-key global-map (kbd "C-c i") 'org-capture-inbox)
+
 (use-package org-modern
   :after org
   :bind
@@ -847,6 +853,7 @@
   :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+
 
 
 (use-package org-appear
