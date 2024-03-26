@@ -911,20 +911,24 @@
       '((:name "Top Priority"
                :priority "A"
                :order 1)
-        (:name "Next Items"
-               :todo ("NEXT")
-               :order 2)
         (:name "Waiting"
                :todo ("WAITING")
+               :order 2)
+        (:name "Next Items"
+               :todo ("NEXT")
                :order 3)
+        (:name "In Progress"
+               :todo ("DOING")
+               :order 4)
         (:name "Mid Priority"
          :priority<= "B"
-                     :order 3)
+                     :order 5)
         (:name "Figure Out"
                :todo ("FIGURE-OUT")
-               :order 4)
+               :order 6)
         (:name "Learning"
-               :tag "learning")
+               :tag "learning"
+               :order 7)
         (:name "Quick Picks"
                :effort< "0:30"
                :tag "admin"
