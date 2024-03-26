@@ -783,7 +783,7 @@
       (file+headline "Work.org" "Projects")
       ,(mapconcat
         #'identity
-        '("* TODO %? :project:"
+        '("* %?"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
