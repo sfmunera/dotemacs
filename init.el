@@ -921,8 +921,8 @@
                :todo ("DOING")
                :order 4)
         (:name "Mid Priority"
-         :priority<= "B"
-                     :order 5)
+               :priority<= "B"
+               :order 5)
         (:name "Figure Out"
                :todo ("FIGURE-OUT")
                :order 6)
