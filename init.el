@@ -1256,7 +1256,8 @@
   (("C-x C-j" . dired-jump)
    (:map dired-mode-map
 	 ("h" . dired-single-up-directory)
-	 ("l" . dired-single-buffer)))
+	 ("l" . dired-single-buffer)
+         ("C-+" . dired-create-empty-file)))
   :custom
   ;; ;; In MacOS run this: brew install coreutils
   ;; https://stackoverflow.com/questions/25125200/emacs-error-ls-does-not-support-dired
@@ -1268,7 +1269,31 @@
         "-AGFhlv --group-directories-first --time-style=long-iso"))
   :config
   ;; Keep only one dired buffer
-  (setq dired-kill-when-opening-new-dired-buffer t))
+  (setq dired-kill-when-opening-new-dired-buffer t)
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t)
+  (setq dired-auto-revert-buffer #'dired-directory-changed-p) ; also see `dired-do-revert-buffer'
+  (setq dired-make-directory-clickable t) ; Emacs 29.1
+  (setq dired-free-space nil) ; Emacs 29.1
+  (setq dired-mouse-drag-files t) ; Emacs 29.1
+  (setq dired-create-destination-dirs 'ask) ; Emacs 27
+  (setq dired-create-destination-dirs-on-trailing-dirsep t) ; Emacs 29
+  )
+
+(use-package wdired
+  :config
+  (setq wdired-allow-to-change-permissions t)
+  (setq wdired-create-parent-directories t))
+
+;;; dired-like mode for the trash (trashed.el)
+(use-package trashed
+  :config
+  (setq trashed-action-confirmer 'y-or-n-p)
+  (setq trashed-use-header-line t)
+  (setq trashed-sort-key '("Date deleted" . t))
+  (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
 (use-package nerd-icons-dired
   :config
