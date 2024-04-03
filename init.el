@@ -1439,3 +1439,4 @@ run grep directly on it without the whole find part."
   (when (file-exists-p work-config-file)
     (load work-config-file)))
 
+(use-package gptel)
