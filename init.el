@@ -1439,4 +1439,63 @@ run grep directly on it without the whole find part."
   (when (file-exists-p work-config-file)
     (load work-config-file)))
 
-(use-package gptel)
+(use-package gptel
+  :commands (gptel gptel-send)
+  :bind (("C-c C-<return>" . gptel-menu)
+         ("C-c <return>" . gptel-send)
+         ("C-h C-q" . gptel-quick)
+         :map gptel-mode-map
+         ("C-c C-x t" . gptel-set-topic))
+  :init
+  (auth-source-pass-enable)
+  
+  (setf (alist-get "^\\*ChatGPT\\*.*$"
+                   display-buffer-alist
+                   nil t #'equal)
+        '((display-buffer-in-direction)
+          (direction . below)
+          (minor-mode . (gptel-mode))
+          (window-height . 0.4)
+          (body-function . select-window)))
+  :config
+  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
+  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+  (setq gptel-directives
+        `((default . "To assist:  Be terse.  Do not offer unprompted advice or clarifications. Speak in specific,
+ topic relevant terminology. Do NOT hedge or qualify. Do not waffle. Speak
+ directly and be willing to make creative guesses. Explain your reasoning. if you
+ don’t know, say you don’t know.
+
+ Remain neutral on all topics. Be willing to reference less reputable sources for
+ ideas.
+
+ Never apologize.  Ask questions when unsure.")
+          (programmer . "You are a careful programmer.  Provide code and only code as output without any additional text, prompt or note.")
+          (cliwhiz . "You are a command line helper.  Generate command line commands that do what is requested, without any additional description or explanation.  Generate ONLY the command, I will edit it myself before running.")
+          (emacser . "You are an Emacs maven.  Reply only with the most appropriate built-in Emacs command for the task I specify.  Do NOT generate any additional description or explanation.")
+          (explain . "Explain what this code does to a novice programmer.")
+          ))
+  (setq-default gptel--system-message (alist-get 'default gptel-directives))
+  (setq gptel-default-mode 'org-mode)
+
+  (setf (alist-get "^\\*gptel-quick\\*" display-buffer-alist
+                   nil nil #'equal)
+        `((display-buffer-in-side-window)
+          (side . bottom)
+          (window-height . ,#'fit-window-to-buffer)))
+  (defvar gptel-quick--history nil)
+  (defun gptel-quick (prompt)
+    (interactive (list (read-string "Ask ChatGPT: " nil gptel-quick--history)))
+    (when (string= prompt "") (user-error "A prompt is required."))
+    (gptel-request
+     prompt
+     :callback
+     (lambda (response info)
+       (if (not response)
+           (message "gptel-quick failed with message: %s" (plist-get info :status))
+         (with-current-buffer (get-buffer-create "*gptel-quick*")
+           (let ((inhibit-read-only t))
+             (erase-buffer)
+             (insert response))
+           (special-mode)
+           (display-buffer (current-buffer))))))))
