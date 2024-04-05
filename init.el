@@ -1439,6 +1439,8 @@ run grep directly on it without the whole find part."
   (when (file-exists-p work-config-file)
     (load work-config-file)))
 
+(setq auth-sources '("~/.authinfo"))
+
 (use-package gptel
   :commands (gptel gptel-send)
   :bind (("C-c C-<return>" . gptel-menu)
