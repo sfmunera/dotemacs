@@ -1500,4 +1500,9 @@ run grep directly on it without the whole find part."
              (erase-buffer)
              (insert response))
            (special-mode)
-           (display-buffer (current-buffer))))))))
+           (display-buffer (current-buffer)))))))
+    (gptel-make-ollama
+            "Ollama"
+          :host "127.0.0.1:11434"
+          :models '("mistral:latest")
+          :stream t))
