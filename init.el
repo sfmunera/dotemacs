@@ -1463,13 +1463,10 @@ run grep directly on it without the whole find part."
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
   (setq gptel-directives
-        `((default . "To assist:  Be terse.  Do not offer unprompted advice or clarifications. Speak in specific,
- topic relevant terminology. Do NOT hedge or qualify. Do not waffle. Speak
- directly and be willing to make creative guesses. Explain your reasoning. if you
- don’t know, say you don’t know.
+        `((default . "To assist:  Be terse.  Do not offer unprompted advice or clarifications. Speak in specific, topic relevant terminology. Do NOT hedge or qualify.
+ Do not waffle. Speak directly and be willing to make creative guesses. Explain your reasoning. if you don’t know, say you don’t know.
 
- Remain neutral on all topics. Be willing to reference less reputable sources for
- ideas.
+ Remain neutral on all topics. Be willing to reference less reputable sources for ideas.
 
  Never apologize.  Ask questions when unsure.")
           (programmer . "You are a careful programmer.  Provide code and only code as output without any additional text, prompt or note.")
@@ -1490,19 +1487,19 @@ run grep directly on it without the whole find part."
     (interactive (list (read-string "Ask ChatGPT: " nil gptel-quick--history)))
     (when (string= prompt "") (user-error "A prompt is required."))
     (gptel-request
-     prompt
-     :callback
-     (lambda (response info)
-       (if (not response)
-           (message "gptel-quick failed with message: %s" (plist-get info :status))
-         (with-current-buffer (get-buffer-create "*gptel-quick*")
-           (let ((inhibit-read-only t))
-             (erase-buffer)
-             (insert response))
-           (special-mode)
-           (display-buffer (current-buffer)))))))
-    (gptel-make-ollama
-            "Ollama"
-          :host "127.0.0.1:11434"
-          :models '("mistral:latest")
-          :stream t))
+        prompt
+      :callback
+      (lambda (response info)
+        (if (not response)
+            (message "gptel-quick failed with message: %s" (plist-get info :status))
+          (with-current-buffer (get-buffer-create "*gptel-quick*")
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (insert response))
+            (special-mode)
+            (display-buffer (current-buffer)))))))
+  (gptel-make-ollama
+      "Ollama"
+    :host "127.0.0.1:11434"
+    :models '("mistral:latest")
+    :stream t))
