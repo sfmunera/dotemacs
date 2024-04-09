@@ -1424,8 +1424,6 @@ run grep directly on it without the whole find part."
 
 
 ;;; AI assistant
-(setq auth-sources '("~/.authinfo"))
-
 (use-package gptel
   :commands (gptel gptel-send)
   :bind (("C-c C-<return>" . gptel-menu)
@@ -1435,6 +1433,11 @@ run grep directly on it without the whole find part."
          ("C-c C-x t" . gptel-set-topic))
   :init
   (auth-source-pass-enable)
+  (setq auth-sources '("~/.authinfo" "~/.authinfo.gpg"))
+
+  (defun sm/auth-source-get-api-key (host)
+    (funcall (plist-get (car (auth-source-search
+               'secret host)) :secret)))
   
   (setf (alist-get "^\\*ChatGPT\\*.*$"
                    display-buffer-alist
@@ -1483,12 +1486,16 @@ run grep directly on it without the whole find part."
               (insert response))
             (special-mode)
             (display-buffer (current-buffer)))))))
+  
   (gptel-make-ollama
       "Ollama"
     :host "127.0.0.1:11434"
     :models '("mistral:latest")
-    :stream t))
+    :stream t)
 
+    (gptel-make-anthropic "Claude"          ;Any name you want
+    :stream t                             ;Streaming responses
+    :key (sm/auth-source-get-api-key "claude.anthropic.com")))
 
 ;;; Macros
 
