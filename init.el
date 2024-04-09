@@ -1493,7 +1493,7 @@ run grep directly on it without the whole find part."
     :models '("mistral:latest")
     :stream t)
 
-    (gptel-make-anthropic "Claude"          ;Any name you want
+  (gptel-make-anthropic "Claude"          ;Any name you want
     :stream t                             ;Streaming responses
     :key (sm/auth-source-get-api-key "claude.anthropic.com")))
 
