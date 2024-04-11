@@ -690,8 +690,8 @@
 
    ;; Org files
    org-directory "~/Dropbox/org/"
-   org-default-notes-file "Inbox.org"
-   org-agenda-files '("Work.org")
+   org-default-notes-file "inbox.org"
+   org-agenda-files '("Work.org" "inbox.org")
 
    ;; Tags, TODO keywords
    org-log-done 'time
@@ -864,8 +864,6 @@
               :host github
               :repo "ichernyshovvv/org-timeblock")
   :after org
-  :custom
-  (org-timeblock-inbox-file (concat org-directory "Work.org"))
   )
 
 ;; Org babel
