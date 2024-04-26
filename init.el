@@ -186,9 +186,9 @@
 ;;; Look and feel
 
 (defun sm/set-font-faces ()
-  (set-face-attribute 'default nil :family "Iosevka Comfy" :height 155)
-  (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 155)
-  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height 155 :weight 'regular))
+  (set-face-attribute 'default nil :family "Iosevka Comfy" :height 160)
+  (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 160)
+  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height 160 :weight 'regular))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
