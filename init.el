@@ -138,7 +138,6 @@
 (setq global-auto-revert-non-file-buffers t)
 
 ;; Visual undo
-;; TODO: fix vundo
 (use-package vundo
   :bind ("C-x u" . vundo)
   :straight (vundo :type git :host github :repo "casouri/vundo"))
@@ -239,9 +238,7 @@
 ;;; Window management
 
 ;; TODO: Add dashboard
-;; TODO: Create keyboard macro to recreate all my tab and windows
 
-;; TODO: fix some of these configurations: windmove stops working, previewing buffers screws up window layout for magit while searching for buffer
 ;;;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
 
@@ -628,7 +625,6 @@
 ;;; Improved help tools
 
 ;; Helpful visual auto-completion for keywords
-;; TODO: Check why it stopped working
 (use-package which-key
   :init (which-key-mode 1)
   :diminish
@@ -1229,15 +1225,14 @@
 
 (use-package eshell-git-prompt)
 
-;; TODO: Fix eshell
 (use-package eshell
   :hook (eshell-first-time-mode . sm/configure-eshell)
-  :bind
-  (:map eshell-mode-map
-        ("C-r" . counsel-esh-history)
-        ("<home>" . eshell-bol))
+  ;; :bind
+  ;; (:map eshell-mode-map
+  ;;       ("C-r" . counsel-esh-history)
+  ;;       ("<home>" . eshell-bol))
   :config
-  (eshell-git-prompt-use-theme 'powerline)
+  (eshell-git-prompt-use-theme 'robbyrussell)
   (with-eval-after-load 'esh-opt
     (setq eshell-destroy-buffer-when-process-dies t)
     (setq eshell-visual-commands '("htop" "zsh" "vim" "less" "tmux" "screen"))))
