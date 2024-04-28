@@ -182,12 +182,23 @@
 
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
+(use-package face-remap
+  :ensure nil
+  :bind
+  ;; Emacs 29 introduces commands that resize the font across all
+  ;; buffers (including the minibuffer), which is what I want, as
+  ;; opposed to doing it only in the current buffer.  The keys are the
+  ;; same as the defaults.
+  (("C-x C-=" . global-text-scale-adjust)
+   ("C-x C-+" . global-text-scale-adjust)
+   ("C-x C-0" . global-text-scale-adjust)))
+
 ;;; Look and feel
 
 (defun sm/set-font-faces ()
   (set-face-attribute 'default nil :family "Iosevka Comfy" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 160)
-  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height 160 :weight 'regular))
+  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Motion Duo" :height 160 :weight 'regular))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
