@@ -236,6 +236,7 @@
   ;;(load-theme 'modus-operandi)
   )
 
+;; TODO: fix heading sizes not getting applied to Org headings
 (use-package ef-themes
   :bind (("<f5>" . ef-themes-toggle)
          ("C-<f5>" . ef-themes-select))
