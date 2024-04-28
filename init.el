@@ -1123,7 +1123,9 @@
    (js-mode . eglot-ensure)
    (tsx-ts-mode . eglot-ensure)
    (tsx-mode . eglot-ensure)
-   (ruby-mode . eglot-ensure))
+   (ruby-mode . eglot-ensure)
+   (java-mode . eglot-ensure)
+   (java-ts-mode . eglot-ensure))
   :config
   (cl-defmethod project-root ((project (head eglot-project)))
     (cdr project))
@@ -1139,15 +1141,22 @@
   (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
   ;; gem install solargraph
   (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("solargraph" "--stdio")))
+
+  (with-eval-after-load 'eglot
+  (let ((cache (expand-file-name (md5 (project-root (project-current t)))
+                                 (locate-user-emacs-file "jdtls-cache"))))
+    (add-to-list 'eglot-server-programs `(java-mode "jdtls" "-data" ,cache))
+    (add-to-list 'eglot-server-programs `(java-ts-mode "jdtls" "-data" ,cache))))
+
   :custom
   ;;(eglot-events-buffer-size 0)
   (eglot-extend-to-xref t)
   (eglot-autoshutdown t)
   (eglot-stay-out-of '(yasnippet)))
 
-(use-package eglot-java
-  :defer t
-  :hook ((java-mode java-ts-mode) . eglot-java-mode))
+;; (use-package eglot-java
+;;   :defer t
+;;   :hook ((java-mode java-ts-mode) . eglot-java-mode))
 
 (use-package jarchive
   :after eglot
