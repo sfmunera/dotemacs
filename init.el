@@ -210,23 +210,55 @@
 
 (use-package spacious-padding
   :config
-  (setq spacious-padding-subtle-mode-line t)
+  (setq spacious-padding-subtle-mode-line nil)
   :hook
-  (text-mode . spacious-padding-mode))
+  (after-init . spacious-padding-mode))
 
 (use-package modus-themes
+  :bind (("<f6>" . modus-themes-toggle)
+         ("C-<f6>" . modus-themes-select))
   :config
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs t
-        modus-themes-common-palette-overrides '((builtin red-cooler))
+        modus-themes-common-palette-overrides nil
+        ;;'((builtin red-cooler))
         modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui nil
+        modus-themes-variable-pitch-ui t
         modus-themes-disable-other-themes t
         modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-headings '((1 1.3) (2 1.2) (3 1.1)))
-  (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+        modus-themes-headings
+        '((agenda-structure . (variable-pitch light 2.2))
+          (agenda-date . (variable-pitch regular 1.3))
+          (t . (regular 1.15)))
+        ;;'((1 1.3) (2 1.2) (3 1.1))
+        )
+  ;;:init
+  ;;(load-theme 'modus-operandi)
+  )
+
+(use-package ef-themes
+  :bind (("<f5>" . ef-themes-toggle)
+         ("C-<f5>" . ef-themes-select))
+  :config
+  (setq ef-themes-variable-pitch-ui t
+        ef-themes-bold-constructs t
+        ef-themes-mixed-fonts t
+        ef-themes-disable-other-themes t
+        ef-themes-to-toggle '(ef-spring ef-elea-dark)
+        ef-themes-headings ; read the manual's entry of the doc string
+        '((0 . (variable-pitch light 1.7))
+          (1 . (variable-pitch light 1.6))
+          (2 . (variable-pitch regular 1.5))
+          (3 . (variable-pitch regular 1.4))
+          (4 . (variable-pitch regular 1.3))
+          (5 . (variable-pitch 1.2)) ; absence of weight means `bold'
+          (6 . (variable-pitch 1.1))
+          (7 . (variable-pitch 1.1))
+          (agenda-date . (semilight 1.3))
+          (agenda-structure . (variable-pitch light 1.5))
+          (t . (variable-pitch 1.1))))
   :init
-  (load-theme 'modus-operandi))
+  (load-theme 'ef-spring))
 
 (use-package nerd-icons)
 
@@ -241,14 +273,11 @@
 ;; sets the text background to the color mentioned. For example: #0000ff, #ff0000
 (use-package rainbow-mode
   :defer t
-  :hook (org-mode
-         emacs-lisp-mode
+  :hook (emacs-lisp-mode
          web-mode))
 
 
 ;;; Window management
-
-;; TODO: Add dashboard
 
 ;;;; Remap listing buffers to ibuffer
 (global-set-key [remap list-buffers] 'ibuffer); C-x C-b
@@ -657,7 +686,7 @@
 ;; Org mode configuration
 (defun sm/org-mode-setup ()
   (org-indent-mode)
-  (variable-pitch-mode 1)
+  ;;(variable-pitch-mode 1)
   (visual-line-mode 1))
 
 (use-package org
@@ -846,7 +875,6 @@
 
 (use-package org-modern
   :after org
-  :bind
   :custom-face
   (org-modern-label
    ((t :height 0.8 :width condensed :weight regular
