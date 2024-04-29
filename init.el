@@ -1143,10 +1143,9 @@
   (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("solargraph" "--stdio")))
 
   (with-eval-after-load 'eglot
-  (let ((cache (expand-file-name (md5 (project-root (project-current t)))
-                                 (locate-user-emacs-file "jdtls-cache"))))
-    (add-to-list 'eglot-server-programs `(java-mode "jdtls" "-data" ,cache))
-    (add-to-list 'eglot-server-programs `(java-ts-mode "jdtls" "-data" ,cache))))
+    (let ((cache (expand-file-name (md5 (project-root (project-current t)))
+                                   (locate-user-emacs-file "jdtls-cache"))))
+      (add-to-list 'eglot-server-programs `(java-ts-mode "jdtls" "-data" ,cache))))
 
   :custom
   ;;(eglot-events-buffer-size 0)
