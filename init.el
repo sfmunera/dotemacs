@@ -215,8 +215,8 @@
   (after-init . spacious-padding-mode))
 
 (use-package modus-themes
-  :bind (("<f6>" . modus-themes-toggle)
-         ("C-<f6>" . modus-themes-select))
+  :bind (("<f7>" . modus-themes-toggle)
+         ("C-<f7>" . modus-themes-select))
   :config
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs t
