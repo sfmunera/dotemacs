@@ -1194,10 +1194,51 @@
   ;; gem install solargraph
   (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("solargraph" "--stdio")))
 
+  (defun eglot-generate-bemol-workspace-folders (server)
+    "Generate the workspaceFolders value for the workspace.
+
+This is implemented by returning the content of .bemol/ws_root_folders file"
+    (let* ((root (project-root (project-current)))
+           (ws-root (file-name-parent-directory
+                     (file-name-parent-directory root)))
+           (bemol-root (file-name-concat ws-root ".bemol/"))
+           (bemol-ws-root-folders (file-name-concat bemol-root "ws_root_folders"))
+           (ws-root-folders-content)
+           (ws-folders-for-eglot))
+      (if (not (file-exists-p bemol-ws-root-folders))
+          (eglot-workspace-folders server))
+      (setq ws-root-folders-content (with-temp-buffer
+                                      (insert-file-contents bemol-ws-root-folders)
+                                      (split-string (buffer-string) "\n" t)))
+      (setq ws-folders-for-eglot (mapcar (lambda (o) (concat "file://" o))
+                                         ws-root-folders-content))
+      (vconcat ws-folders-for-eglot)))
+
   (with-eval-after-load 'eglot
     (let ((cache (expand-file-name (md5 (project-root (project-current t)))
                                    (locate-user-emacs-file "jdtls-cache"))))
-      (add-to-list 'eglot-server-programs `(java-ts-mode "jdtls" "-data" ,cache))))
+      (add-to-list 'eglot-server-programs `(java-ts-mode "jdtls" "-data" ,cache
+                                                         :initializationOptions
+                                                         ,(lambda (server)
+                                                            `(:workspaceFolders ,(eglot-generate-bemol-workspace-folders server)
+                                                                                :extendedClientCapabilities
+                                                                                (:classFileContentsSupport t
+                                                                                                           :classFileContentsSupport t
+		        			                                                           :overrideMethodsPromptSupport t
+		        			                                                           :hashCodeEqualsPromptSupport t
+		        			                                                           :advancedOrganizeImportsSupport t
+		        			                                                           :generateToStringPromptSupport t
+		        			                                                           :advancedGenerateAccessorsSupport t
+		        			                                                           :generateConstructorsPromptSupport t
+		        			                                                           :generateDelegateMethodsPromptSupport t
+		        			                                                           :advancedExtractRefactoringSupport t
+                                                                                                           :moveRefactoringSupport t
+		        			                                                           :clientHoverProvider t
+		        			                                                           :clientDocumentSymbolProvider t
+		        			                                                           :advancedIntroduceParameterRefactoringSupport t
+		        			                                                           :actionableRuntimeNotificationSupport t
+                                                                                                           :extractInterfaceSupport t
+                                                                                                           :advancedUpgradeGradleSupport t)))))))
 
   :custom
   ;;(eglot-events-buffer-size 0)
