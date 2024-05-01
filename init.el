@@ -945,29 +945,30 @@
       '((:name "Top Priority"
                :priority "A"
                :order 1)
-        (:name "Waiting"
-               :todo ("WAITING")
+        (:name "Ready" ;; Ready to start working on
+               :todo ("READY")
                :order 2)
-        (:name "Next Items"
-               :todo ("NEXT")
+        (:name "Started"
+               :todo ("STARTED")
                :order 3)
-        (:name "In Progress"
-               :todo ("DOING")
+        (:name "To Clarify" ;; When not sure what to do yet, needs clarification before READY
+               :todo ("CLARIFY")
+               :order 3)
+        (:name "Waiting" ;; Waiting to hear back from someone
+               :todo ("WAITING")
+               :order 3)
+        (:name "On Hold" ;; Temporarily paused or holding on something external
+               :todo ("ON-HOLD")
+               :order 3)
+        (:name "To Discuss" ;; To discuss during a meeting
+               :todo ("TO-DISCUSS")
                :order 4)
-        (:name "Mid Priority"
-               :priority<= "B"
+        (:name "Backburner" ;; Important but not planning to work on yet
+               :todo ("BACKBURNER")
                :order 5)
-        (:name "Figure Out"
-               :todo ("FIGURE-OUT")
-               :order 6)
-        (:name "Learning"
-               :tag "learning"
-               :order 7)
-        (:name "Quick Picks"
-               :effort< "0:30"
-               :tag "admin"
-               :order 10)
-        ))
+        (:name "Scheduled" ;; 
+               :todo ("SCHEDULED")
+               :order 7)))
 
 ;;; TRAMP
 
