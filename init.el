@@ -956,8 +956,8 @@
 ;; - Admin/short tasks: tasks that are low effort and can be batched
 ;; - Learn: Things to learn
 (use-package org-super-agenda
-  :config (org-super-agenda-mode))
-
+  :config
+  (org-super-agenda-mode))
 (setq org-super-agenda-groups
       '((:name "Top Priority"
                :priority "A"
@@ -968,15 +968,18 @@
         (:name "Started"
                :todo ("STARTED")
                :order 3)
-        (:name "To Clarify" ;; When not sure what to do yet, needs clarification before READY
-               :todo ("CLARIFY")
-               :order 3)
         (:name "Waiting" ;; Waiting to hear back from someone
                :todo ("WAITING")
                :order 3)
+        (:name "Follow Up" ;; Follow up on something that doesn't depend on me
+               :todo ("FOLLOW-UP")
+               :order 3)
+        (:name "To Clarify" ;; When not sure what to do yet, needs clarification before READY
+               :todo ("CLARIFY")
+               :order 3)
         (:name "On Hold" ;; Temporarily paused or holding on something external
                :todo ("ON-HOLD")
-               :order 3)
+               :order 4)
         (:name "To Discuss" ;; To discuss during a meeting
                :todo ("TO-DISCUSS")
                :order 4)
