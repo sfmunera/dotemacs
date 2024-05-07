@@ -704,7 +704,7 @@
 ;; Org mode configuration
 (defun sm/org-mode-setup ()
   (org-indent-mode)
-  ;;(variable-pitch-mode 1)
+  (variable-pitch-mode 1)
   (visual-line-mode 1))
 
 (use-package org
