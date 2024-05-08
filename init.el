@@ -1577,6 +1577,44 @@ run grep directly on it without the whole find part."
 (setq compilation-scroll-output 'first-error)
 
 
+;;; RSS reader
+(use-package elfeed
+  :ensure t
+  :bind
+  ("C-c e" . elfeed)
+  (:map elfeed-search-mode-map
+        ("w" . elfeed-search-yank)
+        ("g" . elfeed-update)
+        ("G" . elfeed-search-update--force))
+  (:map elfeed-show-mode-map
+        ("w" . elfeed-show-yank))
+  :config
+  (setq elfeed-use-curl nil)
+  (setq elfeed-curl-max-connections 10)
+  (setq elfeed-db-directory (concat "~/Dropbox/" ".elfeed/"))
+  (setq elfeed-enclosure-default-dir "~/Downloads/")
+  (setq elfeed-search-filter "@2-weeks-ago +unread")
+  (setq elfeed-sort-order 'descending)
+  (setq elfeed-search-clipboard-type 'CLIPBOARD)
+  (setq elfeed-search-title-max-width 100)
+  (setq elfeed-search-title-min-width 30)
+  (setq elfeed-search-trailing-width 25)
+  (setq elfeed-show-truncate-long-urls t)
+  (setq elfeed-show-unique-buffers t)
+  (setq elfeed-search-date-format '("%F %R" 16 :left))
+
+  ;; Make sure to also check the section on shr and eww for how I handle
+  ;; `shr-width' there.
+  (add-hook 'elfeed-show-mode-hook
+            (lambda () (setq-local shr-width (current-fill-column)))))
+
+(use-package elfeed-org
+  :after elfeed
+  :config
+  (setq rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
+  (elfeed-org))
+
+
 ;;; AI assistant
 (use-package gptel
   :commands (gptel gptel-send)
