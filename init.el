@@ -1699,6 +1699,12 @@ run grep directly on it without the whole find part."
     :stream t                             ;Streaming responses
     :key (sm/auth-source-get-api-key "claude.anthropic.com")))
 
+;; Github Copilot
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
+  :hook
+  (prog-mode . copilot-mode))
+
 ;;; Macros
 
 (require 'kmacro)
