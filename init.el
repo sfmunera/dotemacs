@@ -279,6 +279,11 @@
   :hook (emacs-lisp-mode
          web-mode))
 
+(use-package hl-todo
+  :hook
+  (prog-mode . hl-todo-mode))
+
+(show-paren-mode 1)
 
 ;;; Window management
 
