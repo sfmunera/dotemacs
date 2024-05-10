@@ -926,14 +926,21 @@
   :after org
   )
 
+(use-package jupyter
+  :straight t
+  :after (org))
+
 ;; Org babel
 ;; TODO: Organize into org-mode config
 (setq org-babel-python-command "python3")
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
-   ;;   (python . t)
-   (shell . t)))
+   (shell . t)
+   (python . t)
+   (jupyter . t)))
+(org-babel-jupyter-override-src-block "python")
+
 
 (require 'ob-python)
 
