@@ -1575,9 +1575,6 @@ run grep directly on it without the whole find part."
   :mode "\\.csv\\'")
 
 (use-package olivetti
-  :ensure t
-  :bind
-  ("C-c x o" . olivetti-mode)
   :hook
   ((org-mode . olivetti-mode)
    (markdown-mode . olivetti-mode))
