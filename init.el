@@ -1571,6 +1571,9 @@ run grep directly on it without the whole find part."
   :config
   (setq markdown-command "marked"))
 
+(use-package csv-mode
+  :mode "\\.csv\\'")
+
 (use-package olivetti
   :ensure t
   :bind
