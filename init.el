@@ -41,6 +41,8 @@
 ;;;; Default coding system
 (set-default-coding-systems 'utf-8)
 
+;;;; Prevent Emacs from closing by accident
+(setq confirm-kill-emacs 'y-or-n-p)
 
 ;;;; Disable prompts
 (setq use-short-answers t)
