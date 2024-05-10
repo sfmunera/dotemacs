@@ -680,11 +680,11 @@
 
 
 (use-package avy
-  :commands (avy-goto-char avy-goto-word-0 avy-goto-line)
+  :commands (avy-goto-char-timer avy-goto-word-0 avy-goto-line)
   :bind
-  ("C-: c" . avy-goto-char)
-  ("C-: w" . avy-goto-word-0)
-  ("C-: l" . avy-goto-line))
+  ("M-j" . avy-goto-char-timer)
+  :config
+  (setq avy-timeout-seconds 0.20))
 
 
 ;;; Improved help tools
