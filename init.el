@@ -1577,7 +1577,8 @@ run grep directly on it without the whole find part."
 (use-package olivetti
   :hook
   ((org-mode . olivetti-mode)
-   (markdown-mode . olivetti-mode))
+   (markdown-mode . olivetti-mode)
+   (eww-mode . olivetti-mode))
   :custom
   (olivetti-body-width 100))
 
