@@ -401,19 +401,24 @@
 (use-package tab-bar
   :init
   (tab-bar-mode 1)
-  :custom
-  (tab-bar-show 1)                      ;; hide bar if <= 1 tabs open
-  (tab-bar-close-button-show nil)       ;; hide tab close / X button
-  (tab-bar-tab-hints t)                 ;; show tab numbers
-  (tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
   :bind
   ("s-{" . tab-bar-switch-to-prev-tab)
   ("s-}" . tab-bar-switch-to-next-tab)
   ("s-t" . tab-bar-new-tab)
   ("s-w" . tab-bar-close-tab)
   ("s-r" . tab-bar-rename-tab)
-  ("s-]" . tab-bar-move-tab)
-  ("s-[" . tab-bar-select-tab))
+  ("s-<" . tab-bar-history-back)
+  ("s->" . tab-bar-history-forward)
+  :config
+  (tab-bar-history-mode 1)
+  (setq tab-bar-close-last-tab-choice 'tab-bar-mode-disable
+        tab-bar-tab-name-truncated-max 24
+        tab-bar-new-tab-choice        'ibuffer
+        tab-bar-select-tab-modifiers  '(meta hyper)
+        tab-bar-tab-hints             t
+        tab-bar-format                '(tab-bar-format-tabs
+                                        tab-bar-separator)
+        tab-bar-close-button-show     nil))
 
 (use-package activities
   :init
