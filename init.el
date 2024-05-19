@@ -438,6 +438,9 @@
    ("C-x C-a g" . activities-revert)
    ("C-x C-a l" . activities-list)))
 
+(keymap-global-set "C-x w f" 'tear-off-window)
+(keymap-global-set "C-x w t" 'tab-window-detach)
+
 ;;; Completions
 
 ;; Example configuration for Consult
