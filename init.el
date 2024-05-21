@@ -381,13 +381,46 @@
 
 ;; Jump easily between windows
 (use-package ace-window
-  :bind (("M-o" . ace-window))
+  :bind (("C-x o" . ace-window))
   :custom
   (aw-scope 'frame)
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   (aw-minibuffer-flag t)
   :config
   (ace-window-display-mode 1))
+
+(defun ace-window-one-command ()
+  (interactive)
+  (let ((win (aw-select " ACE")))
+    (when (windowp win)
+      (with-selected-window win
+        (let* ((command (key-binding
+                         (read-key-sequence
+                          (format "Run in %s..." (buffer-name)))))
+               (this-command command))
+          (call-interactively command))))))
+
+(keymap-global-set "C-x O" 'ace-window-one-command)
+
+(defun ace-window-prefix ()
+  "Use `ace-window' to display the buffer of the next command.
+The next buffer is the buffer displayed by the next command invoked
+immediately after this command (ignoring reading from the minibuffer).
+Creates a new window before displaying the buffer.
+When `switch-to-buffer-obey-display-actions' is non-nil,
+`switch-to-buffer' commands are also supported."
+  (interactive)
+  (display-buffer-override-next-command
+   (lambda (buffer _)
+     (let (window type)
+       (setq
+        window (aw-select (propertize " ACE" 'face 'mode-line-highlight))
+        type 'reuse)
+       (cons window type)))
+   nil "[ace-window]")
+  (message "Use `ace-window' to display next command buffer..."))
+
+(keymap-global-set "C-x 4 o" 'ace-window-prefix)
 
 ;; Default buffer placement options
 ;; Reuse existing windows especially those with the same mode
@@ -441,6 +474,103 @@
 (keymap-global-set "C-x w f" 'tear-off-window)
 (keymap-global-set "C-x w t" 'tab-window-detach)
 
+;; Change the default behaviour of `other-window' to switch to the most recently used window.
+;; Note: This doesn't work if the other window is a pop up like when using gptel-quick (is it because the popped up window has technically not been used?).
+(defun other-window-mru ()
+  "Select the most recently used window on this frame."
+  (interactive)
+  (when-let ((mru-window
+              (get-mru-window
+               nil nil 'not-this-one-dummy)))
+    (select-window mru-window)))
+
+(defalias 'other-window-alternating
+    (let ((direction 1))
+      (lambda (&optional arg)
+        "Call `other-window', switching directions each time."
+        (interactive)
+        (if (equal last-command 'other-window-alternating)
+            (other-window (* direction (or arg 1)))
+          (setq direction (- direction))
+          (other-window (* direction (or arg 1)))))))
+
+(keymap-global-set "M-o" 'other-window-alternating)
+;; (keymap-global-set "M-o" 'other-window-mru)
+
+(setq other-window-scroll-default #'get-lru-window)
+
+(defun isearch-other-window (regexp-p)
+    "Function to isearch-forward in the next window.
+
+With prefix arg REGEXP-P, perform a regular expression search."
+    (interactive "P")
+    (unless (one-window-p)
+      (with-selected-window (other-window-for-scrolling)
+        (isearch-forward regexp-p))))
+
+(keymap-global-set "C-M-s" #'isearch-other-window)
+
+(defun my/next-buffer (&optional arg)
+  "Switch to the next ARGth buffer.
+
+With a universal prefix arg, run in the next window."
+  (interactive "P")
+  (if-let (((equal arg '(4)))
+           (win (other-window-for-scrolling)))
+      (with-selected-window win
+        (next-buffer)
+        (setq prefix-arg current-prefix-arg))
+    (next-buffer arg)))
+
+(defun my/previous-buffer (&optional arg)
+  "Switch to the previous ARGth buffer.
+
+With a universal prefix arg, run in the next window."
+  (interactive "P")
+  (if-let (((equal arg '(4)))
+           (win (other-window-for-scrolling)))
+      (with-selected-window win
+        (previous-buffer)
+        (setq prefix-arg current-prefix-arg))
+    (previous-buffer arg)))
+
+(define-key global-map (kbd "C-x C-p") #'my/previous-buffer)
+(define-key global-map (kbd "C-x C-n") #'my/next-buffer)
+(define-key global-map (kbd "C-x n g") #'set-goal-column)
+
+;; switch-to-buffer, but possibly in the next window by using an argument (e.g. C-u)
+(defun my/switch-buffer (&optional arg)
+  (interactive "P")
+  (run-at-time
+   0 nil
+   (lambda (&optional arg)
+     (if-let (((equal arg '(4)))
+              (win (other-window-for-scrolling)))
+         (with-selected-window win
+           (switch-to-buffer
+            (read-buffer-to-switch
+             (format "Switch to buffer (%S)" win))))
+       (call-interactively #'switch-to-buffer)))
+   arg))
+
+;; TODO: This doesn't seem to work.
+(defvar-keymap buffer-cycle-map
+  :doc "Keymap for cycling through buffers, intended for `repeat-mode'."
+  :repeat t
+  "n" 'my/next-buffer
+  "p" 'my/previous-buffer
+  "b" 'my/switch-buffer)
+
+;; Make `pop-global-mark' jump across windows instead of only the current window.
+(define-advice pop-global-mark (:around (pgm) use-display-buffer)
+  "Make `pop-to-buffer' jump buffers via `display-buffer'."
+  (cl-letf (((symbol-function 'switch-to-buffer)
+             #'pop-to-buffer))
+    (funcall pgm)))
+
+(use-package shackle
+  :init (shackle-mode))
+
 ;;; Completions
 
 ;; Example configuration for Consult
@@ -484,7 +614,7 @@
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
          ("M-s l" . consult-line)
-         ("C-s"   . consult-line)
+         ;;("C-s"   . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
