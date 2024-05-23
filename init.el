@@ -648,6 +648,7 @@ With a universal prefix arg, run in the next window."
                 "^\\*eldoc\\*"
                 "^\\*ChatGPT\\*"
                 "^\\*gptel-quick\\*"
+                "[Mm]agit"
                 "\\*Completions\\*")))
   (popper-mode +1)
   (popper-echo-mode +1)
