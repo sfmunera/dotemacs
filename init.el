@@ -55,7 +55,7 @@
       (remq 'process-kill-buffer-query-function
             kill-buffer-query-functions))
 
-;; Mark location at point without activating region 
+;; Mark location at point without activating region
 (defun sm/push-mark-no-activate ()
   "Pushes `point' to `mark-ring' and does not activate the region
    Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
@@ -204,10 +204,10 @@
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
-	      (lambda (frame)
-		(setq doom-modeline-icon t)
-		(with-selected-frame frame
-		  (sm/set-font-faces))))
+              (lambda (frame)
+                (setq doom-modeline-icon t)
+                (with-selected-frame frame
+                  (sm/set-font-faces))))
   (sm/set-font-faces))
 
 (use-package spacious-padding
@@ -428,7 +428,7 @@ When `switch-to-buffer-obey-display-actions' is non-nil,
       '((display-buffer-reuse-mode-window
          display-buffer-reuse-window
          display-buffer-same-window
-	 display-buffer-in-previous-window)))
+         display-buffer-in-previous-window)))
 
 ;; tab-bar-mode
 (use-package tab-bar
@@ -569,7 +569,90 @@ With a universal prefix arg, run in the next window."
     (funcall pgm)))
 
 (use-package shackle
-  :init (shackle-mode))
+  :config
+  (setq shackle-lighter "")
+  (setq shackle-select-reused-windows nil)
+  (setq shackle-default-alignment 'below)
+  (setq shackle-default-size 0.4)
+  (setq shackle-rules '(
+                        (compilation-mode :select nil :popup t)
+                        ("*eshell*" :select t :popup t :align t)
+                        ("*shell*" :select t :popup t :align t)
+                        ("*term*" :select t :popup t :align t)
+                        ("*vterm*" :select t :popup t :align t)
+                        ("*Async Shell Command*" :select nil :popup t :align t)
+                        (occur-mode :select t :popup t)
+                        ("\\*helpful.*\\*" :regexp t :select nil :popup t)
+                        ("*Help*" :select nil :popup t)
+                        ("*Completions*" :size 0.3 :align t)
+                        ("*Messages*" :select nil :other t)
+                        ("*Calendar*" :select t :size 0.3  :align below)
+                        ("*info*" :select t :popup t)
+                        (magit-status-mode :select t :popup t)))
+  (shackle-mode 1))
+
+(use-package popper
+  :bind (("C-`"   . popper-toggle)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type)
+         ("H-k"   . popper-kill-latest-popup))
+  :init
+  (defvar my/occur-grep-modes-list '(occur-mode
+                                     grep-mode
+                                     xref--xref-buffer-mode
+                                     locate-mode
+                                     flymake-diagnostics-buffer-mode
+                                     rg-mode)
+    "List of major-modes used in occur-type buffers")
+  (defvar my/repl-modes-list '(eshell-mode
+                               shell-mode
+                               eat-mode
+                               vterm-mode
+                               inferior-python-mode
+                               jupyter-repl-mode)
+    "List of major-modes used in REPL buffers")
+  (defvar my/repl-names-list
+    '("^\\*\\(?:.*?-\\)\\{0,1\\}e*shell[^z-a]*\\(?:\\*\\|<[[:digit:]]+>\\)$"
+      "\\*.*REPL.*\\*"
+      "\\*Python\\*"
+      "^\\*jupyter-repl.*?\\(\\*\\|<[[:digit:]]>\\)$"
+      "\\*Inferior .*\\*$"
+      "\\*ielm\\*"
+      "\\*edebug\\*")
+    "List of buffer names used in REPL buffers")
+  (defvar my/help-modes-list '(helpful-mode
+                               help-mode
+                               pydoc-mode
+                               eldoc-mode
+                               TeX-special-mode)
+    "List of major-modes used in documentation buffers")
+
+  (defvar my/man-modes-list '(Man-mode woman-mode)
+    "List of major-modes used in Man-type buffers")
+
+  (setq popper-reference-buffers
+        (append my/help-modes-list
+                my/man-modes-list
+                my/repl-modes-list
+                my/repl-names-list
+                my/occur-grep-modes-list
+                '(("^\\*Warnings\\*$" . hide)
+                  ("^\\*Compile-Log\\*$" . hide)
+                messages-buffer-mode
+                "[Oo]utput\\*"
+                ("\\*Async Shell Command\\*" . hide)
+                ("\\*Detached Shell Command\\*" . hide)
+                compilation-mode
+                "^\\*Backtrace\\*"
+                "^\\*Apropos"
+                "^\\*eldoc\\*"
+                "^\\*ChatGPT\\*"
+                "^\\*gptel-quick\\*"
+                "\\*Completions\\*")))
+  (popper-mode +1)
+  (popper-echo-mode +1)
+  :config
+  (setq popper-display-control nil))
 
 ;;; Completions
 
@@ -606,7 +689,7 @@ With a universal prefix arg, run in the next window."
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
-         
+
          ;; M-s bindings in `search-map'
          ("M-s d" . consult-find)                  ;; Alternative: consult-fd
          ("M-s D" . consult-locate)
@@ -643,7 +726,7 @@ With a universal prefix arg, run in the next window."
   ;;   "M-s M-l" #'consult-line
   ;;   "M-s M-m" #'consult-mark
   ;;   "M-s M-y" #'consult-yank-pop
-  ;;   "M-s M-s" #'consult-outline) 
+  ;;   "M-s M-s" #'consult-outline)
 
   ;; Enable automatic preview at point in the *Completions* buffer. This is
   ;; relevant when you use the default completion UI.
@@ -855,7 +938,7 @@ With a universal prefix arg, run in the next window."
 (use-package org
   :hook (org-mode . sm/org-mode-setup)
   :bind (("C-c a" . org-agenda)
-	 ("C-c c" . org-capture))
+         ("C-c c" . org-capture))
   :config
   ;; Custom org mode settings
   (setq
@@ -999,7 +1082,7 @@ With a universal prefix arg, run in the next window."
           ":END:")
         "\n")
       :empty-lines 1)
-     
+
      ("p" "Personal")
      ("pi" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
       "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
@@ -1138,7 +1221,7 @@ With a universal prefix arg, run in the next window."
         (:name "Backburner" ;; Important but not planning to work on yet
                :todo ("BACKBURNER")
                :order 5)
-        (:name "Scheduled" ;; 
+        (:name "Scheduled" ;;
                :todo ("SCHEDULED")
                :order 7)))
 
@@ -1182,7 +1265,7 @@ With a universal prefix arg, run in the next window."
     "XXXXXXXXXX"
     "XXXXXXXXXX"
     "XXXXXXXXXX")
-  
+
   (set-face-foreground 'git-gutter-fr:modified "LightGoldenrod")
   (fringe-helper-define 'git-gutter-fr:modified nil
     "XXXXXXXXXX"
@@ -1198,7 +1281,7 @@ With a universal prefix arg, run in the next window."
     "XXXXXXXXXX"
     "XXXXXXXXXX"
     "XXXXXXXXXX")
-  
+
   (set-face-foreground 'git-gutter-fr:deleted "LightCoral")
   (fringe-helper-define 'git-gutter-fr:deleted nil
     "XXXXXXXXXX"
@@ -1306,7 +1389,7 @@ With a universal prefix arg, run in the next window."
   :load-path ("~/.emacs.d/combobulate")
   :config
   (mp-setup-install-grammars))
-                                          
+
 
 ;; ;; Grammar libraries are installed in ~/.emacs.d/tree-sitter/ and
 ;; ;; downloaded from
@@ -1396,19 +1479,19 @@ This is implemented by returning the content of .bemol/ws_root_folders file"
                                                                                 :extendedClientCapabilities
                                                                                 (:classFileContentsSupport t
                                                                                                            :classFileContentsSupport t
-		        			                                                           :overrideMethodsPromptSupport t
-		        			                                                           :hashCodeEqualsPromptSupport t
-		        			                                                           :advancedOrganizeImportsSupport t
-		        			                                                           :generateToStringPromptSupport t
-		        			                                                           :advancedGenerateAccessorsSupport t
-		        			                                                           :generateConstructorsPromptSupport t
-		        			                                                           :generateDelegateMethodsPromptSupport t
-		        			                                                           :advancedExtractRefactoringSupport t
+                                                                                                           :overrideMethodsPromptSupport t
+                                                                                                           :hashCodeEqualsPromptSupport t
+                                                                                                           :advancedOrganizeImportsSupport t
+                                                                                                           :generateToStringPromptSupport t
+                                                                                                           :advancedGenerateAccessorsSupport t
+                                                                                                           :generateConstructorsPromptSupport t
+                                                                                                           :generateDelegateMethodsPromptSupport t
+                                                                                                           :advancedExtractRefactoringSupport t
                                                                                                            :moveRefactoringSupport t
-		        			                                                           :clientHoverProvider t
-		        			                                                           :clientDocumentSymbolProvider t
-		        			                                                           :advancedIntroduceParameterRefactoringSupport t
-		        			                                                           :actionableRuntimeNotificationSupport t
+                                                                                                           :clientHoverProvider t
+                                                                                                           :clientDocumentSymbolProvider t
+                                                                                                           :advancedIntroduceParameterRefactoringSupport t
+                                                                                                           :actionableRuntimeNotificationSupport t
                                                                                                            :extractInterfaceSupport t
                                                                                                            :advancedUpgradeGradleSupport t)))))))
 
@@ -1499,7 +1582,7 @@ This is implemented by returning the content of .bemol/ws_root_folders file"
   :hook ((typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode) . apheleia-mode))
 
 ;; js/typescript jest tests
-(use-package jest-test-mode 
+(use-package jest-test-mode
   :commands jest-test-mode
   :hook ((typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode) . jest-test-mode))
 
@@ -1532,9 +1615,9 @@ This is implemented by returning the content of .bemol/ws_root_folders file"
   ;; Truncate buffer for performance
   (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
   (setq eshell-history-size 10000
-	eshell-buffer-maximum-lines 10000
-	eshell-hist-ignoredups t
-	eshell-scroll-to-bottom-on-input t))
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
 
 (use-package eshell-git-prompt)
 
@@ -1561,8 +1644,8 @@ This is implemented by returning the content of .bemol/ws_root_folders file"
   :bind
   (("C-x C-j" . dired-jump)
    (:map dired-mode-map
-	 ("h" . dired-single-up-directory)
-	 ("l" . dired-single-buffer)
+         ("h" . dired-single-up-directory)
+         ("l" . dired-single-buffer)
          ("C-+" . dired-create-empty-file)))
   :custom
   ;; ;; In MacOS run this: brew install coreutils
@@ -1675,7 +1758,7 @@ run grep directly on it without the whole find part."
      args
      'grep-mode
      (lambda (mode) (format "*prot-dired-find-%s for '%s'" mode regexp))
-     t))) 
+     t)))
 
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 (add-hook 'dired-mode-hook #'hl-line-mode)
@@ -1689,7 +1772,7 @@ run grep directly on it without the whole find part."
   :hook (dired-mode . dired-hide-dotfiles-mode)
   :bind
   (:map dired-mode-map
-	("." . dired-hide-dotfiles-mode)))
+        ("." . dired-hide-dotfiles-mode)))
 
 ;;; Grep
 ;;; wgrep (writable grep)
@@ -1778,7 +1861,7 @@ run grep directly on it without the whole find part."
   (defun sm/auth-source-get-api-key (host)
     (funcall (plist-get (car (auth-source-search
                'secret host)) :secret)))
-  
+
   (setf (alist-get "^\\*ChatGPT\\*.*$"
                    display-buffer-alist
                    nil t #'equal)
@@ -1826,7 +1909,7 @@ run grep directly on it without the whole find part."
               (insert response))
             (special-mode)
             (display-buffer (current-buffer)))))))
-  
+
   (gptel-make-ollama
       "Ollama"
     :host "127.0.0.1:11434"
