@@ -595,7 +595,7 @@ With a universal prefix arg, run in the next window."
   :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type)
-         ("H-k"   . popper-kill-latest-popup))
+         ("s-k"   . popper-kill-latest-popup))
   :init
   (defvar my/occur-grep-modes-list '(occur-mode
                                      grep-mode
