@@ -1849,6 +1849,9 @@ run grep directly on it without the whole find part."
   (setq rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
   (elfeed-org))
 
+;;; Epub reader
+(use-package nov
+  :mode ("\\.epub\\'" . nov-mode))
 
 ;;; AI assistant
 (use-package gptel
