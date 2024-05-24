@@ -56,20 +56,20 @@
             kill-buffer-query-functions))
 
 ;; Mark location at point without activating region
-(defun sm/push-mark-no-activate ()
+(defun my/push-mark-no-activate ()
   "Pushes `point' to `mark-ring' and does not activate the region
    Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (push-mark (point) t nil)
   (message "Pushed mark to ring"))
-(global-set-key (kbd "C-`") 'sm/push-mark-no-activate)
+(global-set-key (kbd "C-`") 'my/push-mark-no-activate)
 
-(defun sm/jump-to-mark ()
+(defun my/jump-to-mark ()
   "Jumps to the local mark, respecting the `mark-ring' order.
   This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
-(global-set-key (kbd "M-`") 'sm/jump-to-mark)
+(global-set-key (kbd "M-`") 'my/jump-to-mark)
 
 ;;;; Package manager
 (setq package-enable-at-startup nil)
@@ -197,7 +197,7 @@
 
 ;;; Look and feel
 
-(defun sm/set-font-faces ()
+(defun my/set-font-faces ()
   (set-face-attribute 'default nil :family "Iosevka Comfy" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Iosevka Comfy" :height 160)
   (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Motion Duo" :height 160 :weight 'regular))
@@ -207,8 +207,8 @@
               (lambda (frame)
                 (setq doom-modeline-icon t)
                 (with-selected-frame frame
-                  (sm/set-font-faces))))
-  (sm/set-font-faces))
+                  (my/set-font-faces))))
+  (my/set-font-faces))
 
 (use-package spacious-padding
   :config
@@ -931,13 +931,13 @@ With a universal prefix arg, run in the next window."
 ;;; Org mode
 
 ;; Org mode configuration
-(defun sm/org-mode-setup ()
+(defun my/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
   (visual-line-mode 1))
 
 (use-package org
-  :hook (org-mode . sm/org-mode-setup)
+  :hook (org-mode . my/org-mode-setup)
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :config
@@ -1613,7 +1613,7 @@ This is implemented by returning the content of .bemol/ws_root_folders file"
   ;; (setq vterm-shell "zsh")
   (setq vterm-max-scrollback 10000))
 
-(defun sm/configure-eshell ()
+(defun my/configure-eshell ()
   ;; Save command history when commands are entered
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
   ;; Truncate buffer for performance
@@ -1626,7 +1626,7 @@ This is implemented by returning the content of .bemol/ws_root_folders file"
 (use-package eshell-git-prompt)
 
 (use-package eshell
-  :hook (eshell-first-time-mode . sm/configure-eshell)
+  :hook (eshell-first-time-mode . my/configure-eshell)
   ;; :bind
   ;; (:map eshell-mode-map
   ;;       ("C-r" . counsel-esh-history)
@@ -1862,7 +1862,7 @@ run grep directly on it without the whole find part."
   (auth-source-pass-enable)
   (setq auth-sources '("~/.authinfo" "~/.authinfo.gpg"))
 
-  (defun sm/auth-source-get-api-key (host)
+  (defun my/auth-source-get-api-key (host)
     (funcall (plist-get (car (auth-source-search
                'secret host)) :secret)))
 
@@ -1923,7 +1923,7 @@ run grep directly on it without the whole find part."
   ;; TODO: Fix auth for Claude
   (gptel-make-anthropic "Claude"          ;Any name you want
     :stream t                             ;Streaming responses
-    :key (sm/auth-source-get-api-key "claude.anthropic.com")))
+    :key (my/auth-source-get-api-key "claude.anthropic.com")))
 
 ;; ;; Github Copilot
 ;; (use-package copilot
