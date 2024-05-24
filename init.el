@@ -1234,6 +1234,9 @@ With a universal prefix arg, run in the next window."
 
 ;;; Programming
 
+;; Navigate through subwords in camel-cased words correctly.
+(add-hook 'prog-mode-hook 'subword-mode)
+
 ;;;; Git
 
 (use-package magit
