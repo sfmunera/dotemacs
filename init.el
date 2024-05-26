@@ -247,7 +247,7 @@
         ef-themes-bold-constructs t
         ef-themes-mixed-fonts t
         ef-themes-disable-other-themes t
-        ef-themes-to-toggle '(ef-spring ef-elea-dark)
+        ef-themes-to-toggle '(ef-maris-light ef-maris-dark)
         ef-themes-headings ; read the manual's entry of the doc string
         '((0 . (variable-pitch light 1.7))
           (1 . (variable-pitch light 1.6))
@@ -261,7 +261,7 @@
           (agenda-structure . (variable-pitch light 1.5))
           (t . (variable-pitch 1.1))))
   :init
-  (load-theme 'ef-spring))
+  (load-theme 'ef-maris-light))
 
 (use-package nerd-icons)
 
