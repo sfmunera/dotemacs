@@ -379,6 +379,7 @@
    ("s-<up>" . windmove-up)
    ("s-<down>" . windmove-down)))
 
+;; TODO: Configure ace-window
 ;; Jump easily between windows
 (use-package ace-window
   :bind (("C-x o" . ace-window))
@@ -809,6 +810,7 @@ With a universal prefix arg, run in the next window."
   ;; package.
   (marginalia-mode))
 
+;; TODO: configure embark
 (use-package embark
   :ensure t
 
@@ -901,7 +903,7 @@ With a universal prefix arg, run in the next window."
 (use-package smartparens
   :hook (prog-mode . smartparens-mode))
 
-
+;; TODO: configure avy
 (use-package avy
   :commands (avy-goto-char-timer avy-goto-word-0 avy-goto-line)
   :bind
