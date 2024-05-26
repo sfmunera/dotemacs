@@ -568,6 +568,7 @@ With a universal prefix arg, run in the next window."
              #'pop-to-buffer))
     (funcall pgm)))
 
+;; TODO: Complete window configurations
 (use-package shackle
   :config
   (setq shackle-lighter "")
@@ -1191,6 +1192,8 @@ With a universal prefix arg, run in the next window."
 ;; - Figure out: Tasks that need to be clarified
 ;; - Admin/short tasks: tasks that are low effort and can be batched
 ;; - Learn: Things to learn
+
+;; TODO: Finish setting up my agenda
 (use-package org-super-agenda
   :config
   (org-super-agenda-mode))
