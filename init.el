@@ -592,6 +592,7 @@ With a universal prefix arg, run in the next window."
           ("*Calendar*" :select t :size 0.3  :align t)
           ("*info*" :select t :popup t :align 'right)
           (magit-status-mode :select t :popup t :align 'right)
+          ("*org-timeblock*" :select t :popup t :align 'right)
 
           ("^\\*Warnings\\*$" :regexp t :select t :popup t :align t)
           ("^\\*Compile-Log\\*$" :regexp t :select nil :popup t :align t)
