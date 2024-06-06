@@ -576,21 +576,67 @@ With a universal prefix arg, run in the next window."
   (setq shackle-select-reused-windows nil)
   (setq shackle-default-alignment 'below)
   (setq shackle-default-size 0.4)
-  (setq shackle-rules '(
-                        (compilation-mode :select nil :popup t)
-                        ("*eshell*" :select t :popup t :align t)
-                        ("*shell*" :select t :popup t :align t)
-                        ("*term*" :select t :popup t :align t)
-                        ("*vterm*" :select t :popup t :align t)
-                        ("*Async Shell Command*" :select nil :popup t :align t)
-                        (occur-mode :select t :popup t)
-                        ("\\*helpful.*\\*" :regexp t :select nil :popup t)
-                        ("*Help*" :select nil :popup t)
-                        ("*Completions*" :size 0.3 :align t)
-                        ("*Messages*" :select nil :other t)
-                        ("*Calendar*" :select t :size 0.3  :align below)
-                        ("*info*" :select t :popup t)
-                        (magit-status-mode :select t :popup t)))
+  (setq shackle-rules
+        '(
+          (compilation-mode :select nil :popup t :align 'right)
+          ("*eshell*" :select t :popup t :align t)
+          ("*shell*" :select t :popup t :align t)
+          ("*term*" :select t :popup t :align t)
+          ("*vterm*" :select t :popup t :align t)
+          ("*Async Shell Command*" :select nil :popup t :align t)
+          (occur-mode :select t :popup t :align 'right)
+          ("\\*helpful.*\\*" :regexp t :select nil :popup t :align 'right)
+          ("*Help*" :select nil :popup t :align 'right)
+          ("*Completions*" :select nil :size 0.3 :align t)
+          ("*Messages*" :select nil :size 0.3 :align t)
+          ("*Calendar*" :select t :size 0.3  :align t)
+          ("*info*" :select t :popup t :align 'right)
+          (magit-status-mode :select t :popup t :align 'right)
+
+          ("^\\*Warnings\\*$" :regexp t :select t :popup t :align t)
+          ("^\\*Compile-Log\\*$" :regexp t :select nil :popup t :align t)
+          (messages-buffer-mode :select nil :size 0.3 :align t)
+          ("[Oo]utput\\*" :regexp t :select nil :popup t :align t)
+          ("*Detached Shell Command*" :select nil :popup t :align t)
+          ("^\\*Backtrace\\*" :regexp t :select t :popup t :align t)
+          ("^\\*Apropos" :regexp t :select t :popup t :align t)
+          ("^\\*eldoc\\*" :regexp t :select t :popup t :align t)
+          ("^\\*ChatGPT\\*" :regexp t :select t :popup t :align t)
+          ("^\\*gptel-quick\\*" :regexp t :select t :popup t :align t)
+          ("[Mm]agit" :regexp t :select t :popup t :align t)
+          
+          ;; Occur/grep modes
+          (occur-mode :select t :popup t :align t)
+          (grep-mode :select t :popup t :align t)
+          (xref--xref-buffer-mode :select t :popup t :align t)
+          (locate-mode :select t :popup t :align t)
+          (flymake-diagnostics-buffer-mode :select t :popup t :align t)
+          (rg-mode :select t :popup t :align t)
+
+          ;; REPL modes
+          (eshell-mode :select t :popup t :align t)
+          (shell-mode :select t :popup t :align t)
+          (eat-mode :select t :popup t :align t)
+          (vterm-mode :select t :popup t :align t)
+          (inferior-python-mode :select t :popup t :align t)
+          (jupyter-repl-mode :select t :popup t :align t)
+          ("^\\*\\(?:.*?-\\)\\{0,1\\}e*shell[^z-a]*\\(?:\\*\\|<[[:digit:]]+>\\)$" :regexp t :select t :popup t :align t)
+          ("\\*.*REPL.*\\*" :regexp t :select t :popup t :align t)
+          ("*Python*" :select t :popup t :align t)
+          ("^\\*jupyter-repl.*?\\(\\*\\|<[[:digit:]]>\\)$" :regexp t :select t :popup t :align t)
+          ("\\*Inferior .*\\*$" :regexp t :select t :popup t :align t)
+          ("*ielm*" :select t :popup t :align t)
+          ("*edebug*" :select t :popup t :align t)
+
+          ;; Help modes
+          (helpful-mode :select t :popup t :align t)
+          (help-mode :select t :popup t :align t)
+          (pydoc-mode :select t :popup t :align t)
+          (eldoc-mode :select t :popup t :align t)
+          (TeX-special-mode :select t :popup t :align t)
+          (Man-mode :select t :popup t :align t)
+          (Woman-mode :select t :popup t :align t)
+          ))
   (shackle-mode 1))
 
 (use-package popper
@@ -642,7 +688,7 @@ With a universal prefix arg, run in the next window."
                   ("^\\*Compile-Log\\*$" . hide)
                 messages-buffer-mode
                 "[Oo]utput\\*"
-                ("\\*Async Shell Command\\*" . hide)
+                "\\*Async Shell Command\\*"
                 ("\\*Detached Shell Command\\*" . hide)
                 compilation-mode
                 "^\\*Backtrace\\*"
