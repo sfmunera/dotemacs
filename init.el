@@ -1249,33 +1249,34 @@ With a universal prefix arg, run in the next window."
       '((:name "Top Priority"
                :priority "A"
                :order 1)
-        (:name "Ready" ;; Ready to start working on
-               :todo ("READY")
-               :order 2)
         (:name "Started"
                :todo ("STARTED")
-               :order 3)
-        (:name "Waiting" ;; Waiting to hear back from someone
-               :todo ("WAITING")
-               :order 3)
-        (:name "Follow Up" ;; Follow up on something that doesn't depend on me
-               :todo ("FOLLOW-UP")
-               :order 3)
+               :order 2)
         (:name "To Clarify" ;; When not sure what to do yet, needs clarification before READY
                :todo ("CLARIFY")
                :order 3)
-        (:name "On Hold" ;; Temporarily paused or holding on something external
-               :todo ("ON-HOLD")
-               :order 4)
         (:name "To Discuss" ;; To discuss during a meeting
                :todo ("TO-DISCUSS")
                :order 4)
-        (:name "Backburner" ;; Important but not planning to work on yet
-               :todo ("BACKBURNER")
+        (:name "Follow Up" ;; Follow up on something that doesn't depend on me
+               :todo ("FOLLOW-UP")
                :order 5)
+        (:name "Waiting" ;; Waiting to hear back from someone
+               :todo ("WAITING")
+               :order 6)
+        (:name "Ready" ;; Ready to start working on
+               :todo ("READY")
+               :order 7)
         (:name "Scheduled" ;;
                :todo ("SCHEDULED")
-               :order 7)))
+               :order 8)
+        (:name "On Hold" ;; Temporarily paused or holding on something external
+               :todo ("ON-HOLD")
+               :order 9)        
+        (:name "Backburner" ;; Important but not planning to work on yet
+               :todo ("BACKBURNER")
+               :order 10)
+        ))
 
 ;;; TRAMP
 
