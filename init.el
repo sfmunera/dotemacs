@@ -622,12 +622,11 @@ With a universal prefix arg, run in the next window."
           ;; Help modes
           (helpful-mode :select nil :other t :align right)
           (help-mode :select nil :other t :align right)
-          (Info-mode :select t :other t :align right)
-          (pydoc-mode :select t :other t :align right)
-          (eldoc-mode :select t :other t :align right)
-          (TeX-special-mode :select t :other t :align right)
-          (Man-mode :select t :other t :align right)
-          (Woman-mode :select t :other t :align right)
+          (Info-mode :select nil :other t :align right)
+          (pydoc-mode :select nil :other t :align right)
+          (eldoc-mode :select nil :other t :align right)
+          (Man-mode :select nil :other t :align right)
+          (Woman-mode :select nil :other t :align right)
           ))
   (shackle-mode 1))
 
