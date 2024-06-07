@@ -569,7 +569,6 @@ With a universal prefix arg, run in the next window."
              #'pop-to-buffer))
     (funcall pgm)))
 
-;; TODO: Complete window configurations
 (use-package shackle
   :config
   (setq shackle-lighter "")
@@ -578,12 +577,12 @@ With a universal prefix arg, run in the next window."
   (setq shackle-default-size 0.4)
   (setq shackle-rules
         '(
-          (compilation-mode :select nil :popup t :align right)
+          (compilation-mode :select t :size 0.5 :popup t :align t)
           ("*Async Shell Command*" :select t :popup t :align t)
           ("*Detached Shell Command*" :select t :popup t :align t)
           ("*Completions*" :select nil :size 0.3 :align t)
           ("*Calendar*" :select t :size 0.3  :align t)
-          ("*org-timeblock*" :select t :popup t :align right)
+          ("*org-timeblock*" :select t :other t :align right)
           ("^\\*Warnings\\*$" :regexp t :select nil :size 0.3 :popup t :align t)
           (messages-buffer-mode :select nil :size 0.3 :popup t :align t)
           ("^\\*Compile-Log\\*$" :regexp t :select nil :popup t :align t)
@@ -594,15 +593,15 @@ With a universal prefix arg, run in the next window."
           ;;("^\\*ChatGPT\\*" :regexp t :select t :popup t :align t)
           ;;("^\\*gptel-quick\\*" :regexp t :select t :popup t :align t)
 
-          ("[Mm]agit.*" :regexp t :select t :popup t :align right)
+          ("^[Mm]agit.*$" :regexp t :select t :other t :align right)
           
           ;; Occur/grep modes
-          (occur-mode :select t :popup t :align right)
-          (grep-mode :select t :popup t :align right)
-          (xref--xref-buffer-mode :select t :popup t :align right)
-          (locate-mode :select t :popup t :align right)
-          (flymake-diagnostics-buffer-mode :select t :popup t :align right)
-          (rg-mode :select t :popup t :align right)
+          (occur-mode :select t :other t :align right)
+          (grep-mode :select t :other t :align right)
+          (xref--xref-buffer-mode :select t :other t :align right)
+          (locate-mode :select t :other t :align right)
+          (flymake-diagnostics-buffer-mode :select t :other t :align right)
+          (rg-mode :select t :other t :align right)
 
           ;; REPL modes
           (eshell-mode :select t :popup t :align t)
@@ -621,14 +620,14 @@ With a universal prefix arg, run in the next window."
           ("*edebug*" :select t :popup t :align t)
 
           ;; Help modes
-          (helpful-mode :select nil :popup t :align right)
-          (help-mode :select nil :popup t :align right)
-          (Info-mode :select t :popup t :align right)
-          (pydoc-mode :select t :popup t :align right)
-          (eldoc-mode :select t :popup t :align right)
-          (TeX-special-mode :select t :popup t :align right)
-          (Man-mode :select t :popup t :align right)
-          (Woman-mode :select t :popup t :align right)
+          (helpful-mode :select nil :other t :align right)
+          (help-mode :select nil :other t :align right)
+          (Info-mode :select t :other t :align right)
+          (pydoc-mode :select t :other t :align right)
+          (eldoc-mode :select t :other t :align right)
+          (TeX-special-mode :select t :other t :align right)
+          (Man-mode :select t :other t :align right)
+          (Woman-mode :select t :other t :align right)
           ))
   (shackle-mode 1))
 
