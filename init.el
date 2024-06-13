@@ -590,10 +590,6 @@ With a universal prefix arg, run in the next window."
           ("^\\*Backtrace\\*" :regexp t :select nil :popup t :align t)
           ("^\\*Apropos" :regexp t :select nil :popup t :align t)
           ("^\\*eldoc\\*" :regexp t :select nil :popup t :align t)
-          ;;("^\\*ChatGPT\\*" :regexp t :select t :popup t :align t)
-          ;;("^\\*gptel-quick\\*" :regexp t :select t :popup t :align t)
-
-          ("^[Mm]agit.*$" :regexp t :select t :other t :align right)
           
           ;; Occur/grep modes
           (occur-mode :select t :other t :align right)
