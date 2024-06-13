@@ -1360,6 +1360,11 @@ With a universal prefix arg, run in the next window."
 ;;;; Flycheck
 (use-package flycheck)
 
+;;;; Expand region
+
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
 ;;;; Tree sitter
 
 ;; `M-x combobulate' (default: `C-c o o') to start using Combobulate
