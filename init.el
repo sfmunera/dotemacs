@@ -1195,9 +1195,8 @@ With a universal prefix arg, run in the next window."
  'org-babel-load-languages
  '((emacs-lisp . t)
    (shell . t)
-   (python . t)
-   (jupyter . t)))
-(org-babel-jupyter-override-src-block "python")
+   (python . t)))
+;;(org-babel-jupyter-override-src-block "python")
 
 
 (require 'ob-python)
