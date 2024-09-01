@@ -1010,14 +1010,14 @@ With a universal prefix arg, run in the next window."
    ;; Org files
    org-directory "~/Dropbox/org/"
    org-default-notes-file "inbox.org"
-   org-agenda-files '("Work.org" "inbox.org")
+   org-agenda-files '("Work.org" "inbox.org" "Projects.org")
 
    ;; Tags, TODO keywords
    org-log-done 'time
    org-log-into-drawer t
    org-use-fast-todo-selection t
    org-todo-keywords
-   '((sequence "TODO(t)" "NEXT(n)" "DOING(i)" "|" "DONE(d)")
+   '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "|" "DONE(d)")
      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
 
    ;; Capture configurations
@@ -1148,6 +1148,24 @@ With a universal prefix arg, run in the next window."
   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+(setq org-agenda-custom-commands
+      '(("p" "Personal Projects and Tasks"
+         ((tags "+personal+project"
+                     ((org-super-agenda-groups
+                       '((:name "🔨 Active Projects"
+                                :todo "ACTIVE")
+                         (:name "🗃️ Backlog Projects"
+                                :todo "TODO")
+                         (:discard (:anything t))))))
+          (tags "+personal+tasks"
+                     ((org-super-agenda-groups
+                       '((:name "🔥 Active Tasks"
+                                :todo "IN-PROGRESS")
+                         (:name "⏳ Backlog Tasks"
+                                :todo "TODO")
+                         (:discard (:anything t)))))))
+         ((org-agenda-files '("Projects.org" "phone/Inbox.org"))))))
 
 (defun org-capture-inbox ()
      (interactive)
