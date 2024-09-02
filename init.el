@@ -1150,22 +1150,58 @@ With a universal prefix arg, run in the next window."
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 (setq org-agenda-custom-commands
-      '(("p" "Personal Projects and Tasks"
-         ((tags "+personal+project"
-                     ((org-super-agenda-groups
-                       '((:name "🔨 Active Projects"
-                                :todo "ACTIVE")
-                         (:name "🗃️ Backlog Projects"
-                                :todo "TODO")
-                         (:discard (:anything t))))))
-          (tags "+personal+tasks"
-                     ((org-super-agenda-groups
-                       '((:name "🔥 Active Tasks"
-                                :todo "IN-PROGRESS")
-                         (:name "⏳ Backlog Tasks"
-                                :todo "TODO")
-                         (:discard (:anything t)))))))
-         ((org-agenda-files '("Projects.org" "phone/Inbox.org"))))))
+      '(("p" "Projects and Tasks Overview"
+         ((agenda "" ((org-agenda-span 'day)
+                      (org-super-agenda-groups
+                       '((:name "🗓️ Today"
+                                :time-grid t
+                                :date today
+                                :todo "TODAY"
+                                :scheduled today
+                                :order 1)))))
+          (alltodo "" ((org-agenda-overriding-header "\n\n✨ PROJECTS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
+                       (org-super-agenda-groups
+                        '((:name "📦 Active Projects"
+                           :and (:todo "ACTIVE"
+                                 :tag "project")
+                           :order 1)
+                          (:name "📅 Project Backlog"
+                           :and (:todo "BACKLOG"
+                                 :tag "project")
+                           :order 2)
+                          (:name "🔥 Active Tasks"
+                                 :and (:todo "IN-PROGRESS"
+                                       :tag "project")
+                                 :order 3)
+                          (:name "➡️ Next Tasks"
+                                 :and (:todo "NEXT"
+                                       :tag "project")
+                                 :order 4)
+                          (:name "📋 Task Backlog"
+                                 :and (:todo "TODO"
+                                       :tag "project")
+                                 :order 5)
+                          (:discard (:not (:tag "project")))))))
+          (alltodo "" ((org-agenda-overriding-header "\n\n✨ GENERAL TASKS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
+                       (org-super-agenda-groups
+                        '((:discard (:tag "project"))
+                          (:name "⭐ Important Tasks"
+                                 :priority "A"
+                                 :order 1)
+                          (:name "🔥 Active Tasks"
+                                 :todo "IN-PROGRESS"
+                                 :order 2)
+                          (:name "➡️ Next Tasks"
+                                 :todo "NEXT"
+                                 :order 3)
+                          (:name "📁 Backlog"
+                                 :todo "TODO"
+                                 :order 4)
+                          (:name "➕ Other Tasks"
+                           :auto-category t
+                           :order 5))))))
+         ((org-agenda-files '("Projects.org" "phone/Inbox.org"))
+          (org-agenda-compact-blocks t)))))
 
 (defun org-capture-inbox ()
      (interactive)
