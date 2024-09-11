@@ -28,7 +28,7 @@
 (setq native-comp-async-report-warnings-errors nil)
 
 ;; Set the right directory to store the native comp cache
-(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
+;;(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
 
 ;;;; Personal information
 (setq user-full-name "Sebastian Munera")
@@ -1010,7 +1010,7 @@ With a universal prefix arg, run in the next window."
    ;; Org files
    org-directory "~/Dropbox/org/"
    org-default-notes-file "inbox.org"
-   org-agenda-files '("Work.org" "inbox.org" "Projects.org")
+   org-agenda-files '("Work.org" "inbox.org")
 
    ;; Tags, TODO keywords
    org-log-done 'time
