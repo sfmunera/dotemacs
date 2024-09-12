@@ -1068,7 +1068,7 @@ With a universal prefix arg, run in the next window."
       (file+headline "Work.org" "Notes")
       ,(mapconcat
         #'identity
-        '("* %u: %?"
+        '("* FOLLOW-UP %u: %?"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
