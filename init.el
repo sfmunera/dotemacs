@@ -1150,7 +1150,84 @@ With a universal prefix arg, run in the next window."
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 (setq org-agenda-custom-commands
-      '(("p" "Projects and Tasks Overview"
+      '(("w" "Work Projects and Tasks Overview"
+         ((agenda "" ((org-agenda-span 'day)
+                      (org-super-agenda-groups
+                       '((:name "🗓️ Today"
+                                :time-grid t
+                                :date today
+                                :todo "TODAY"
+                                :scheduled today
+                                :order 1)))))
+          (alltodo "" ((org-agenda-overriding-header "\n\n✨ WORK PROJECTS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
+                       (org-super-agenda-groups
+                        '((:discard (:not (:tag "project")))
+                          (:name "📦 Active Projects"
+                                 :todo "ACTIVE"
+                                 :order 1)
+                          (:name "📅 Project Backlog"
+                                 :todo "BACKLOG"
+                                 :order 2)
+                          (:name "⭐ Important Tasks"
+                                 :priority "A"
+                                 :order 3)
+                          (:name "📋 In Progress"
+                                 :todo "STARTED"
+                                 :order 4)
+                          (:name "🔥 Tasks to follow up on"
+                                 :todo ("FOLLOW-UP" "TO-DISCUSS" "CLARIFY")
+                                 :order 5)
+                          (:name "🔥 Tasks waiting for something"
+                                 :todo ("WAITING" "ON-HOLD")
+                                 :order 6)
+                          (:name "➡️ Next Tasks"
+                                 :todo "READY"
+                                 :order 7)
+                          (:name "📁 Task Backlog"
+                                 :todo ("TODO" "BACKBURNER")
+                                 :order 8)
+                          ))))
+          (alltodo "" ((org-agenda-overriding-header "\n\n✨ WORK TASKS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
+                       (org-super-agenda-groups
+                        '((:discard (:tag ("project" "learning")))
+                          (:name "⭐ Important Tasks"
+                                 :priority "A"
+                                 :order 1)
+                          (:name "📋 In Progress"
+                                 :todo "STARTED"
+                                 :order 2)
+                          (:name "🔥 Tasks to follow up on"
+                                 :todo ("FOLLOW-UP" "TO-DISCUSS" "CLARIFY")
+                                 :order 3)
+                          (:name "🔥 Tasks waiting for something"
+                                 :todo ("WAITING" "ON-HOLD")
+                                 :order 4)
+                          (:name "➡️ Next Tasks"
+                                 :todo "READY"
+                                 :order 5)
+                          (:name "📁 Task Backlog"
+                                 :todo "TODO"
+                                 :order 6)
+                          (:name "➕ Other Tasks"
+                           :auto-category t
+                           :order 7)))))
+          (alltodo "" ((org-agenda-overriding-header "\n\n✨ LEARNING/SIDE PROJECTS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
+                       (org-super-agenda-groups
+                        '((:discard (:not (:tag ("learning" "side-project"))))
+                          (:name "🔥 Active"
+                                 :todo "STARTED"
+                                 :order 1)
+                          (:name "➡️ Next"
+                                 :todo "READY"
+                                 :order 2)
+                          (:name "📋 Backlog"
+                                 :todo ("TODO" "BACKBURNER")
+                                 :order 3)
+                          )))))
+         ((org-agenda-files '("Work.org"))
+          (org-agenda-compact-blocks t)))
+
+        ("p" "Personal Projects and Tasks Overview"
          ((agenda "" ((org-agenda-span 'day)
                       (org-super-agenda-groups
                        '((:name "🗓️ Today"
@@ -1161,27 +1238,23 @@ With a universal prefix arg, run in the next window."
                                 :order 1)))))
           (alltodo "" ((org-agenda-overriding-header "\n\n✨ PROJECTS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
                        (org-super-agenda-groups
-                        '((:name "📦 Active Projects"
-                           :and (:todo "ACTIVE"
-                                 :tag "project")
+                        '((:discard (:not (:tag "project")))
+                          (:name "📦 Active Projects"
+                           :todo "ACTIVE"
                            :order 1)
                           (:name "📅 Project Backlog"
-                           :and (:todo "BACKLOG"
-                                 :tag "project")
+                           :todo "BACKLOG"
                            :order 2)
                           (:name "🔥 Active Tasks"
-                                 :and (:todo "IN-PROGRESS"
-                                       :tag "project")
+                                 :todo "IN-PROGRESS"
                                  :order 3)
                           (:name "➡️ Next Tasks"
-                                 :and (:todo "NEXT"
-                                       :tag "project")
+                                 :todo "NEXT"
                                  :order 4)
                           (:name "📋 Task Backlog"
-                                 :and (:todo "TODO"
-                                       :tag "project")
+                                 :todo "TODO"
                                  :order 5)
-                          (:discard (:not (:tag "project")))))))
+                          ))))
           (alltodo "" ((org-agenda-overriding-header "\n\n✨ GENERAL TASKS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
                        (org-super-agenda-groups
                         '((:discard (:tag "project"))
@@ -1312,7 +1385,7 @@ With a universal prefix arg, run in the next window."
                :order 8)
         (:name "On Hold" ;; Temporarily paused or holding on something external
                :todo ("ON-HOLD")
-               :order 9)        
+               :order 9)
         (:name "Backburner" ;; Important but not planning to work on yet
                :todo ("BACKBURNER")
                :order 10)
