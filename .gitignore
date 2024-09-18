@@ -21,3 +21,6 @@
 /.mc-lists.*
 /bookmarks
 /.emacs.desktop
+/etc/
+/excorporate/
+/tree-sitter/
