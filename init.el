@@ -1309,7 +1309,11 @@ With a universal prefix arg, run in the next window."
               :host github
               :repo "ichernyshovvv/org-timeblock")
   :after org
-  )
+  :config
+  (setq org-timeblock-inbox-file (expand-file-name "Work.org" org-directory)
+        org-timeblock-show-outline-path t
+        org-timeblock-span 1
+        org-timeblock-scale-options '(9 . 18)))
 
 (use-package jupyter
   :straight t
