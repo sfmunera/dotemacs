@@ -1021,14 +1021,6 @@ With a universal prefix arg, run in the next window."
      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
 
    ;; Capture configurations
-   ;; Work
-   ;;  [X] Work inbox: timestamp, what
-   ;;  [-] Meeting notes: timestamp, clock, attendees, notes, action items. Refile action items to inbox
-   ;;  [X] Daily journal: date. Refile some things to work log.
-   ;;  [-] Weekly plan: date, template with goals, sub-headers with days of the week
-   ;;  [X] Daily plan: meant to use with agenda side by side. Date, goals.
-   ;;  [X] New project: date, project name, project description, sub-headers for tasks
-   ;;  [-] Weekly work log: refine the items that are refiled from daily journal. Template: deliveries, who I helped, feedback received, important artifacts, important discussions, how I influenced, important meetings, important decisions, what did I learn.
    org-capture-templates
    `(
      ("w" "Work")
@@ -1042,28 +1034,6 @@ With a universal prefix arg, run in the next window."
           ":END:")
         "\n")
       :empty-lines 1)
-     ("wm" "Meeting Notes" entry
-      (file+headline "Work.org" "Notes")
-      ,(mapconcat
-        #'identity
-        '("* Meeting %u: %? :meeting:"
-          ":PROPERTIES:"
-          ":CAPTURED: %U"
-          ":END:")
-        "\n")
-      :prepend t
-      :empty-lines 1)
-     ("wj" "Daily Journal" plain
-      (file+olp+datetree "Work.org" "Daily Journal")
-      ,(mapconcat
-        #'identity
-        '("%?"
-          ":PROPERTIES:"
-          ":CAPTURED: %U"
-          ":END:")
-        "\n")
-      :empty-lines 1
-      :prepend t)
      ("wn" "Notes" entry
       (file+headline "Work.org" "Notes")
       ,(mapconcat
@@ -1091,7 +1061,14 @@ With a universal prefix arg, run in the next window."
       (file+olp+datetree "Work.org" "Daily Plan")
       ,(mapconcat
         #'identity
-        '("%?"
+        '("*GOAL:*\n%?\n"
+          "*TASKS:*"
+          "- [ ] \n"
+          "*NOTES:*"
+          "- \n"
+          "*LOG:*"
+          "- \n"
+          "*REVIEW:*\n"
           ":PROPERTIES:"
           ":CAPTURED: %U"
           ":END:")
@@ -1109,17 +1086,6 @@ With a universal prefix arg, run in the next window."
         "\n")
       :prepend t
       :empty-lines 1)
-     ("wl" "Work Log Entry" plain
-      (file+olp+datetree "Work.org" "Work Log")
-      ,(mapconcat
-        #'identity
-        '("%?"
-          ":PROPERTIES:"
-          ":CAPTURED: %U"
-          ":END:")
-        "\n")
-      :empty-lines 1)
-
      ("p" "Personal")
      ("pi" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
       "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
