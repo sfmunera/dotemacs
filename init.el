@@ -94,6 +94,9 @@
 (straight-use-package 'use-package)
 (straight-use-package 'org)
 
+;; FIX: needed to avoid this error: https://github.com/radian-software/straight.el/issues/1146#issuecomment-1949645571
+(straight-use-package 'project)
+
 ;;;; Organize files
 
 ;; keep folders clean
