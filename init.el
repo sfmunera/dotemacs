@@ -1466,16 +1466,16 @@ With a universal prefix arg, run in the next window."
 
 ;;;; Tree sitter
 
-;; `M-x combobulate' (default: `C-c o o') to start using Combobulate
-(use-package combobulate
+(use-package treesit
+  :straight nil
+  :mode (("\\.tsx\\'" . tsx-ts-mode))
   :preface
-  ;; You can customize Combobulate's key prefix here.
-  ;; Note that you may have to restart Emacs for this to take effect!
-  (setq combobulate-key-prefix "C-c o")
   (defun mp-setup-install-grammars ()
     "Install Tree-sitter grammars if they are absent."
     (interactive)
     (dolist (grammar
+             ;; Note the version numbers. These are the versions that
+             ;; are known to work with Combobulate *and* Emacs.
              '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.20.5"))
                (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
                (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
@@ -1485,9 +1485,11 @@ With a universal prefix arg, run in the next window."
                (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
                (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby" "v0.20.1"))
                (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))
-               (toml "https://github.com/tree-sitter/tree-sitter-toml")
                (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
+               (go . ("https://github.com/tree-sitter/tree-sitter-go" "v0.20.0"))
+               (markdown . ("https://github.com/ikatyang/tree-sitter-markdown" "v0.7.1"))
+               (toml . ("https://github.com/tree-sitter/tree-sitter-toml" "v0.5.1"))
                (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
       (add-to-list 'treesit-language-source-alist grammar)
       ;; Only install `grammar' if we don't already have it
@@ -1496,17 +1498,12 @@ With a universal prefix arg, run in the next window."
       (unless (treesit-language-available-p (car grammar))
         (treesit-install-language-grammar (car grammar)))))
 
-  ;; Optional, but recommended. Tree-sitter enabled major modes are
-  ;; distinct from their ordinary counterparts.
-  ;;
   ;; You can remap major modes with `major-mode-remap-alist'. Note
   ;; that this does *not* extend to hooks! Make sure you migrate them
   ;; also
   (dolist (mapping
            '((yaml-mode . yaml-ts-mode)
              (bash-mode . bash-ts-mode)
-             (js-mode . js-ts-mode)
-             (js2-mode . js2-ts-mode)
              (typescript-mode . typescript-ts-mode)
              (tsx-mode . tsx-ts-mode)
              (json-mode . json-ts-mode)
@@ -1515,48 +1512,20 @@ With a universal prefix arg, run in the next window."
              (java-mode . java-ts-mode)
              (rust-mode . rust-ts-mode)
              (python-mode . python-ts-mode)
-             (ruby-mode . ruby-ts-mode)))
+             (ruby-mode . ruby-ts-mode)
+             (js2-mode . js-ts-mode)
+             (conf-toml-mode . toml-ts-mode)
+             (go-mode . go-ts-mode)
+             (js-json-mode . json-ts-mode)))
     (add-to-list 'major-mode-remap-alist mapping))
-
-  ;; Optional, but recommended.
-  ;;
-  ;; You can manually enable Combobulate with `M-x
-  ;; combobulate-mode'.
-  :hook
-  ((python-ts-mode . combobulate-mode)
-   (js-ts-mode . combobulate-mode)
-   (html-ts-mode . combobulate-mode)
-   (css-ts-mode . combobulate-mode)
-   (yaml-ts-mode . combobulate-mode)
-   (typescript-ts-mode . combobulate-mode)
-   (json-ts-mode . combobulate-mode)
-   (tsx-ts-mode . combobulate-mode))
-  ;; Amend this to the directory where you keep Combobulate's source
-  ;; code.
-  :load-path ("~/.emacs.d/combobulate")
   :config
-  (mp-setup-install-grammars))
-
-
-;; ;; Grammar libraries are installed in ~/.emacs.d/tree-sitter/ and
-;; ;; downloaded from
-;; ;; https://github.com/emacs-tree-sitter/tree-sitter-langs/releases for
-;; ;; all platforms
-;; (dolist (mapping '((yaml-mode . yaml-ts-mode)
-;;                    (bash-mode . bash-ts-mode)
-;;                    (js-mode . js-ts-mode)
-;;                    (js2-mode . js2-ts-mode)
-;;                    (typescript-mode . typescript-ts-mode)
-;;                    (tsx-mode . tsx-ts-mode)
-;;                    (json-mode . json-ts-mode)
-;;                    (css-mode . css-ts-mode)
-;;                    ;;(java-mode . java-ts-mode) Currently not working: error in process filter: Query pattern is malformed
-;;                    (rust-mode . rust-ts-mode)
-;;                    (python-mode . python-ts-mode)
-;;                    (ruby-mode . ruby-ts-mode)))
-;;   (add-to-list 'major-mode-remap-alist mapping))
-
-;; (setq treesit-font-lock-level 4)
+  (mp-setup-install-grammars)
+  (use-package combobulate
+    :straight nil
+    :custom
+    (combobulate-key-prefix "C-c o")
+    :hook ((prog-mode . combobulate-mode))
+    :load-path ("~/.emacs.d/combobulate")))
 
 ;;;; LSP
 
