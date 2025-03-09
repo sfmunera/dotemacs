@@ -201,8 +201,8 @@
 ;;; Look and feel
 
 (defun my/set-font-faces ()
-  (set-face-attribute 'default nil :family "Aporetic Sans" :height 140)
-  (set-face-attribute 'fixed-pitch nil :family "Aporetic Sans" :height 140)
+  (set-face-attribute 'default nil :family "Aporetic Sans Mono" :height 140)
+  (set-face-attribute 'fixed-pitch nil :family "Aporetic Sans Mono" :height 140)
   (set-face-attribute 'variable-pitch nil :family "Aporetic Serif" :height 140 :weight 'regular))
 
 (if (daemonp)
