@@ -19,8 +19,8 @@
 (setq user-emacs-directory (expand-file-name "~/.emacs.d"))
 
 ;; move customization variable to a separate file and load it
-(setq custom-file (locate-user-emacs-file "custom-vars.el"))
-(load custom-file 'noerror 'nomessage)
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(load custom-file :no-error-if-file-is-missing)
 
 ;;;; Native compilation
 
@@ -29,9 +29,6 @@
 
 ;; Set the right directory to store the native comp cache
 ;;(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
-
-;;;; Personal information
-(setq user-full-name "Sebastian Munera")
 
 ;;;; Start emacs server
 (require 'server)
@@ -142,6 +139,38 @@
 ;; Revert Dired and other buffers
 (setq global-auto-revert-non-file-buffers t)
 
+;; Delete the selected text upon text insertion
+(use-package delsel
+  :ensure nil ; no need to install it as it is built-in
+  :hook (after-init . delete-selection-mode))
+
+;; Make C-g more helpful
+(defun prot/keyboard-quit-dwim ()
+  "Do-What-I-Mean behaviour for a general `keyboard-quit'.
+
+The generic `keyboard-quit' does not do the expected thing when
+the minibuffer is open.  Whereas we want it to close the
+minibuffer, even without explicitly focusing it.
+
+The DWIM behaviour of this command is as follows:
+
+- When the region is active, disable it.
+- When a minibuffer is open, but not focused, close the minibuffer.
+- When the Completions buffer is selected, close it.
+- In every other case use the regular `keyboard-quit'."
+  (interactive)
+  (cond
+   ((region-active-p)
+    (keyboard-quit))
+   ((derived-mode-p 'completion-list-mode)
+    (delete-completion-window))
+   ((> (minibuffer-depth) 0)
+    (abort-recursive-edit))
+   (t
+    (keyboard-quit))))
+
+(define-key global-map (kbd "C-g") #'prot/keyboard-quit-dwim)
+
 ;; Visual undo
 (use-package vundo
   :bind ("C-x u" . vundo)
@@ -201,9 +230,11 @@
 ;;; Look and feel
 
 (defun my/set-font-faces ()
-  (set-face-attribute 'default nil :family "Aporetic Sans Mono" :height 140)
-  (set-face-attribute 'fixed-pitch nil :family "Aporetic Sans Mono" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Aporetic Serif" :height 140 :weight 'regular))
+  (let ((mono-spaced-font "Aporetic Sans Mono")
+        (proportionately-spaced-font "Aporetic Serif"))
+    (set-face-attribute 'default nil :family mono-spaced-font :height 140)
+    (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
+    (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0)))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -238,7 +269,7 @@
         ;;'((1 1.3) (2 1.2) (3 1.1))
         )
   ;;:init
-  ;;(load-theme 'modus-operandi)
+  ;;(load-theme 'modus-operandi :no-confirm-loading)
   )
 
 ;; TODO: fix heading sizes not getting applied to Org headings
@@ -264,7 +295,7 @@
           (agenda-structure . (variable-pitch light 1.5))
           (t . (variable-pitch 1.1))))
   :init
-  (load-theme 'ef-maris-light))
+  (load-theme 'ef-maris-light :no-confirm-loading))
 
 (use-package nerd-icons)
 
@@ -823,7 +854,8 @@ With a universal prefix arg, run in the next window."
   :after (vertico marginalia)
   :config
   (nerd-icons-completion-marginalia-setup)
-  (nerd-icons-completion-mode 1))
+  (nerd-icons-completion-mode 1)
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
 (use-package nerd-icons-corfu
   :after corfu
