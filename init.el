@@ -1852,13 +1852,11 @@ handle it. If it is not a jar call ORIGINAL-FN."
   :straight nil
   :commands (dired dired-jump)
   :hook
-  ((dired-mode . dired-hide-details-mode)
-   (dired-mode . hl-line-mode))
+  ((dired-mode . hl-line-mode))
   :bind
   (("C-x C-j" . dired-jump)
    (:map dired-mode-map
-         ("C-+" . dired-create-empty-file)
-         ("."   . dired-hide-dotfiles-mode)))
+         ("C-+" . dired-create-empty-file)))
   :custom
   ;; ;; In MacOS run this: brew install coreutils
   ;; https://stackoverflow.com/questions/25125200/emacs-error-ls-does-not-support-dired
@@ -1894,6 +1892,13 @@ handle it. If it is not a jar call ORIGINAL-FN."
     ("S-TAB" . dired-subtree-remove))
   :config
   (setq dired-subtree-use-backgrounds nil))
+
+(use-package dired-hide-dotfiles
+  :after dired
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :bind
+  (:map dired-mode-map
+        ("." . dired-hide-dotfiles-mode)))
 
 (use-package wdired
   :config
