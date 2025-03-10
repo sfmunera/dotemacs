@@ -126,9 +126,12 @@
   (recentf-max-saved-items 50))
 
 ;; save history in minibuffer
-(setq history-length 200)
-(setq savehist-additional-variables '(register-alist kill-ring))
-(savehist-mode 1)
+(use-package savehist
+  :ensure nil ; it is built-in
+  :config
+  (setq history-length 200)
+  (setq savehist-additional-variables '(register-alist kill-ring))
+  :hook (after-init . savehist-mode))
 
 ;; remember and restore the last cursor location of opened files
 (save-place-mode 1)
@@ -805,8 +808,6 @@ With a universal prefix arg, run in the next window."
 ;; TODO: check Vertico multiform
 (use-package vertico
   :init
-  (vertico-mode)
-
   ;; Different scroll margin
   (setq vertico-scroll-margin 0)
 
@@ -818,7 +819,7 @@ With a universal prefix arg, run in the next window."
 
   ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
   ;; (setq vertico-cycle t)
-  )
+  :hook (after-init . vertico-mode))
 
 ;; This works with `file-name-shadow-mode' enabled.  When you are in
 ;; a sub-directory and use, say, `find-file' to go to your home '~/'
@@ -827,27 +828,27 @@ With a universal prefix arg, run in the next window."
 (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
 (use-package orderless
-  :init
+  :config
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
-        completion-category-defaults nil))
+        completion-category-defaults nil
 
-(setq completion-category-overrides
-      ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
-      ;; default for some contexts.  Read:
-      ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=50387>.
-      ;;
-      ;; `partial-completion' is a killer app for files, because it
-      ;; can expand ~/.l/s/fo to ~/.local/share/fonts.
-      ;;
-      ;; If `basic' cannot match my current input, Emacs tries the
-      ;; next completion style in the given order.  In other words,
-      ;; `orderless' kicks in as soon as I input a space or one of its
-      ;; style dispatcher characters.
-      '((file (styles . (basic partial-completion orderless)))
-        (consult-location (styles . (basic substring initials orderless)))))
+        completion-category-overrides
+        ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
+        ;; default for some contexts.  Read:
+        ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=50387>.
+        ;;
+        ;; `partial-completion' is a killer app for files, because it
+        ;; can expand ~/.l/s/fo to ~/.local/share/fonts.
+        ;;
+        ;; If `basic' cannot match my current input, Emacs tries the
+        ;; next completion style in the given order.  In other words,
+        ;; `orderless' kicks in as soon as I input a space or one of its
+        ;; style dispatcher characters.
+        '((file (styles . (basic partial-completion orderless)))
+          (consult-location (styles . (basic substring initials orderless))))))
 
 ;;; Icons
 (use-package nerd-icons-completion
@@ -871,12 +872,7 @@ With a universal prefix arg, run in the next window."
               ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
-  :init
-
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
-  (marginalia-mode))
+  :hook (after-init . marginalia-mode))
 
 ;; TODO: configure embark
 (use-package embark
@@ -911,8 +907,6 @@ With a universal prefix arg, run in the next window."
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(setq tab-always-indent 'complete)
-
 ;; Use Dabbrev with Corfu!
 (use-package dabbrev
   ;; Swap M-/ and C-M-/
@@ -924,6 +918,7 @@ With a universal prefix arg, run in the next window."
 
 (use-package corfu
   :straight (corfu :type git :files (:defaults "extensions/*.el"))
+  :hook (after-init . (global-corfu-mode))
   ;; Optional customizations
   :custom
   (corfu-cycle t)                       ;; Enable cycling for `corfu-next/previous'
@@ -932,28 +927,27 @@ With a universal prefix arg, run in the next window."
   (corfu-auto-prefix 3)
   (corfu-separator ?\s)                 ;; Orderless field separator
   (corfu-quit-at-boundary 'separator)   ;; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)             ;; Never quit, even if there is no match
-  (corfu-preview-current 'insert)       ;; Disable current candidate preview
-  (corfu-preselect 'prompt)             ;; Preselect the prompt
-  (corfu-on-exact-match nil)            ;; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)               ;; Use scroll margin
-  (corfu-popupinfo-delay 0)
+  (corfu-quit-no-match t)               ;; Never quit, even if there is no match
+  (corfu-preview-current nil)           ;; Disable current candidate preview
+  (corfu-preselect 'first)              ;; Preselect the first candidate
+  (corfu-on-exact-match 'insert)        ;; Configure handling of exact matches
+  (corfu-popupinfo-delay '(1.25 . 0.5))
+  (corfu-min-width 20)
   :config
+  (setq tab-always-indent 'complete)
   (add-hook 'eshell-mode-hook
             (lambda ()
               (setq-local corfu-auto nil)
               (corfu-mode)))
+  (corfu-popupinfo-mode 1) ; shows documentation after `corfu-popupinfo-delay'
   :bind
   (:map corfu-map
         ("C-n" . #'corfu-next)
         ("C-p" . #'corfu-previous)
         ("<escape>" . #'corfu-quit)
         ("<return>" . #'corfu-insert)
-        ("<return>" . #'corfu-complete)
-        ("C-<tab>" . corfu-insert-separator))
-  :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode))
+        ("<tab>" . #'corfu-complete)
+        ("C-<tab>" . corfu-insert-separator)))
 
 (use-package kind-icon
   :after corfu
@@ -1857,12 +1851,14 @@ handle it. If it is not a jar call ORIGINAL-FN."
 (use-package dired
   :straight nil
   :commands (dired dired-jump)
+  :hook
+  ((dired-mode . dired-hide-details-mode)
+   (dired-mode . hl-line-mode))
   :bind
   (("C-x C-j" . dired-jump)
    (:map dired-mode-map
-         ("h" . dired-single-up-directory)
-         ("l" . dired-single-buffer)
-         ("C-+" . dired-create-empty-file)))
+         ("C-+" . dired-create-empty-file)
+         ("."   . dired-hide-dotfiles-mode)))
   :custom
   ;; ;; In MacOS run this: brew install coreutils
   ;; https://stackoverflow.com/questions/25125200/emacs-error-ls-does-not-support-dired
@@ -1885,7 +1881,19 @@ handle it. If it is not a jar call ORIGINAL-FN."
   (setq dired-mouse-drag-files t) ; Emacs 29.1
   (setq dired-create-destination-dirs 'ask) ; Emacs 27
   (setq dired-create-destination-dirs-on-trailing-dirsep t) ; Emacs 29
-  )
+  (setq dired-guess-shell-alist-user '(("\\.png" "feh")
+                                       ("\\.mkv" "mpv"))))
+
+(use-package dired-subtree
+  :after dired
+  :bind
+  ( :map dired-mode-map
+    ("<tab>" . dired-subtree-toggle)
+    ("TAB" . dired-subtree-toggle)
+    ("<backtab>" . dired-subtree-remove)
+    ("S-TAB" . dired-subtree-remove))
+  :config
+  (setq dired-subtree-use-backgrounds nil))
 
 (use-package wdired
   :config
@@ -1894,6 +1902,7 @@ handle it. If it is not a jar call ORIGINAL-FN."
 
 ;;; dired-like mode for the trash (trashed.el)
 (use-package trashed
+  :commands (trashed)
   :config
   (setq trashed-action-confirmer 'y-or-n-p)
   (setq trashed-use-header-line t)
@@ -1953,14 +1962,6 @@ run grep directly on it without the whole find part."
   (when-let* ((marks (dired-get-marked-files 'no-dir))
               (files (mapconcat #'identity marks " "))
               (args (if (or arg (length> marks 1))
-                        ;; Thanks to Sean Whitton for pointing out an
-                        ;; earlier superfluity of mine: we do not need
-                        ;; to call grep through find when we already
-                        ;; know the files we want to search in.  Check
-                        ;; Sean's dotfiles:
-                        ;; <https://git.spwhitton.name/dotfiles>.
-                        ;;
-                        ;; Any other errors or omissions are my own.
                         (format "grep -nH --color=auto %s %s" (shell-quote-argument regexp) files)
                       (concat
                        "find . -not " (shell-quote-argument "(")
@@ -1975,20 +1976,6 @@ run grep directly on it without the whole find part."
      'grep-mode
      (lambda (mode) (format "*prot-dired-find-%s for '%s'" mode regexp))
      t)))
-
-(add-hook 'dired-mode-hook #'dired-hide-details-mode)
-(add-hook 'dired-mode-hook #'hl-line-mode)
-
-
-
-(setq dired-guess-shell-alist-user '(("\\.png" "feh")
-                                     ("\\.mkv" "mpv")))
-
-(use-package dired-hide-dotfiles
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  :bind
-  (:map dired-mode-map
-        ("." . dired-hide-dotfiles-mode)))
 
 ;;; Grep
 ;;; wgrep (writable grep)
