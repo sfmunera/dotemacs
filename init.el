@@ -1,4 +1,8 @@
-;; -*- lexical-binding: t; -*-
+;;; init.el --- My Emacs configuration. ;; -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;;; Code:
 
 ;;; Basic configurations
 
@@ -22,10 +26,17 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (load custom-file :no-error-if-file-is-missing)
 
+;; Disable creating backup and lock files
+(setq make-backup-files nil)
+(setq backup-inhibited nil)
+(setq create-lockfiles nil)
+
 ;;;; Native compilation
 
-;; Silence native compiling warnings as they are pretty noisy
-(setq native-comp-async-report-warnings-errors nil)
+;; Make native compilation silent and prune its cache.
+(when (native-comp-available-p)
+  (setq native-comp-async-report-warnings-errors 'silent)
+  (setq native-compile-prune-cache t))
 
 ;; Set the right directory to store the native comp cache
 ;;(add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
@@ -85,6 +96,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq straight-use-package-version 'straight)
 (setq straight-use-package-by-default t)
 
 ;; Use straight.el for use-package expressions
@@ -237,7 +249,7 @@ The DWIM behaviour of this command is as follows:
         (proportionately-spaced-font "Aporetic Serif"))
     (set-face-attribute 'default nil :family mono-spaced-font :height 140)
     (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
-    (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0)))
+    (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0 :weight 'regular)))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -252,6 +264,8 @@ The DWIM behaviour of this command is as follows:
   (setq spacious-padding-subtle-mode-line nil)
   :hook
   (after-init . spacious-padding-mode))
+
+(setq custom-safe-themes t)
 
 (use-package modus-themes
   :bind (("<f7>" . modus-themes-toggle)
@@ -1846,26 +1860,16 @@ handle it. If it is not a jar call ORIGINAL-FN."
 
 ;;; Dired
 ;; Require to mark by extension
-(require 'dired-x)
-
 (use-package dired
   :straight nil
   :commands (dired dired-jump)
   :hook
-  ((dired-mode . hl-line-mode))
+  ((dired-mode . hl-line-mode)
+   (dired-mode . dired-hide-details-mode))
   :bind
   (("C-x C-j" . dired-jump)
    (:map dired-mode-map
          ("C-+" . dired-create-empty-file)))
-  :custom
-  ;; ;; In MacOS run this: brew install coreutils
-  ;; https://stackoverflow.com/questions/25125200/emacs-error-ls-does-not-support-dired
-  ((when (string= system-type "darwin")
-     (setq dired-use-ls-dired t
-           insert-directory-program "/usr/local/bin/gls"))
-   ;;(setq dired-listing-switches "-agho --group-directories-first")
-   (setq dired-listing-switches
-        "-AGFhlv --group-directories-first --time-style=long-iso"))
   :config
   ;; Keep only one dired buffer
   (setq dired-kill-when-opening-new-dired-buffer t)
@@ -1880,7 +1884,28 @@ handle it. If it is not a jar call ORIGINAL-FN."
   (setq dired-create-destination-dirs 'ask) ; Emacs 27
   (setq dired-create-destination-dirs-on-trailing-dirsep t) ; Emacs 29
   (setq dired-guess-shell-alist-user '(("\\.png" "feh")
-                                       ("\\.mkv" "mpv"))))
+                                       ("\\.mkv" "mpv")))
+  ;;  (setq dired-listing-switches
+  ;;        "-AGFhlv --group-directories-first --time-style=long-iso"))
+  (when (eq system-type 'darwin)
+    (let ((gls (executable-find "gls")))
+      (when gls
+        (setq dired-use-ls-dired t
+              insert-directory-program gls
+              dired-listing-switches "-aBhl  --group-directories-first"))))
+  )
+
+(use-package dired-aux
+  :straight nil
+  :after dired
+  :bind
+  ( :map dired-mode-map
+    ("C-<return>" . dired-do-open)) ; Emacs 30
+  :config
+  (setq dired-isearch-filenames 'dwim)
+  (setq dired-create-destination-dirs 'ask) ; Emacs 27
+  (setq dired-do-revert-buffer t) ; Emacs 28
+  (setq dired-create-destination-dirs-on-trailing-dirsep t)) ; Emacs 29
 
 (use-package dired-subtree
   :after dired
@@ -1900,10 +1925,38 @@ handle it. If it is not a jar call ORIGINAL-FN."
   (:map dired-mode-map
         ("." . dired-hide-dotfiles-mode)))
 
-(use-package wdired
+(use-package dired-x
+  :straight nil
+  :after dired
   :config
-  (setq wdired-allow-to-change-permissions t)
-  (setq wdired-create-parent-directories t))
+  (setq dired-clean-up-buffers-too t)
+  (setq dired-clean-confirm-killing-deleted-buffers t))
+
+(use-package wdired
+  :straight nil
+  :commands (wdired-change-to-wdired-mode))
+
+(use-package image-dired
+  :straight nil
+  :commands (image-dired)
+  :bind
+  ( :map image-dired-thumbnail-mode-map
+    ("<return>" . image-dired-thumbnail-display-external))
+  :config
+  (setq image-dired-thumbnail-storage 'standard)
+  (setq image-dired-external-viewer "open")
+  (setq image-dired-thumb-size 80)
+  (setq image-dired-thumb-margin 2)
+  (setq image-dired-thumb-relief 0)
+  (setq image-dired-thumbs-per-row 4))
+
+(use-package ready-player
+  :straight t
+  :mode
+  ("\\.\\(mp3\\|m4a\\|mp4\\|mkv\\|webm\\)\\'" . ready-player-major-mode)
+  :config
+  (setq ready-player-autoplay nil)
+  (setq ready-player-repeat nil))
 
 ;;; dired-like mode for the trash (trashed.el)
 (use-package trashed
