@@ -995,7 +995,7 @@ With a universal prefix arg, run in the next window."
   :init (which-key-mode 1)
   :diminish
   :config
-  (setq which-key-idle-delay 0.3))
+  (setq which-key-idle-delay 1))
 
 (use-package hydra)
 
