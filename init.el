@@ -299,7 +299,9 @@ The DWIM behaviour of this command is as follows:
         ef-themes-mixed-fonts t
         ef-themes-disable-other-themes t
         ef-themes-to-toggle '(ef-maris-light ef-maris-dark)
-        ef-themes-headings ; read the manual's entry of the doc string
+        )
+  :init
+  (setq ef-themes-headings ; read the manual's entry of the doc string
         '((0 . (variable-pitch light 1.7))
           (1 . (variable-pitch light 1.6))
           (2 . (variable-pitch regular 1.5))
@@ -311,7 +313,6 @@ The DWIM behaviour of this command is as follows:
           (agenda-date . (semilight 1.3))
           (agenda-structure . (variable-pitch light 1.5))
           (t . (variable-pitch 1.1))))
-  :init
   (load-theme 'ef-maris-light :no-confirm-loading))
 
 (use-package nerd-icons)
