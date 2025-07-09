@@ -872,11 +872,6 @@ With a universal prefix arg, run in the next window."
   (nerd-icons-completion-mode 1)
   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
-(use-package nerd-icons-corfu
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
@@ -932,7 +927,7 @@ With a universal prefix arg, run in the next window."
 
 (use-package corfu
   :straight (corfu :type git :files (:defaults "extensions/*.el"))
-  :hook (after-init . (global-corfu-mode))
+  :hook (after-init . global-corfu-mode)
   ;; Optional customizations
   :custom
   (corfu-cycle t)                       ;; Enable cycling for `corfu-next/previous'
@@ -963,15 +958,10 @@ With a universal prefix arg, run in the next window."
         ("<tab>" . #'corfu-complete)
         ("C-<tab>" . corfu-insert-separator)))
 
-(use-package kind-icon
+(use-package nerd-icons-corfu
   :after corfu
-  :custom
-  (kind-icon-use-icons t)
-  (kind-icon-default-face 'corfu-default)
-  (kind-icon-blend-background nil)
-  (kind-icon-blend-frac 0.08)
   :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 
 ;;; Improved search tools
