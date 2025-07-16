@@ -8,16 +8,7 @@
 
 ;;;; Performance optimizations
 
-(setq gc-cons-threshold (* 50 1000 1000))
-
-;; Profile emacs startup
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
+(setq gc-cons-threshold most-positive-fixnum) ; Disable GC during startup
 
 ;;;; Emacs directory
 (setq user-emacs-directory (expand-file-name "~/.emacs.d"))
@@ -96,6 +87,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq use-package-always-ensure nil)
 (setq straight-use-package-version 'straight)
 (setq straight-use-package-by-default t)
 
@@ -139,7 +131,6 @@
 
 ;; save history in minibuffer
 (use-package savehist
-  :ensure nil ; it is built-in
   :config
   (setq history-length 200)
   (setq savehist-additional-variables '(register-alist kill-ring))
@@ -156,7 +147,6 @@
 
 ;; Delete the selected text upon text insertion
 (use-package delsel
-  :ensure nil ; no need to install it as it is built-in
   :hook (after-init . delete-selection-mode))
 
 ;; Make C-g more helpful
@@ -232,7 +222,6 @@ The DWIM behaviour of this command is as follows:
 (global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
 
 (use-package face-remap
-  :ensure nil
   :bind
   ;; Emacs 29 introduces commands that resize the font across all
   ;; buffers (including the minibuffer), which is what I want, as
@@ -1710,6 +1699,8 @@ handle it. If it is not a jar call ORIGINAL-FN."
   ;; based on eglot documentation, this improves the performance. I need
   ;; to enable it for debugging eglot issues.
   (eglot-events-buffer-config '(:size 0 :format full))
+  (eglot-send-changes-idle-time 0.5)
+  (eglot-auto-display-help-buffer nil)
   (eglot-connection-timeout 120)
   (eglot-confirm-server-initiated-edits nil)
   ;;(eglot-events-buffer-size 0)
@@ -2191,4 +2182,16 @@ run grep directly on it without the whole find part."
 ;;; Work-specific config (private)
 (let ((work-config-file (expand-file-name "work-config.el" user-emacs-directory)))
   (when (file-exists-p work-config-file)
-    (load work-config-file)))
+    (condition-case err
+        (load work-config-file)
+      (error (message "Failed to load work config: %s" err)))))
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 16 1024 1024)) ; 16MB
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+;;; init.el ends here
