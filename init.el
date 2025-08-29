@@ -1031,45 +1031,23 @@ With a universal prefix arg, run in the next window."
    org-edit-src-content-indentation 2
 
    ;; Org files
-   org-directory "~/Dropbox/org/"
-   org-default-notes-file "inbox.org"
-   org-agenda-files '("Work.org" "inbox.org")
+   org-directory "~/Org/"
+   org-default-notes-file "daily.org"
+   org-agenda-files (list "~/Org/")
 
    ;; Tags, TODO keywords
    org-log-done 'time
    org-log-into-drawer t
    org-use-fast-todo-selection t
    org-todo-keywords
-   '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "|" "DONE(d)")
-     (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+   '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "FOLLOW-UP(f)" "|" "DONE(d)" "CANCELLED(c)"))
 
    ;; Capture configurations
    org-capture-templates
    `(
      ("w" "Work")
-     ("wi" "Work Inbox" entry
-      (file+headline "Work.org" "Inbox")
-      ,(mapconcat
-        #'identity
-        '("* TODO %?"
-          ":PROPERTIES:"
-          ":CAPTURED: %U"
-          ":END:")
-        "\n")
-      :empty-lines 1)
-     ("wn" "Notes" entry
-      (file+headline "Work.org" "Notes")
-      ,(mapconcat
-        #'identity
-        '("* FOLLOW-UP %u: %?"
-          ":PROPERTIES:"
-          ":CAPTURED: %U"
-          ":END:")
-        "\n")
-      :empty-lines 1
-      :prepend t)
      ("ww" "Weekly Plan" plain
-      (file+olp+datetree "Work.org" "Weekly Plan")
+      (file+olp+datetree "plans.org" "Weekly Plan")
       ,(mapconcat
         #'identity
         '("%?"
@@ -1080,35 +1058,7 @@ With a universal prefix arg, run in the next window."
       :empty-lines 1
       :prepend t
       :tree-type week)
-     ("wd" "Daily Plan" plain
-      (file+olp+datetree "Work.org" "Daily Plan")
-      ,(mapconcat
-        #'identity
-        '("*GOAL:*\n%?\n"
-          "*TASKS:*"
-          "- [ ] \n"
-          "*NOTES:*"
-          "- \n"
-          "*LOG:*"
-          "- \n"
-          "*REVIEW:*\n"
-          ":PROPERTIES:"
-          ":CAPTURED: %U"
-          ":END:")
-        "\n")
-      :prepend t
-      :empty-lines 1)
-     ("wp" "New Project" entry
-      (file+headline "Work.org" "Projects")
-      ,(mapconcat
-        #'identity
-        '("* %?"
-          ":PROPERTIES:"
-          ":CAPTURED: %U"
-          ":END:")
-        "\n")
-      :prepend t
-      :empty-lines 1)
+     ("wd" "Daily Entry" entry (file "daily.org") "* %<%Y-%m-%d %A>\n%?")
      ("p" "Personal")
      ("pi" "Inbox Capture" entry (file+headline "Inbox.org" "Tasks")
       "* TODO %?\n %U\n" :empty-lines 1 :kill-buffer t)
@@ -1139,7 +1089,7 @@ With a universal prefix arg, run in the next window."
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 (setq org-agenda-custom-commands
-      '(("w" "Work Projects and Tasks Overview"
+      '(("w" "Work Tasks Overview"
          ((agenda "" ((org-agenda-span 'day)
                       (org-super-agenda-groups
                        '((:name "🗓️ Today"
@@ -1148,72 +1098,31 @@ With a universal prefix arg, run in the next window."
                                 :todo "TODAY"
                                 :scheduled today
                                 :order 1)))))
-          (alltodo "" ((org-agenda-overriding-header "\n\n✨ WORK PROJECTS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
+          (alltodo "" ((org-agenda-overriding-header "\n\n Work Tasks Overview \n━━━━━━━━━━━━━━━━━━━━━━━━━")
                        (org-super-agenda-groups
-                        '((:discard (:not (:tag "project")))
-                          (:name "📦 Active Projects"
-                                 :todo "ACTIVE"
-                                 :order 1)
-                          (:name "📅 Project Backlog"
-                                 :todo "BACKLOG"
-                                 :order 2)
-                          (:name "⭐ Important Tasks"
+                        '((:name "⭐ Important Tasks"
                                  :priority "A"
+                                 :order 1)
+                          (:name "🔥 Active Tasks"
+                                 :todo "IN-PROGRESS"
+                                 :order 2)
+                          (:name "➡️ Ready Tasks"
+                                 :todo "NEXT"
                                  :order 3)
-                          (:name "📋 In Progress"
-                                 :todo "STARTED"
+                          (:name "Follow Up"
+                                 :todo ("FOLLOW-UP")
                                  :order 4)
-                          (:name "🔥 Tasks to follow up on"
-                                 :todo ("FOLLOW-UP" "TO-DISCUSS" "CLARIFY")
+                          (:name "Tasks waiting for something"
+                                 :todo "WAITING"
                                  :order 5)
-                          (:name "🔥 Tasks waiting for something"
-                                 :todo ("WAITING" "ON-HOLD")
+                          (:name "Nice to Have Tasks"
+                                 :priority "B"
                                  :order 6)
-                          (:name "➡️ Next Tasks"
-                                 :todo "READY"
-                                 :order 7)
-                          (:name "📁 Task Backlog"
-                                 :todo ("TODO" "BACKBURNER")
-                                 :order 8)
-                          ))))
-          (alltodo "" ((org-agenda-overriding-header "\n\n✨ WORK TASKS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
-                       (org-super-agenda-groups
-                        '((:discard (:tag ("project" "learning")))
-                          (:name "⭐ Important Tasks"
-                                 :priority "A"
-                                 :order 1)
-                          (:name "📋 In Progress"
-                                 :todo "STARTED"
-                                 :order 2)
-                          (:name "🔥 Tasks to follow up on"
-                                 :todo ("FOLLOW-UP" "TO-DISCUSS" "CLARIFY")
-                                 :order 3)
-                          (:name "🔥 Tasks waiting for something"
-                                 :todo ("WAITING" "ON-HOLD")
-                                 :order 4)
-                          (:name "➡️ Next Tasks"
-                                 :todo "READY"
-                                 :order 5)
                           (:name "📁 Task Backlog"
                                  :todo "TODO"
-                                 :order 6)
-                          (:name "➕ Other Tasks"
-                           :auto-category t
-                           :order 7)))))
-          (alltodo "" ((org-agenda-overriding-header "\n\n✨ LEARNING/SIDE PROJECTS ✨\n━━━━━━━━━━━━━━━━━━━━━━━━━")
-                       (org-super-agenda-groups
-                        '((:discard (:not (:tag ("learning" "side-project"))))
-                          (:name "🔥 Active"
-                                 :todo "STARTED"
-                                 :order 1)
-                          (:name "➡️ Next"
-                                 :todo "READY"
-                                 :order 2)
-                          (:name "📋 Backlog"
-                                 :todo ("TODO" "BACKBURNER")
-                                 :order 3)
+                                 :order 7)
                           )))))
-         ((org-agenda-files '("Work.org"))
+         ((org-agenda-files (list "~/Org/"))
           (org-agenda-compact-blocks t)))
 
         ("p" "Personal Projects and Tasks Overview"
@@ -1265,13 +1174,6 @@ With a universal prefix arg, run in the next window."
          ((org-agenda-files '("Projects.org" "phone/Inbox.org"))
           (org-agenda-compact-blocks t)))))
 
-(defun org-capture-inbox ()
-     (interactive)
-     (call-interactively 'org-store-link)
-     (org-capture nil "wi"))
-
-(define-key global-map (kbd "C-c i") 'org-capture-inbox)
-
 (use-package org-modern
   :after org
   :custom-face
@@ -1299,10 +1201,10 @@ With a universal prefix arg, run in the next window."
               :repo "ichernyshovvv/org-timeblock")
   :after org
   :config
-  (setq org-timeblock-inbox-file (expand-file-name "Work.org" org-directory)
+  (setq org-timeblock-inbox-file (expand-file-name "daily.org" org-directory)
         org-timeblock-show-outline-path t
         org-timeblock-span 1
-        org-timeblock-scale-options '(9 . 18)))
+        org-timeblock-scale-options '(8 . 18)))
 
 (use-package jupyter
   :straight t
