@@ -1044,7 +1044,19 @@ With a universal prefix arg, run in the next window."
 
    ;; Capture configurations
    org-capture-templates
-   `(
+   `(("b" "Book" entry
+      (file+headline "Books.org" "Books")
+      ,(mapconcat
+        #'identity
+        '("*** TO-READ %^{Title}"
+          "    :PROPERTIES:"
+          "    :ADDED: %U"
+          "    :AUTHOR: %^{Author}"
+          "    :CATEGORY: %^{Category|Technical|Non-Technical}"
+          "    :RATING:"
+          "    :DAYS_TO_READ:"
+          "    :END:")
+        "\n"))
      ("w" "Work")
      ("ww" "Weekly Plan" plain
       (file+olp+datetree "plans.org" "Weekly Plan")
@@ -1088,8 +1100,197 @@ With a universal prefix arg, run in the next window."
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
+(defun my/org-days-between (start-date end-date)
+  "Calculate days between two org timestamps"
+  (when (and start-date end-date)
+    (let ((start (org-time-string-to-time start-date))
+          (end (org-time-string-to-time end-date)))
+      (floor (/ (float-time (time-subtract end start))
+                86400)))))
+
+(defun my/org-get-year (timestamp)
+  "Extract year from org timestamp"
+  (when timestamp
+    (format-time-string "%Y" 
+                        (org-time-string-to-time timestamp))))
+
+(defun my/calculate-reading-days ()
+  "Calculate and store the reading duration when a book is marked as DONE"
+  (let* ((start-date (org-entry-get nil "STARTED"))
+         (end-date (org-entry-get nil "FINISHED"))
+         (days (my/org-days-between start-date end-date)))
+    (when days
+      (org-entry-put nil "DAYS_TO_READ" (+ 1 (number-to-string days))))))
+
+(defun my/org-book-state-change ()
+  "Handle book state changes"
+  (cond
+   ((string= org-state "READING")
+    (unless (org-entry-get nil "STARTED")  ; Only if STARTED not already set
+      (let ((today (format-time-string "[%Y-%m-%d %a]")))
+        (org-entry-put nil "STARTED" today)
+        ;; Set YEAR_READ to current year when starting
+        (org-entry-put nil "YEAR_READ" (my/org-get-year today)))))
+   ((string= org-state "READ")
+    (let ((today (format-time-string "[%Y-%m-%d %a]")))
+      (org-entry-put nil "FINISHED" today)
+      ;; Update YEAR_READ to completion year
+      (org-entry-put nil "YEAR_READ" (my/org-get-year today))
+      (my/calculate-reading-days)
+      (org-set-property "RATING" (read-string "Rating (1-5): "))))))
+
+;; Add the hook
+(add-hook 'org-after-todo-state-change-hook #'my/org-book-state-change)
+
 (setq org-agenda-custom-commands
-      '(("w" "Work Tasks Overview"
+      '(("r" "Reading List Overview"
+           ((tags "CATEGORY=\"Technical\"|CATEGORY=\"Non-Technical\""
+                     ((org-agenda-files '("Books.org"))
+                      (org-agenda-prefix-format "  %-12c: ")
+                      (org-super-agenda-groups
+                       '((:name "Currently Reading"
+                          :todo "READING"
+                          :order 1)
+                         (:name "Technical Books To Read"
+                          :and (:todo "TO-READ"
+                                :category "Technical")
+                          :order 2)
+                         (:name "Non-Technical Books To Read"
+                          :and (:todo "TO-READ"
+                                :category "Non-Technical")
+                          :order 3)
+                         (:name "Recently Completed Technical Books"
+                          :and (:todo "READ"
+                                :category "Technical"
+                                )
+                          :order 4)
+                         (:name "Recently Completed Non-Technical Books"
+                          :and (:todo "READ"
+                                :category "Non-Technical"
+                                )
+                          :order 5)
+                         (:discard (:anything t))))))))
+        ("h" . "House Manual Views")
+        ("hd" "🏠 House Dashboard"
+         ((tags-todo "urgent"
+                     ((org-agenda-overriding-header "🚨 URGENT TASKS")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  %-12c: ")
+                      (org-agenda-remove-tags t)
+                      (org-agenda-sorting-strategy '(priority-down))
+                      ))
+          (tags-todo "repair"
+                     ((org-agenda-overriding-header "🔧 REPAIRS NEEDED")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  %-12c: ")
+                      (org-agenda-tag-filter-preset '("+repair"))
+                      (org-agenda-sorting-strategy '(priority-down))))
+          (tags-todo "improvement"
+                     ((org-agenda-overriding-header "⬆️  IMPROVEMENTS & UPGRADES")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  %-12c: ")
+                      (org-agenda-tag-filter-preset '("+improvement"))
+                      (org-agenda-sorting-strategy '(priority-down))))
+          (agenda ""
+                  ((org-agenda-overriding-header "📅 THIS WEEK'S MAINTENANCE")
+                   (org-agenda-span 7)
+                   (org-agenda-start-on-weekday nil)
+                   (org-agenda-start-day "today")
+                   (org-agenda-tag-filter-preset '("+maintenance"))
+                   (org-agenda-prefix-format "  %t: %-12c ")
+                   (org-agenda-todo-keyword-format ""))))
+         ((org-agenda-files '("Notes/Personal/House.org"))
+          (org-agenda-compact-blocks t)
+          (org-agenda-block-separator ?─)))
+        
+        ;; Weekly Planning View
+        ("hw" "📅 Weekly Maintenance Plan"
+         ((agenda ""
+                  ((org-agenda-overriding-header "🗓️  NEXT 7 DAYS")
+                   (org-agenda-span 7)
+                   (org-agenda-start-on-weekday nil)
+                   (org-agenda-start-day "today")
+                   (org-agenda-tag-filter-preset '("+maintenance"))
+                   (org-agenda-prefix-format "  %t: %-15c %s")
+                   (org-agenda-todo-keyword-format "")
+                   (org-agenda-scheduled-leaders '("📋 " "📋 "))
+                   (org-agenda-time-grid nil))))
+         ((org-agenda-files '("Notes/Personal/House.org"))
+          (org-agenda-compact-blocks t)))
+        
+        ;; Monthly Planning View
+        ("hm" "📆 Monthly Maintenance Plan"
+         ((agenda ""
+                  ((org-agenda-overriding-header "🗓️  NEXT 30 DAYS")
+                   (org-agenda-span 30)
+                   (org-agenda-start-on-weekday nil)
+                   (org-agenda-start-day "today")
+                   (org-agenda-tag-filter-preset '("+maintenance"))
+                   (org-agenda-prefix-format "  %t: %-15c %s")
+                   (org-agenda-todo-keyword-format "")
+                   (org-agenda-scheduled-leaders '("📋 " "📋 "))
+                   (org-agenda-time-grid nil))))
+         ((org-agenda-files '("Notes/Personal/House.org"))
+          (org-agenda-compact-blocks t)))
+        
+        ;; Quarterly Planning View
+        ("hq" "📊 Quarterly Maintenance Plan"
+         ((agenda ""
+                  ((org-agenda-overriding-header "🗓️  NEXT 90 DAYS")
+                   (org-agenda-span 90)
+                   (org-agenda-start-on-weekday nil)
+                   (org-agenda-start-day "today")
+                   (org-agenda-tag-filter-preset '("+maintenance"))
+                   (org-agenda-prefix-format "  %t: %-15c %s")
+                   (org-agenda-todo-keyword-format "")
+                   (org-agenda-scheduled-leaders '("📋 " "📋 "))
+                   (org-agenda-time-grid nil)
+                   (org-agenda-show-all-dates nil))))
+         ((org-agenda-files '("Notes/Personal/House.org"))
+          (org-agenda-compact-blocks t)))
+        
+        ;; Seasonal View
+        ("hs" "🌅 Seasonal Maintenance"
+         ((tags-todo "seasonal"
+                     ((org-agenda-overriding-header "🌱 SEASONAL TASKS")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  %-15c: %s")
+                      (org-agenda-sorting-strategy '(priority-down)))))
+         ((org-agenda-files '("Notes/Personal/House.org"))
+          (org-agenda-compact-blocks t)))
+        
+        ;; Cost Planning View
+        ("hc" "💰 Cost Planning"
+         ((tags-todo "+TODO=\"TODO\"+COST>0"
+                     ((org-agenda-overriding-header "💸 TASKS WITH COSTS")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  $%-4(org-entry-get nil \"COST\"): %-15c %s")
+                      (org-agenda-sorting-strategy '(user-defined-down))))
+          
+          (tags-todo "urgent+COST>0"
+                     ((org-agenda-overriding-header "🚨 URGENT TASKS WITH COSTS")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  $%-4(org-entry-get nil \"COST\"): %-15c %s"))))
+         ((org-agenda-files '("Notes/Personal/House.org"))
+          (org-agenda-compact-blocks t)))
+        
+        ;; All Repairs & Improvements
+        ("hr" "🔧 All Repairs & Improvements"
+         ((tags-todo "repair+TODO=\"TODO\""
+                     ((org-agenda-overriding-header "🔧 ALL REPAIRS")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  %-15c: %s")
+                      (org-agenda-sorting-strategy '(priority-down))))
+          
+          (tags-todo "improvement+TODO=\"TODO\""
+                     ((org-agenda-overriding-header "⬆️  ALL IMPROVEMENTS")
+                      (org-agenda-todo-keyword-format "")
+                      (org-agenda-prefix-format "  %-15c: %s")
+                      (org-agenda-sorting-strategy '(priority-down)))))
+         ((org-agenda-files '("Notes/Personal/House.org"))
+          (org-agenda-compact-blocks t)))
+
+        ("w" "Work Projects and Tasks Overview"
          ((agenda "" ((org-agenda-span 'day)
                       (org-super-agenda-groups
                        '((:name "🗓️ Today"
