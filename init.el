@@ -1034,7 +1034,7 @@ With a universal prefix arg, run in the next window."
    org-directory "~/Org/"
    org-default-notes-file "daily.org"
    org-agenda-files (list "~/Org/")
-
+   org-startup-with-inline-images t
    ;; Tags, TODO keywords
    org-log-done 'time
    org-log-into-drawer t
