@@ -2145,9 +2145,10 @@ run grep directly on it without the whole find part."
   :hook
   ((org-mode . olivetti-mode)
    (markdown-mode . olivetti-mode)
-   (eww-mode . olivetti-mode))
+   (eww-mode . olivetti-mode)
+   (nov-mode . olivetti-mode))
   :custom
-  (olivetti-body-width 100))
+  (olivetti-body-width 125))
 
 (use-package antlr-mode)
 
