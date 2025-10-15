@@ -407,9 +407,10 @@ The DWIM behaviour of this command is as follows:
 (use-package winner
   :config
   (winner-mode 1)
-  :bind
-  (("M-[" . winner-undo)
-   ("M-]" . winner-redo)))
+  ;;:bind
+  ;;(("M-[" . winner-undo)
+  ;; ("M-]" . winner-redo))
+  )
 
 (use-package windmove
   :config
@@ -482,8 +483,8 @@ When `switch-to-buffer-obey-display-actions' is non-nil,
   ("s-t" . tab-bar-new-tab)
   ("s-w" . tab-bar-close-tab)
   ("s-r" . tab-bar-rename-tab)
-  ("s-<" . tab-bar-history-back)
-  ("s->" . tab-bar-history-forward)
+  ("M-[" . tab-bar-history-back)
+  ("M-]" . tab-bar-history-forward)
   :config
   (tab-bar-history-mode 1)
   (setq tab-bar-close-last-tab-choice 'tab-bar-mode-disable
