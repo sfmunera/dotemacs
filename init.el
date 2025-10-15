@@ -185,7 +185,7 @@ The DWIM behaviour of this command is as follows:
 
 ;; turn off some unneeded UI elements
 (tool-bar-mode -1)
-(scroll-bar-mode -1)
+;;(scroll-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
 (menu-bar-mode -1)
