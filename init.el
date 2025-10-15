@@ -493,7 +493,8 @@ When `switch-to-buffer-obey-display-actions' is non-nil,
         tab-bar-tab-hints             t
         tab-bar-format                '(tab-bar-format-tabs
                                         tab-bar-separator)
-        tab-bar-close-button-show     nil))
+        tab-bar-close-button-show     nil
+        tab-bar-show                  1)) ;; show tabs when more than 1 tab only
 
 (use-package activities
   :init
