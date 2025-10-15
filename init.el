@@ -1510,8 +1510,7 @@ With a universal prefix arg, run in the next window."
 (use-package git-gutter-fringe)
 (use-package git-gutter
   :diminish
-  :hook ((text-mode . git-gutter-mode)
-         (prog-mode . git-gutter-mode))
+  :hook ((prog-mode . git-gutter-mode))
   :config
   (setq git-gutter:update-interval 2)
   (require 'git-gutter-fringe)
