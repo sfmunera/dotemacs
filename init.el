@@ -46,7 +46,7 @@
 ;;;; Make C-w kill line if no region selected
 (use-package whole-line-or-region
   :config
-  (whole-line-or-region-global-mode))
+  (whole-line-or-region-global-mode 1))
 
 ;;;; Disable prompts
 (setq use-short-answers t)
