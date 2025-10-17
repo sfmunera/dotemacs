@@ -43,6 +43,11 @@
 ;;;; Prevent Emacs from closing by accident
 (setq confirm-kill-emacs 'y-or-n-p)
 
+;;;; Make C-w kill line if no region selected
+(use-package whole-line-or-region
+  :config
+  (whole-line-or-region-global-mode))
+
 ;;;; Disable prompts
 (setq use-short-answers t)
 (setq confirm-nonexistent-file-or-buffer nil)
