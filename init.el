@@ -48,6 +48,11 @@
   :config
   (whole-line-or-region-global-mode 1))
 
+;;;;
+(use-package exec-path-from-shell
+  :init
+  (exec-path-from-shell-initialize))
+
 ;;;; Disable prompts
 (setq use-short-answers t)
 (setq confirm-nonexistent-file-or-buffer nil)
