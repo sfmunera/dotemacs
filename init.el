@@ -2309,4 +2309,14 @@ run grep directly on it without the whole find part."
                              (float-time
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
+
+(use-package shell-maker
+  :ensure t)
+
+(use-package acp
+  :straight (acp :type git :host github :repo "xenodium/acp.el" :files ("*.el")))
+
+(use-package agent-shell
+  :straight (agent-shell :type git :host github :repo "xenodium/agent-shell"))
+
 ;;; init.el ends here
