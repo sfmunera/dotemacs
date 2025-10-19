@@ -927,6 +927,9 @@ With a universal prefix arg, run in the next window."
   :custom
   (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
+;; Replace Dabbrev with Hippie expand
+(global-set-key [remap dabbrev-expand] 'hippie-expand)
+
 (use-package corfu
   :straight (corfu :type git :files (:defaults "extensions/*.el"))
   :hook (after-init . global-corfu-mode)
