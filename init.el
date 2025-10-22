@@ -1666,6 +1666,11 @@ With a universal prefix arg, run in the next window."
 
 ;;;; LSP
 
+(use-package dumb-jump
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+
 (use-package eglot
   :bind (:map eglot-mode-map
               ("C-c e n" . flymake-goto-next-error)
