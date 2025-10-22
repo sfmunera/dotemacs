@@ -314,7 +314,7 @@ The DWIM behaviour of this command is as follows:
           (agenda-date . (semilight 1.3))
           (agenda-structure . (variable-pitch light 1.5))
           (t . (variable-pitch 1.1))))
-  (load-theme 'ef-maris-light :no-confirm-loading))
+  (modus-themes-load-theme 'ef-maris-light))
 
 (use-package nerd-icons)
 
