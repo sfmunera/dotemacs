@@ -114,13 +114,11 @@
 
 ;;;; Make C-w kill line if no region selected
 (use-package whole-line-or-region
-  :straight t
   :config
   (whole-line-or-region-global-mode 1))
 
 ;;;;
 (use-package exec-path-from-shell
-  :straight t
   :init
   (exec-path-from-shell-initialize))
 
@@ -888,8 +886,6 @@ With a universal prefix arg, run in the next window."
 
 ;; TODO: configure embark
 (use-package embark
-  :straight t
-
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
@@ -915,7 +911,6 @@ With a universal prefix arg, run in the next window."
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
-  :straight t ; only need to install it, embark loads it after consult if found
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -1423,7 +1418,6 @@ With a universal prefix arg, run in the next window."
         org-timeblock-scale-options '(8 . 18)))
 
 (use-package jupyter
-  :straight t
   :after (org))
 
 ;; Org babel
@@ -2060,7 +2054,6 @@ handle it. If it is not a jar call ORIGINAL-FN."
   (setq image-dired-thumbs-per-row 4))
 
 (use-package ready-player
-  :straight t
   :mode
   ("\\.\\(mp3\\|m4a\\|mp4\\|mkv\\|webm\\)\\'" . ready-player-major-mode)
   :config
@@ -2186,7 +2179,6 @@ run grep directly on it without the whole find part."
 
 ;;; RSS reader
 (use-package elfeed
-  :straight t
   :bind
   ("C-c e" . elfeed)
   (:map elfeed-search-mode-map
