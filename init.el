@@ -43,16 +43,6 @@
 ;;;; Prevent Emacs from closing by accident
 (setq confirm-kill-emacs 'y-or-n-p)
 
-;;;; Make C-w kill line if no region selected
-(use-package whole-line-or-region
-  :config
-  (whole-line-or-region-global-mode 1))
-
-;;;;
-(use-package exec-path-from-shell
-  :init
-  (exec-path-from-shell-initialize))
-
 ;;;; Disable prompts
 (setq use-short-answers t)
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -122,10 +112,21 @@
       auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
 (setq create-lockfiles nil)
 
+;;;; Make C-w kill line if no region selected
+(use-package whole-line-or-region
+  :straight t
+  :config
+  (whole-line-or-region-global-mode 1))
+
+;;;;
+(use-package exec-path-from-shell
+  :straight t
+  :init
+  (exec-path-from-shell-initialize))
+
 ;; Auto-Saving Changed Files
 (use-package super-save
   :defer 1
-  :diminish super-save-mode
   :config
   (super-save-mode +1)
   (setq super-save-auto-save-when-idle t))
@@ -887,7 +888,7 @@ With a universal prefix arg, run in the next window."
 
 ;; TODO: configure embark
 (use-package embark
-  :ensure t
+  :straight t
 
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
@@ -914,7 +915,7 @@ With a universal prefix arg, run in the next window."
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
-  :ensure t ; only need to install it, embark loads it after consult if found
+  :straight t ; only need to install it, embark loads it after consult if found
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -988,7 +989,6 @@ With a universal prefix arg, run in the next window."
 ;; Helpful visual auto-completion for keywords
 (use-package which-key
   :init (which-key-mode 1)
-  :diminish
   :config
   (setq which-key-idle-delay 1))
 
@@ -1524,7 +1524,6 @@ With a universal prefix arg, run in the next window."
 
 (use-package git-gutter-fringe)
 (use-package git-gutter
-  :diminish
   :hook ((prog-mode . git-gutter-mode))
   :config
   (setq git-gutter:update-interval 2)
@@ -2176,7 +2175,7 @@ run grep directly on it without the whole find part."
 
 ;;; RSS reader
 (use-package elfeed
-  :ensure t
+  :straight t
   :bind
   ("C-c e" . elfeed)
   (:map elfeed-search-mode-map
@@ -2314,7 +2313,7 @@ run grep directly on it without the whole find part."
                      gcs-done)))
 
 (use-package shell-maker
-  :ensure t)
+  :straight (shell-maker :type git :host github :repo "xenodium/shell-maker"))
 
 (use-package acp
   :straight (acp :type git :host github :repo "xenodium/acp.el" :files ("*.el")))
