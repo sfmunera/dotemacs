@@ -265,41 +265,44 @@ The DWIM behaviour of this command is as follows:
 
 (setq custom-safe-themes t)
 
-(use-package modus-themes
-  :bind (("<f7>" . modus-themes-toggle)
-         ("C-<f7>" . modus-themes-select))
-  :config
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-common-palette-overrides nil
-        ;;'((builtin red-cooler))
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-disable-other-themes t
-        modus-themes-to-toggle '(modus-operandi modus-vivendi)
-        modus-themes-headings
-        '((agenda-structure . (variable-pitch light 2.2))
-          (agenda-date . (variable-pitch regular 1.3))
-          (t . (regular 1.15)))
-        ;;'((1 1.3) (2 1.2) (3 1.1))
-        )
-  ;;:init
-  ;;(load-theme 'modus-operandi :no-confirm-loading)
-  )
+;; (use-package modus-themes
+;;   :bind (("<f7>" . modus-themes-toggle)
+;;          ("C-<f7>" . modus-themes-select))
+;;   :config
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-common-palette-overrides nil
+;;         ;;'((builtin red-cooler))
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui t
+;;         modus-themes-disable-other-themes t
+;;         modus-themes-to-toggle '(modus-operandi modus-vivendi)
+;;         modus-themes-headings
+;;         '((agenda-structure . (variable-pitch light 2.2))
+;;           (agenda-date . (variable-pitch regular 1.3))
+;;           (t . (regular 1.15)))
+;;         ;;'((1 1.3) (2 1.2) (3 1.1))
+;;         )
+;;   ;;:init
+;;   ;;(load-theme 'modus-operandi :no-confirm-loading)
+;;   )
 
-;; TODO: fix heading sizes not getting applied to Org headings
 (use-package ef-themes
-  :bind (("<f5>" . ef-themes-toggle)
-         ("C-<f5>" . ef-themes-select))
+  :init
+  (ef-themes-take-over-modus-themes-mode 1)
+  :bind
+  (("<f5>"   . modus-themes-toggle)
+   ("C-<f5>" . modus-themes-select)
+   ("M-<f5>" . modus-themes-rotate))
   :config
-  (setq ef-themes-variable-pitch-ui t
-        ef-themes-bold-constructs t
-        ef-themes-mixed-fonts t
-        ef-themes-disable-other-themes t
-        ef-themes-to-toggle '(ef-maris-light ef-maris-dark)
+  (setq modus-themes-variable-pitch-ui t
+        modus-themes-bold-constructs t
+        modus-themes-mixed-fonts t
+        modus-themes-disable-other-themes t
+        modus-themes-to-toggle '(ef-maris-light ef-maris-dark)
         )
   :init
-  (setq ef-themes-headings ; read the manual's entry of the doc string
+  (setq modus-themes-headings ; read the manual's entry of the doc string
         '((0 . (variable-pitch light 1.7))
           (1 . (variable-pitch light 1.6))
           (2 . (variable-pitch regular 1.5))
