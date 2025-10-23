@@ -8,6 +8,11 @@
 
 ;;;; Performance optimizations
 
+(when (eq system-type 'darwin)
+  (setenv "LIBRARY_PATH" 
+          (concat (getenv "LIBRARY_PATH")
+                  ":/opt/homebrew/lib/gcc/current")))
+
 (setq gc-cons-threshold most-positive-fixnum) ; Disable GC during startup
 
 ;;;; Emacs directory
