@@ -1666,10 +1666,20 @@ With a universal prefix arg, run in the next window."
 
 ;;;; LSP
 
+(use-package ripgrep)
+
+(use-package deadgrep
+  :commands deadgrep)
+
 (use-package dumb-jump
-  :config
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+  :after xref
+  :custom
+  (dumb-jump-prefer-searcher 'rg)
+  (dumb-jump-rg-search-args "--color=never --pcre2 -i")
+  (dumb-jump-git-grep-search-args "--color=never -iI --cached --ignore-standard --untracked")
+  (xref-show-definitions-function #'xref-show-definitions-completing-read)
+  :init
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 (use-package eglot
   :bind (:map eglot-mode-map
