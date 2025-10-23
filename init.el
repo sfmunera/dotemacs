@@ -295,13 +295,6 @@ The DWIM behaviour of this command is as follows:
    ("C-<f5>" . modus-themes-select)
    ("M-<f5>" . modus-themes-rotate))
   :config
-  (setq modus-themes-variable-pitch-ui t
-        modus-themes-bold-constructs t
-        modus-themes-mixed-fonts t
-        modus-themes-disable-other-themes t
-        modus-themes-to-toggle '(ef-maris-light ef-maris-dark)
-        )
-  :init
   (setq modus-themes-headings ; read the manual's entry of the doc string
         '((0 . (variable-pitch light 1.7))
           (1 . (variable-pitch light 1.6))
@@ -313,7 +306,12 @@ The DWIM behaviour of this command is as follows:
           (7 . (variable-pitch 1.1))
           (agenda-date . (semilight 1.3))
           (agenda-structure . (variable-pitch light 1.5))
-          (t . (variable-pitch 1.1))))
+          (t . (variable-pitch 1.1)))
+        modus-themes-variable-pitch-ui t
+        modus-themes-bold-constructs t
+        modus-themes-mixed-fonts t
+        modus-themes-disable-other-themes t
+        modus-themes-to-toggle '(ef-maris-light ef-maris-dark))
   (modus-themes-load-theme 'ef-maris-light))
 
 (use-package nerd-icons)
