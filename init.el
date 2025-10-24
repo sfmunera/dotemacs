@@ -1136,7 +1136,7 @@ With a universal prefix arg, run in the next window."
          (end-date (org-entry-get nil "FINISHED"))
          (days (my/org-days-between start-date end-date)))
     (when days
-      (org-entry-put nil "DAYS_TO_READ" (+ 1 (number-to-string days))))))
+      (org-entry-put nil "DAYS_TO_READ" (number-to-string (+ 1 days))))))
 
 (defun my/org-book-state-change ()
   "Handle book state changes"
