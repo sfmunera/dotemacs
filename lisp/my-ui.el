@@ -146,38 +146,5 @@
 
 (show-paren-mode 1)
 
-;;;; ============================================================================
-;;;; WINDOW MANAGEMENT
-;;;; ============================================================================
-;;;; Window navigation, buffer management, and workspace organization
-
-;;; Window management
-
-;;;; Remap listing buffers to ibuffer
-(global-set-key [remap list-buffers] 'ibuffer); C-x C-b
-
-;; Apply some settings from https://www.masteringemacs.org/article/demystifying-emacs-window-manager
-;; (defun make-display-buffer-matcher-function (major-modes)
-;;   (lambda (buffer-name action)
-;;     (with-current-buffer buffer-name (apply #'derived-mode-p major-modes))))
-
-;; ;; Treat manual buffer switching the same as programmatic buffer switching
-;; (setq switch-to-buffer-obey-display-actions t)
-
-;; (setq switch-to-buffer-in-dedicated-window 'pop)
-
-;; (setq switch-to-buffer-obey-display-actions t)
-
-;; (add-to-list 'display-buffer-alist
-;;              '("\\*helpful.*\\*"
-;;                (display-buffer-reuse-window display-buffer-pop-up-window)
-;;                (inhibit-same-window . t)))
-
-;; (add-to-list 'display-buffer-alist
-;;              '("\\*Help\\*"
-;;                (display-buffer-reuse-window display-buffer-pop-up-window)
-;;                (inhibit-same-window . t)))
-
-
 (provide 'my-ui)
 ;;; my-ui.el ends here
