@@ -58,30 +58,8 @@
 ;; AI tooling
 (require 'my-ai)
 
-;;;; Work-specific configuration
-(let ((work-config-file (expand-file-name "work-config.el" user-emacs-directory)))
-  (when (file-exists-p work-config-file)
-    (condition-case err
-        (load work-config-file)
-      (error (message "Failed to load work config: %s" err)))))
-
-;;;; Macros
-(require 'kmacro)
-(defalias 'kmacro-insert-macro 'insert-kbd-macro)
-(define-key kmacro-keymap (kbd "I") #'kmacro-insert-macro)
-
-;;;; Additional AI packages
-(use-package shell-maker
-  :straight (shell-maker :type git :host github :repo "xenodium/shell-maker"))
-
-(use-package acp
-  :straight (acp :type git :host github :repo "xenodium/acp.el" :files ("*.el")))
-
-(use-package agent-shell
-  :straight (agent-shell :type git :host github :repo "xenodium/agent-shell")
-  :config
-  (setq agent-shell-anthropic-authentication
-      (agent-shell-anthropic-make-authentication :login t)))
+;; Work configs
+(require 'my-work)
 
 ;;;; Startup finalization
 

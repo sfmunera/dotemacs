@@ -86,5 +86,10 @@
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
+;; Macros
+(require 'kmacro)
+(defalias 'kmacro-insert-macro 'insert-kbd-macro)
+(define-key kmacro-keymap (kbd "I") #'kmacro-insert-macro)
+
 (provide 'my-editing)
 ;;; my-editing.el ends here

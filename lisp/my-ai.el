@@ -86,5 +86,18 @@
 ;;   :hook
 ;;   (prog-mode . copilot-mode))
 
-(provide 'my-ai)
+;;;; agent-shell
+(use-package shell-maker
+  :straight (shell-maker :type git :host github :repo "xenodium/shell-maker"))
+
+(use-package acp
+  :straight (acp :type git :host github :repo "xenodium/acp.el" :files ("*.el")))
+
+(use-package agent-shell
+  :straight (agent-shell :type git :host github :repo "xenodium/agent-shell")
+  :config
+  (setq agent-shell-anthropic-authentication
+      (agent-shell-anthropic-make-authentication :login t)))
+
+ (provide 'my-ai)
 ;;; my-ai.el ends here
