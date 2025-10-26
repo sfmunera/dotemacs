@@ -7,8 +7,15 @@
 
 ;;; Window management
 
-;;;; Remap listing buffers to ibuffer
-(global-set-key [remap list-buffers] 'ibuffer); C-x C-b
+;;;; Enhanced ibuffer configuration
+(use-package ibuffer
+  :bind (([remap list-buffers] . ibuffer)  ; C-x C-b
+         :map ibuffer-mode-map
+         ("C-k" . ibuffer-do-delete)       ; Quick buffer deletion
+         ("M-o" . other-window))           ; Quick window switching
+  :config
+  (setq ibuffer-expert t)                  ; Don't ask for confirmation on delete
+  (setq ibuffer-show-empty-filter-groups nil)) ; Hide empty filter groups
 
 ;; Apply some settings from https://www.masteringemacs.org/article/demystifying-emacs-window-manager
 ;; (defun make-display-buffer-matcher-function (major-modes)
