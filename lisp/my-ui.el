@@ -30,16 +30,6 @@
 
 (setq blink-cursor-mode nil)
 
-;; Only use spaces for indentation
-(setq-default indent-tabs-mode nil)
-
-;; Merge C-a with M-m to go to beginning-of-line or back-to-indentation alternatively
-(defun back-to-indentation-or-beginning () (interactive)
-       (if (= (point) (progn (back-to-indentation) (point)))
-           (beginning-of-line)))
-
-(global-set-key (kbd "C-a") 'back-to-indentation-or-beginning)
-
 (use-package face-remap
   :bind
   ;; Emacs 29 introduces commands that resize the font across all
