@@ -43,11 +43,26 @@
 ;;; Look and feel
 
 (defun my/set-font-faces ()
-  (let ((mono-spaced-font "Aporetic Sans Mono")
-        (proportionately-spaced-font "Aporetic Serif"))
-    (set-face-attribute 'default nil :family mono-spaced-font :height 130)
-    (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
-    (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0 :weight 'regular)))
+  "Set font faces with availability checks and fallbacks."
+  (let* ((mono-spaced-font "Aporetic Sans Mono")
+         (proportionately-spaced-font "Aporetic Serif")
+         ;; Check font availability
+         (mono-available-p (find-font (font-spec :name mono-spaced-font)))
+         (prop-available-p (find-font (font-spec :name proportionately-spaced-font)))
+         ;; Use fallback fonts if preferred fonts are not available
+         (mono-font (if mono-available-p mono-spaced-font "Monospace"))
+         (prop-font (if prop-available-p proportionately-spaced-font "Serif")))
+
+    ;; Warn if fonts are missing
+    (unless mono-available-p
+      (message "Warning: Font '%s' not found, using fallback 'Monospace'" mono-spaced-font))
+    (unless prop-available-p
+      (message "Warning: Font '%s' not found, using fallback 'Serif'" proportionately-spaced-font))
+
+    ;; Set fonts
+    (set-face-attribute 'default nil :family mono-font :height 130)
+    (set-face-attribute 'fixed-pitch nil :family mono-font :height 1.0)
+    (set-face-attribute 'variable-pitch nil :family prop-font :height 1.0 :weight 'regular)))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
