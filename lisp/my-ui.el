@@ -21,12 +21,16 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; make line numbers visible only for programming modes
-;; TODO: check why sometimes the numbers dissapear
 (column-number-mode)
 (global-display-line-numbers-mode 0)
-(dolist (mode '(prog-mode-hook
-                conf-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+
+;; Use a named function to avoid adding duplicate hooks
+(defun my/enable-line-numbers ()
+  "Enable line numbers in the current buffer."
+  (display-line-numbers-mode 1))
+
+(dolist (mode '(prog-mode-hook conf-mode-hook))
+  (add-hook mode #'my/enable-line-numbers))
 
 (setq blink-cursor-mode nil)
 
