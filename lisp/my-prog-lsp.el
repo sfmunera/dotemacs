@@ -1,166 +1,18 @@
-;;; my-programming.el --- Programming languages and tools -*- lexical-binding: t -*-
+;;; my-prog-lsp.el --- LSP and Eglot configuration -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Programming languages and tools
+;; LSP client configuration: eglot, ripgrep, dumb-jump, jarchive
 
 ;;; Code:
 
-;;; Programming
-
-;; Navigate through subwords in camel-cased words correctly.
-(add-hook 'prog-mode-hook 'subword-mode)
-
-;;;; Git
-
-(use-package magit
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-
-(use-package git-gutter-fringe)
-(use-package git-gutter
-  :hook ((prog-mode . git-gutter-mode))
-  :config
-  (setq git-gutter:update-interval 2)
-  (require 'git-gutter-fringe)
-  (set-face-foreground 'git-gutter-fr:added "LightGreen")
-  (fringe-helper-define 'git-gutter-fr:added nil
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    ".........."
-    ".........."
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    ".........."
-    ".........."
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX")
-
-  (set-face-foreground 'git-gutter-fr:modified "LightGoldenrod")
-  (fringe-helper-define 'git-gutter-fr:modified nil
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    ".........."
-    ".........."
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    ".........."
-    ".........."
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX")
-
-  (set-face-foreground 'git-gutter-fr:deleted "LightCoral")
-  (fringe-helper-define 'git-gutter-fr:deleted nil
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    ".........."
-    ".........."
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    ".........."
-    ".........."
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"
-    "XXXXXXXXXX"))
-
-;; These characters are used in terminal mode
-(setq git-gutter:modified-sign "≡")
-(setq git-gutter:added-sign "≡")
-(setq git-gutter:deleted-sign "≡")
-(set-face-foreground 'git-gutter:added "LightGreen")
-(set-face-foreground 'git-gutter:modified "LightGoldenrod")
-(set-face-foreground 'git-gutter:deleted "LightCoral")
-
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-
-;;;; Flycheck
-(use-package flycheck)
-
-;;;; Expand region
-
-(use-package expand-region
-  :bind ("C-=" . er/expand-region))
-
-;;;; Tree sitter
-
-(use-package treesit
-  :straight nil
-  :mode (("\\.tsx\\'" . tsx-ts-mode))
-  :preface
-  (defun mp-setup-install-grammars ()
-    "Install Tree-sitter grammars if they are absent."
-    (interactive)
-    (dolist (grammar
-             ;; Note the version numbers. These are the versions that
-             ;; are known to work with Combobulate *and* Emacs.
-             '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.20.5"))
-               (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
-               (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
-               (java . ("https://github.com/tree-sitter/tree-sitter-java" "v0.20.2"))
-               (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.20.1" "src"))
-               (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.20.2"))
-               (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
-               (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby" "v0.20.1"))
-               (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))
-               (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
-               (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
-               (go . ("https://github.com/tree-sitter/tree-sitter-go" "v0.20.0"))
-               (markdown . ("https://github.com/ikatyang/tree-sitter-markdown" "v0.7.1"))
-               (toml . ("https://github.com/tree-sitter/tree-sitter-toml" "v0.5.1"))
-               (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
-      (add-to-list 'treesit-language-source-alist grammar)
-      ;; Only install `grammar' if we don't already have it
-      ;; installed. However, if you want to *update* a grammar then
-      ;; this obviously prevents that from happening.
-      (unless (treesit-language-available-p (car grammar))
-        (treesit-install-language-grammar (car grammar)))))
-
-  ;; You can remap major modes with `major-mode-remap-alist'. Note
-  ;; that this does *not* extend to hooks! Make sure you migrate them
-  ;; also
-  (dolist (mapping
-           '((yaml-mode . yaml-ts-mode)
-             (bash-mode . bash-ts-mode)
-             (typescript-mode . typescript-ts-mode)
-             (tsx-mode . tsx-ts-mode)
-             (json-mode . json-ts-mode)
-             (css-mode . css-ts-mode)
-             (html-mode . html-ts-mode)
-             (java-mode . java-ts-mode)
-             (rust-mode . rust-ts-mode)
-             (python-mode . python-ts-mode)
-             (ruby-mode . ruby-ts-mode)
-             (js2-mode . js-ts-mode)
-             (conf-toml-mode . toml-ts-mode)
-             (go-mode . go-ts-mode)
-             (js-json-mode . json-ts-mode)))
-    (add-to-list 'major-mode-remap-alist mapping))
-  :config
-  (mp-setup-install-grammars)
-  (use-package combobulate
-    :straight nil
-    :custom
-    (combobulate-key-prefix "C-c o")
-    :hook ((prog-mode . combobulate-mode))
-    :load-path ("~/.emacs.d/combobulate")))
-
-;;;; LSP
+;;;; Search Tools
 
 (use-package ripgrep)
 
 (use-package deadgrep
   :commands deadgrep)
+
+;;;; Jump to Definition
 
 (use-package dumb-jump
   :after xref
@@ -171,6 +23,8 @@
   (xref-show-definitions-function #'xref-show-definitions-completing-read)
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+;;;; Eglot LSP Client
 
 (use-package eglot
   :bind (:map eglot-mode-map
@@ -339,10 +193,14 @@ handle it. If it is not a jar call ORIGINAL-FN."
 ;;   :defer t
 ;;   :hook ((java-mode java-ts-mode) . eglot-java-mode))
 
+;;;; JAR Archive Support
+
 (use-package jarchive
   :after eglot
   :config
   (jarchive-mode 1))
+
+;;;; Alternative: LSP Mode (Commented Out)
 
 ;; (use-package lsp-mode
 ;;   :hook ((lsp-mode . lsp-diagnostics-mode))
@@ -399,40 +257,5 @@ handle it. If it is not a jar call ORIGINAL-FN."
 ;;   :no-require
 ;;   :hook ((java-mode java-ts-mode) . lsp))
 
-;;;; Languages
-
-;; needs to install LSP for the specific languages first
-;; npm install -g typescript-language-server
-;; npm install typescript-eslint-language-service -D
-(use-package typescript-mode
-  :mode "\\.ts\\'"
-  :config
-  (setq typescript-indent-level 2))
-
-;; smart auto-format source code files on save
-(use-package apheleia
-  ;; :config
-  ;; (apheleia-global-mode 1)
-  :hook ((typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode) . apheleia-mode))
-
-;; js/typescript jest tests
-(use-package jest-test-mode
-  :commands jest-test-mode
-  :hook ((typescript-ts-mode js-ts-mode typescript-mode js-mode tsx-ts-mode tsx-mode) . jest-test-mode))
-
-;; LSP server installation:
-;; pip install "python-lsp-server[all]" or pip install pyright
-(use-package python
-  :custom
-  (python-shell-interpreter "python3"))
-
-(use-package rust-mode)
-
-(add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
-
-(use-package yasnippet)
-
-(use-package yasnippet-snippets)
-
-(provide 'my-programming)
-;;; my-programming.el ends here
+(provide 'my-prog-lsp)
+;;; my-prog-lsp.el ends here

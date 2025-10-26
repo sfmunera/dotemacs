@@ -34,14 +34,20 @@
 ;; Help and documentation
 (require 'my-help)
 
-;; Org mode
-(require 'my-org)
+;; Org mode (split into focused modules)
+(require 'my-org-core)
+(require 'my-org-capture)
+(require 'my-org-agenda)
+(require 'my-org-babel)
 
 ;; TRAMP
 (require 'my-tramp)
 
-;; Programming
-(require 'my-programming)
+;; Programming (split into focused modules)
+(require 'my-prog-core)
+(require 'my-prog-git)
+(require 'my-prog-lsp)
+(require 'my-prog-langs)
 
 ;; Terminal
 (require 'my-terminal)
