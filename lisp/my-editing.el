@@ -67,6 +67,10 @@
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
+;; Cycle through naming conventions (snake_case, camelCase, PascalCase, UPPER_CASE)
+(use-package string-inflection
+  :bind ("C-M-j" . string-inflection-cycle))
+
 ;; Avy for quick navigation
 (use-package avy
   :commands (avy-goto-char-timer avy-goto-word-0 avy-goto-line)
