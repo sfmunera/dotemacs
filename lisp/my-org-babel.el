@@ -14,8 +14,11 @@
 
 ;;;; Org Babel Configuration
 
-;; TODO: Organize into org-mode config
-(setq org-babel-python-command "python3")
+;; Auto-detect Python executable
+(setq org-babel-python-command
+      (or (executable-find "python3")
+          (executable-find "python")
+          "python3")) ; fallback if neither found
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
@@ -25,7 +28,12 @@
 
 (require 'ob-python)
 
-(setq org-confirm-babel-evaluate nil)
+;; Only disable confirmation for trusted languages
+;; Set to t to confirm all, or use lambda to selectively trust languages
+(setq org-confirm-babel-evaluate
+      (lambda (lang body)
+        "Confirm evaluation for all languages except trusted ones."
+        (not (member lang '("emacs-lisp" "shell" "python")))))
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
