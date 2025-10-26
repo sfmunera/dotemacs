@@ -83,9 +83,8 @@
     :models '("mistral:latest")
     :stream t)
 
-  ;; TODO: Fix auth for Claude
-  (gptel-make-anthropic "Claude"          ;Any name you want
-    :stream t                             ;Streaming responses
+  (gptel-make-anthropic "Claude"
+    :stream t
     :key (my/auth-source-get-api-key "claude.anthropic.com")))
 
 ;; ;; Github Copilot

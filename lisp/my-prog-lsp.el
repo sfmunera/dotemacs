@@ -167,8 +167,9 @@ handle it. If it is not a jar call ORIGINAL-FN."
         (apply original-fn args))))
 
   (defun jdthandler-patch-eglot ()
-    "Patch old versions of Eglot to work with Jdthandler."
-    (interactive) ;; TODO, remove when eglot is updated in melpa
+    "Patch Eglot to work with JDT URI scheme.
+This is required for eglot-java integration with jdt:// URIs."
+    (interactive)
     (unless (and (advice-member-p #'jdthandler--wrap-legacy-eglot--path-to-uri 'eglot--path-to-uri)
                  (advice-member-p #'jdthandler--wrap-legacy-eglot--uri-to-path 'eglot--uri-to-path))
       (advice-add 'eglot--path-to-uri :around #'jdthandler--wrap-legacy-eglot--path-to-uri)

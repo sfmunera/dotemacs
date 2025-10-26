@@ -83,7 +83,6 @@
   ;; relevant when you use the default completion UI.
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
-;; TODO: check Vertico multiform
 (use-package vertico
   :hook (after-init . vertico-mode)
   :custom
@@ -144,7 +143,6 @@
   ;; The :init section is always executed.
   :hook (after-init . marginalia-mode))
 
-;; TODO: configure embark
 (use-package embark
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding

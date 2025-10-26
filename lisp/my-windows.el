@@ -101,7 +101,6 @@
    ("s-<up>" . windmove-up)
    ("s-<down>" . windmove-down)))
 
-;; TODO: Configure ace-window
 ;; Jump easily between windows
 (use-package ace-window
   :bind (("C-x o" . ace-window))
