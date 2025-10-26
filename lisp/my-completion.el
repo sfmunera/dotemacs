@@ -219,19 +219,5 @@
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-
-;;; Improved search tools
-
-(use-package smartparens
-  :hook (prog-mode . smartparens-mode))
-
-;; TODO: configure avy
-(use-package avy
-  :commands (avy-goto-char-timer avy-goto-word-0 avy-goto-line)
-  :bind
-  ("M-j" . avy-goto-char-timer)
-  :config
-  (setq avy-timeout-seconds 0.20))
-
 (provide 'my-completion)
 ;;; my-completion.el ends here
