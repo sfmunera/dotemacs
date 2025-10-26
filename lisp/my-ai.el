@@ -18,8 +18,16 @@
   (setq auth-sources '("~/.authinfo" "~/.authinfo.gpg"))
 
   (defun my/auth-source-get-api-key (host)
-    (funcall (plist-get (car (auth-source-search
-               'secret host)) :secret)))
+    "Retrieve API key for HOST from auth-source with error handling."
+    (let ((auth-info (car (auth-source-search :host host))))
+      (unless auth-info
+        (error "No auth-source entry found for host: %s" host))
+      (let ((secret (plist-get auth-info :secret)))
+        (unless secret
+          (error "No secret found for host: %s" host))
+        (if (functionp secret)
+            (funcall secret)
+          secret))))
 
   (setf (alist-get "^\\*ChatGPT\\*.*$"
                    display-buffer-alist
