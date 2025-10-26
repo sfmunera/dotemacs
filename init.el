@@ -73,5 +73,9 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+;; Run garbage collection when Emacs is idle for 5 minutes
+;; This prevents GC pauses during active editing by running cleanup during natural breaks
+(run-with-idle-timer 300 t #'garbage-collect)
+
 (provide 'init)
 ;;; init.el ends here
