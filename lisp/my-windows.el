@@ -91,11 +91,7 @@
 
 ;; winner-mode to undo/redo window layouts
 (use-package winner
-  :hook (after-init . winner-mode)
-  ;;:bind
-  ;;(("M-[" . winner-undo)
-  ;; ("M-]" . winner-redo))
-  )
+  :hook (after-init . winner-mode))
 
 (use-package windmove
   :hook (after-init . windmove-mode)
