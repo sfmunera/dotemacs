@@ -272,13 +272,17 @@ With a universal prefix arg, run in the next window."
        (call-interactively #'switch-to-buffer)))
    arg))
 
-;; TODO: This doesn't seem to work.
+;; Enable repeat-mode for buffer cycling
 (defvar-keymap buffer-cycle-map
   :doc "Keymap for cycling through buffers, intended for `repeat-mode'."
   :repeat t
   "n" 'my/next-buffer
   "p" 'my/previous-buffer
   "b" 'my/switch-buffer)
+
+;; Associate the commands with the repeat map
+(dolist (cmd '(my/next-buffer my/previous-buffer my/switch-buffer))
+  (put cmd 'repeat-map 'buffer-cycle-map))
 
 ;; Make `pop-global-mark' jump across windows instead of only the current window.
 (define-advice pop-global-mark (:around (pgm) use-display-buffer)
