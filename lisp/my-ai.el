@@ -95,9 +95,9 @@
 
 (use-package agent-shell
   :straight (agent-shell :type git :host github :repo "xenodium/agent-shell")
-  :config
-  (setq agent-shell-anthropic-authentication
-      (agent-shell-anthropic-make-authentication :login t)))
+  :custom
+  (agent-shell-anthropic-authentication
+   (agent-shell-anthropic-make-authentication :login t)))
 
  (provide 'my-ai)
 ;;; my-ai.el ends here

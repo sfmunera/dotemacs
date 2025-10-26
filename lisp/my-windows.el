@@ -13,9 +13,9 @@
          :map ibuffer-mode-map
          ("C-k" . ibuffer-do-delete)       ; Quick buffer deletion
          ("M-o" . other-window))           ; Quick window switching
-  :config
-  (setq ibuffer-expert t)                  ; Don't ask for confirmation on delete
-  (setq ibuffer-show-empty-filter-groups nil)) ; Hide empty filter groups
+  :custom
+  (ibuffer-expert t)                       ; Don't ask for confirmation on delete
+  (ibuffer-show-empty-filter-groups nil))  ; Hide empty filter groups
 
 ;; Apply some settings from https://www.masteringemacs.org/article/demystifying-emacs-window-manager
 ;; (defun make-display-buffer-matcher-function (major-modes)
@@ -91,16 +91,14 @@
 
 ;; winner-mode to undo/redo window layouts
 (use-package winner
-  :config
-  (winner-mode 1)
+  :hook (after-init . winner-mode)
   ;;:bind
   ;;(("M-[" . winner-undo)
   ;; ("M-]" . winner-redo))
   )
 
 (use-package windmove
-  :config
-  (windmove-mode 1)
+  :hook (after-init . windmove-mode)
   :bind
   (("s-<left>" . windmove-left)
    ("s-<right>" . windmove-right)
@@ -111,12 +109,11 @@
 ;; Jump easily between windows
 (use-package ace-window
   :bind (("C-x o" . ace-window))
+  :hook (after-init . ace-window-display-mode)
   :custom
   (aw-scope 'frame)
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  (aw-minibuffer-flag t)
-  :config
-  (ace-window-display-mode 1))
+  (aw-minibuffer-flag t))
 
 (defun ace-window-one-command ()
   (interactive)
@@ -161,8 +158,8 @@ When `switch-to-buffer-obey-display-actions' is non-nil,
 
 ;; tab-bar-mode
 (use-package tab-bar
-  :init
-  (tab-bar-mode 1)
+  :hook ((after-init . tab-bar-mode)
+         (after-init . tab-bar-history-mode))
   :bind
   ("s-{" . tab-bar-switch-to-prev-tab)
   ("s-}" . tab-bar-switch-to-next-tab)
@@ -171,25 +168,22 @@ When `switch-to-buffer-obey-display-actions' is non-nil,
   ("s-r" . tab-bar-rename-tab)
   ("M-[" . tab-bar-history-back)
   ("M-]" . tab-bar-history-forward)
-  :config
-  (tab-bar-history-mode 1)
-  (setq tab-bar-close-last-tab-choice 'tab-bar-mode-disable
-        tab-bar-tab-name-truncated-max 24
-        tab-bar-new-tab-choice        'ibuffer
-        tab-bar-select-tab-modifiers  '(meta hyper)
-        tab-bar-tab-hints             t
-        tab-bar-format                '(tab-bar-format-tabs
-                                        tab-bar-separator)
-        tab-bar-close-button-show     nil
-        tab-bar-show                  1)) ;; show tabs when more than 1 tab only
+  :custom
+  (tab-bar-close-last-tab-choice 'tab-bar-mode-disable)
+  (tab-bar-tab-name-truncated-max 24)
+  (tab-bar-new-tab-choice 'ibuffer)
+  (tab-bar-select-tab-modifiers '(meta hyper))
+  (tab-bar-tab-hints t)
+  (tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+  (tab-bar-close-button-show nil)
+  (tab-bar-show 1)) ;; show tabs when more than 1 tab only
 
 (use-package activities
-  :init
-  (activities-mode)
-  (activities-tabs-mode)
+  :hook ((after-init . activities-mode)
+         (after-init . activities-tabs-mode))
+  :custom
   ;; Prevent `edebug' default bindings from interfering.
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-
+  (edebug-inhibit-emacs-lisp-mode-bindings t)
   :bind
   (("C-x C-a C-n" . activities-new)
    ("C-x C-a C-d" . activities-define)
@@ -414,10 +408,10 @@ With a universal prefix arg, run in the next window."
                 "^\\*gptel-quick\\*"
                 "[Mm]agit"
                 "\\*Completions\\*")))
-  (popper-mode +1)
-  (popper-echo-mode +1)
-  :config
-  (setq popper-display-control nil))
+  :hook ((after-init . popper-mode)
+         (after-init . popper-echo-mode))
+  :custom
+  (popper-display-control nil))
 
 (provide 'my-windows)
 ;;; my-windows.el ends here

@@ -85,19 +85,17 @@
 
 ;; TODO: check Vertico multiform
 (use-package vertico
-  :init
+  :hook (after-init . vertico-mode)
+  :custom
   ;; Different scroll margin
-  (setq vertico-scroll-margin 0)
-
+  (vertico-scroll-margin 0)
   ;; Show more candidates
-  (setq vertico-count 20)
-
+  (vertico-count 20)
   ;; Grow and shrink the Vertico minibuffer
-  ;; (setq vertico-resize t)
-
+  ;; (vertico-resize t)
   ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  ;; (setq vertico-cycle t)
-  :hook (after-init . vertico-mode))
+  ;; (vertico-cycle t)
+  )
 
 ;; This works with `file-name-shadow-mode' enabled.  When you are in
 ;; a sub-directory and use, say, `find-file' to go to your home '~/'
@@ -106,35 +104,34 @@
 (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
 (use-package orderless
-  :config
+  :custom
   ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-
-        completion-category-overrides
-        ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
-        ;; default for some contexts.  Read:
-        ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=50387>.
-        ;;
-        ;; `partial-completion' is a killer app for files, because it
-        ;; can expand ~/.l/s/fo to ~/.local/share/fonts.
-        ;;
-        ;; If `basic' cannot match my current input, Emacs tries the
-        ;; next completion style in the given order.  In other words,
-        ;; `orderless' kicks in as soon as I input a space or one of its
-        ;; style dispatcher characters.
-        '((file (styles . (basic partial-completion orderless)))
-          (consult-location (styles . (basic substring initials orderless))))))
+  ;; (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
+  ;; (orderless-component-separator #'orderless-escapable-split-on-space)
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  ;; NOTE 2021-10-25: I am adding `basic' because it works better as a
+  ;; default for some contexts.  Read:
+  ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=50387>.
+  ;;
+  ;; `partial-completion' is a killer app for files, because it
+  ;; can expand ~/.l/s/fo to ~/.local/share/fonts.
+  ;;
+  ;; If `basic' cannot match my current input, Emacs tries the
+  ;; next completion style in the given order.  In other words,
+  ;; `orderless' kicks in as soon as I input a space or one of its
+  ;; style dispatcher characters.
+  (completion-category-overrides
+   '((file (styles . (basic partial-completion orderless)))
+     (consult-location (styles . (basic substring initials orderless))))))
 
 ;;; Icons
 (use-package nerd-icons-completion
   :after (vertico marginalia)
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
   :config
   (nerd-icons-completion-marginalia-setup)
-  (nerd-icons-completion-mode 1)
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  (nerd-icons-completion-mode 1))
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
@@ -153,19 +150,14 @@
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
-  :init
-
+  :custom
   ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
-
+  (prefix-help-command #'embark-prefix-help-command)
   ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
   ;; strategy, if you want to see the documentation from multiple providers.
-                                        ;(add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-
+  ;; (eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   :config
-
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"

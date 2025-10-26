@@ -17,30 +17,29 @@
   (("C-x C-j" . dired-jump)
    (:map dired-mode-map
          ("C-+" . dired-create-empty-file)))
-  :config
+  :custom
   ;; Keep only one dired buffer
-  (setq dired-kill-when-opening-new-dired-buffer t)
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t)
-  (setq dired-dwim-target t)
-  (setq dired-auto-revert-buffer #'dired-directory-changed-p) ; also see `dired-do-revert-buffer'
-  (setq dired-make-directory-clickable t) ; Emacs 29.1
-  (setq dired-free-space nil) ; Emacs 29.1
-  (setq dired-mouse-drag-files t) ; Emacs 29.1
-  (setq dired-create-destination-dirs 'ask) ; Emacs 27
-  (setq dired-create-destination-dirs-on-trailing-dirsep t) ; Emacs 29
-  (setq dired-guess-shell-alist-user '(("\\.png" "feh")
-                                       ("\\.mkv" "mpv")))
-  ;;  (setq dired-listing-switches
-  ;;        "-AGFhlv --group-directories-first --time-style=long-iso"))
+  (dired-kill-when-opening-new-dired-buffer t)
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  (delete-by-moving-to-trash t)
+  (dired-dwim-target t)
+  (dired-auto-revert-buffer #'dired-directory-changed-p) ; also see `dired-do-revert-buffer'
+  (dired-make-directory-clickable t) ; Emacs 29.1
+  (dired-free-space nil) ; Emacs 29.1
+  (dired-mouse-drag-files t) ; Emacs 29.1
+  (dired-create-destination-dirs 'ask) ; Emacs 27
+  (dired-create-destination-dirs-on-trailing-dirsep t) ; Emacs 29
+  (dired-guess-shell-alist-user '(("\\.png" "feh")
+                                   ("\\.mkv" "mpv")))
+  ;;  (dired-listing-switches "-AGFhlv --group-directories-first --time-style=long-iso")
+  :config
   (when (eq system-type 'darwin)
     (let ((gls (executable-find "gls")))
       (when gls
         (setq dired-use-ls-dired t
               insert-directory-program gls
-              dired-listing-switches "-aBhl  --group-directories-first"))))
-  )
+              dired-listing-switches "-aBhl  --group-directories-first")))))
 
 (use-package dired-aux
   :straight nil
@@ -48,11 +47,11 @@
   :bind
   ( :map dired-mode-map
     ("C-<return>" . dired-do-open)) ; Emacs 30
-  :config
-  (setq dired-isearch-filenames 'dwim)
-  (setq dired-create-destination-dirs 'ask) ; Emacs 27
-  (setq dired-do-revert-buffer t) ; Emacs 28
-  (setq dired-create-destination-dirs-on-trailing-dirsep t)) ; Emacs 29
+  :custom
+  (dired-isearch-filenames 'dwim)
+  (dired-create-destination-dirs 'ask) ; Emacs 27
+  (dired-do-revert-buffer t) ; Emacs 28
+  (dired-create-destination-dirs-on-trailing-dirsep t)) ; Emacs 29
 
 (use-package dired-subtree
   :after dired
@@ -62,8 +61,8 @@
     ("TAB" . dired-subtree-toggle)
     ("<backtab>" . dired-subtree-remove)
     ("S-TAB" . dired-subtree-remove))
-  :config
-  (setq dired-subtree-use-backgrounds nil))
+  :custom
+  (dired-subtree-use-backgrounds nil))
 
 (use-package dired-hide-dotfiles
   :after dired
@@ -75,9 +74,9 @@
 (use-package dired-x
   :straight nil
   :after dired
-  :config
-  (setq dired-clean-up-buffers-too t)
-  (setq dired-clean-confirm-killing-deleted-buffers t))
+  :custom
+  (dired-clean-up-buffers-too t)
+  (dired-clean-confirm-killing-deleted-buffers t))
 
 (use-package wdired
   :straight nil
@@ -114,8 +113,7 @@
   (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
 (use-package nerd-icons-dired
-  :config
-  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
+  :hook (dired-mode . nerd-icons-dired-mode))
 
 ;; Customizations to dired
 (defvar prot-dired--limit-hist '()

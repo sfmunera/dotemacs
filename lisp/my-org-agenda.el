@@ -254,8 +254,7 @@
 
 ;; TODO: Finish setting up my agenda
 (use-package org-super-agenda
-  :config
-  (org-super-agenda-mode))
+  :hook (after-init . org-super-agenda-mode))
 
 (setq org-super-agenda-groups
       '((:name "Top Priority"

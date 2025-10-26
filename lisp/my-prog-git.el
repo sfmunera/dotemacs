@@ -21,8 +21,9 @@
 (use-package git-gutter-fringe)
 (use-package git-gutter
   :hook ((prog-mode . git-gutter-mode))
+  :custom
+  (git-gutter:update-interval 2)
   :config
-  (setq git-gutter:update-interval 2)
   (require 'git-gutter-fringe)
   (set-face-foreground 'git-gutter-fr:added "LightGreen")
   (fringe-helper-define 'git-gutter-fr:added nil

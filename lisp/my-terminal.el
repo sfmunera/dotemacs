@@ -9,10 +9,10 @@
 
 (use-package vterm
   :commands vterm
-  :config
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
-  ;; (setq vterm-shell "zsh")
-  (setq vterm-max-scrollback 10000))
+  :custom
+  (term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
+  ;; (vterm-shell "zsh")
+  (vterm-max-scrollback 10000))
 
 (defun my/configure-eshell ()
   ;; Save command history when commands are entered

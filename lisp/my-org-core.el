@@ -15,59 +15,51 @@
 
 (use-package org
   :hook (org-mode . my/org-mode-setup)
-  :config
-  ;; Custom org mode settings
-  (setq
-   ;; Edit settings
-   org-auto-align-tags nil
-   org-tags-column 0
-   org-fold-catch-invisible-edits 'show-and-error
-   org-special-ctrl-a/e t
-   org-insert-heading-respect-content t
-
-   ;; Org styling, hide markup etc.
-   org-hide-emphasis-markers t
-   org-pretty-entities t
-   org-ellipsis " ▾"
-   org-startup-folded 'content
-
-   ;; Agenda styling
-   org-agenda-tags-column 0
-   org-agenda-block-separator ?─
-   org-agenda-time-grid
+  :custom
+  ;; Edit settings
+  (org-auto-align-tags nil)
+  (org-tags-column 0)
+  (org-fold-catch-invisible-edits 'show-and-error)
+  (org-special-ctrl-a/e t)
+  (org-insert-heading-respect-content t)
+  ;; Org styling, hide markup etc.
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+  (org-ellipsis " ▾")
+  (org-startup-folded 'content)
+  ;; Agenda styling
+  (org-agenda-tags-column 0)
+  (org-agenda-block-separator ?─)
+  (org-agenda-time-grid
    '((daily today require-timed)
      (800 1000 1200 1400 1600 1800 2000)
-     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-   org-agenda-current-time-string
-   "◀── now ─────────────────────────────────────────────────"
-
-   ;; Code blocks config
-   org-src-fontify-natively t
-   org-src-tab-acts-natively t
-   org-edit-src-content-indentation 2
-
-   ;; Org files
-   org-directory "~/Org/"
-   org-default-notes-file "daily.org"
-   org-agenda-files (list "~/Org/")
-   org-startup-with-inline-images t
-
-   ;; Tags, TODO keywords
-   org-log-done 'time
-   org-log-into-drawer t
-   org-use-fast-todo-selection t
-   org-todo-keywords
+     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
+  (org-agenda-current-time-string
+   "◀── now ─────────────────────────────────────────────────")
+  ;; Code blocks config
+  (org-src-fontify-natively t)
+  (org-src-tab-acts-natively t)
+  (org-edit-src-content-indentation 2)
+  ;; Org files
+  (org-directory "~/Org/")
+  (org-default-notes-file "daily.org")
+  (org-agenda-files (list "~/Org/"))
+  (org-startup-with-inline-images t)
+  ;; Tags, TODO keywords
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+  (org-use-fast-todo-selection t)
+  (org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "FOLLOW-UP(f)" "|" "DONE(d)" "CANCELLED(c)")))
-
+  ;; Refile configuration
+  (org-refile-targets '((org-agenda-files . (:maxlevel . 10)) (nil . (:maxlevel . 10))))
+  (org-refile-use-outline-path 'file)
+  (org-outline-path-complete-in-steps nil)
+  (org-refile-allow-creating-parent-nodes 'confirm)
+  :config
   ;; set C-a and C-e explicitly because back-to-indentation-or-beginning conflicts with org-special-ctrl-a/e
   (define-key org-mode-map "\C-a" 'org-beginning-of-line)
   (define-key org-mode-map "\C-e" 'org-end-of-line)
-
-  (setq org-refile-targets '((org-agenda-files . (:maxlevel . 10)) (nil . (:maxlevel . 10))))
-  (setq org-refile-use-outline-path 'file)
-  ;; makes org-refile outline working with completion framework
-  (setq org-outline-path-complete-in-steps nil)
-  (setq org-refile-allow-creating-parent-nodes 'confirm)
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way.
   ;; Everything else will be variable-pitch
@@ -133,14 +125,14 @@
   (org-modern-label
    ((t :height 0.8 :width condensed :weight regular
        :underline nil :inherit fixed-pitch)))
-  :config
-  (global-org-modern-mode))
+  :hook (after-init . global-org-modern-mode))
 
 (require 'org-indent)
 
 (use-package org-modern-indent
   :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
   :config
+  ;; Keep in :config to preserve priority 90
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
 (use-package org-appear
@@ -151,11 +143,11 @@
               :host github
               :repo "ichernyshovvv/org-timeblock")
   :after org
-  :config
-  (setq org-timeblock-inbox-file (expand-file-name "daily.org" org-directory)
-        org-timeblock-show-outline-path t
-        org-timeblock-span 1
-        org-timeblock-scale-options '(8 . 18)))
+  :custom
+  (org-timeblock-inbox-file (expand-file-name "daily.org" org-directory))
+  (org-timeblock-show-outline-path t)
+  (org-timeblock-span 1)
+  (org-timeblock-scale-options '(8 . 18)))
 
 ;;;; Table of Contents
 

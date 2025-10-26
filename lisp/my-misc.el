@@ -9,8 +9,8 @@
 
 (use-package markdown-mode
   :mode "\\.md\\'"
-  :config
-  (setq markdown-command "marked"))
+  :custom
+  (markdown-command "marked"))
 
 (use-package csv-mode
   :mode "\\.csv\\'")
@@ -44,25 +44,26 @@
         ("G" . elfeed-search-update--force))
   (:map elfeed-show-mode-map
         ("w" . elfeed-show-yank))
-  :config
-  (setq elfeed-use-curl nil)
-  (setq elfeed-curl-max-connections 10)
-  (setq elfeed-db-directory (concat "~/Dropbox/" ".elfeed/"))
-  (setq elfeed-enclosure-default-dir "~/Downloads/")
-  (setq elfeed-search-filter "@2-weeks-ago +unread")
-  (setq elfeed-sort-order 'descending)
-  (setq elfeed-search-clipboard-type 'CLIPBOARD)
-  (setq elfeed-search-title-max-width 100)
-  (setq elfeed-search-title-min-width 30)
-  (setq elfeed-search-trailing-width 25)
-  (setq elfeed-show-truncate-long-urls t)
-  (setq elfeed-show-unique-buffers t)
-  (setq elfeed-search-date-format '("%F %R" 16 :left)))
+  :custom
+  (elfeed-use-curl nil)
+  (elfeed-curl-max-connections 10)
+  (elfeed-db-directory (concat "~/Dropbox/" ".elfeed/"))
+  (elfeed-enclosure-default-dir "~/Downloads/")
+  (elfeed-search-filter "@2-weeks-ago +unread")
+  (elfeed-sort-order 'descending)
+  (elfeed-search-clipboard-type 'CLIPBOARD)
+  (elfeed-search-title-max-width 100)
+  (elfeed-search-title-min-width 30)
+  (elfeed-search-trailing-width 25)
+  (elfeed-show-truncate-long-urls t)
+  (elfeed-show-unique-buffers t)
+  (elfeed-search-date-format '("%F %R" 16 :left)))
 
 (use-package elfeed-org
   :after elfeed
+  :custom
+  (rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
   :config
-  (setq rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
   (elfeed-org))
 
 ;;; Epub reader

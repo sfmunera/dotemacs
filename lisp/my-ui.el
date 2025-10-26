@@ -68,10 +68,9 @@
   (my/set-font-faces))
 
 (use-package spacious-padding
-  :config
-  (setq spacious-padding-subtle-mode-line nil)
-  :hook
-  (after-init . spacious-padding-mode))
+  :hook (after-init . spacious-padding-mode)
+  :custom
+  (spacious-padding-subtle-mode-line nil))
 
 (setq custom-safe-themes t)
 
@@ -98,36 +97,36 @@
 ;;   )
 
 (use-package ef-themes
-  :init
-  (ef-themes-take-over-modus-themes-mode 1)
+  :hook (after-init . ef-themes-take-over-modus-themes-mode)
   :bind
   (("<f5>"   . modus-themes-toggle)
    ("C-<f5>" . modus-themes-select)
    ("M-<f5>" . modus-themes-rotate))
+  :custom
+  (modus-themes-headings ; read the manual's entry of the doc string
+   '((0 . (variable-pitch light 1.7))
+     (1 . (variable-pitch light 1.6))
+     (2 . (variable-pitch regular 1.5))
+     (3 . (variable-pitch regular 1.4))
+     (4 . (variable-pitch regular 1.3))
+     (5 . (variable-pitch 1.2)) ; absence of weight means `bold'
+     (6 . (variable-pitch 1.1))
+     (7 . (variable-pitch 1.1))
+     (agenda-date . (semilight 1.3))
+     (agenda-structure . (variable-pitch light 1.5))
+     (t . (variable-pitch 1.1))))
+  (modus-themes-variable-pitch-ui t)
+  (modus-themes-bold-constructs t)
+  (modus-themes-mixed-fonts t)
+  (modus-themes-disable-other-themes t)
+  (modus-themes-to-toggle '(ef-maris-light ef-maris-dark))
   :config
-  (setq modus-themes-headings ; read the manual's entry of the doc string
-        '((0 . (variable-pitch light 1.7))
-          (1 . (variable-pitch light 1.6))
-          (2 . (variable-pitch regular 1.5))
-          (3 . (variable-pitch regular 1.4))
-          (4 . (variable-pitch regular 1.3))
-          (5 . (variable-pitch 1.2)) ; absence of weight means `bold'
-          (6 . (variable-pitch 1.1))
-          (7 . (variable-pitch 1.1))
-          (agenda-date . (semilight 1.3))
-          (agenda-structure . (variable-pitch light 1.5))
-          (t . (variable-pitch 1.1)))
-        modus-themes-variable-pitch-ui t
-        modus-themes-bold-constructs t
-        modus-themes-mixed-fonts t
-        modus-themes-disable-other-themes t
-        modus-themes-to-toggle '(ef-maris-light ef-maris-dark))
   (modus-themes-load-theme 'ef-maris-light))
 
 (use-package nerd-icons)
 
 (use-package doom-modeline
-  :init (doom-modeline-mode 1)
+  :hook (after-init . doom-modeline-mode)
   :custom (doom-modeline-height 15))
 
 ;; Use different colors for nested parens

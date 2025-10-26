@@ -7,8 +7,7 @@
 
 ;;;; Make C-w kill line if no region selected
 (use-package whole-line-or-region
-  :config
-  (whole-line-or-region-global-mode 1))
+  :hook (after-init . whole-line-or-region-global-mode))
 
 ;;;; Environment
 (use-package exec-path-from-shell
@@ -18,25 +17,24 @@
 ;; Auto-Saving Changed Files
 (use-package super-save
   :defer 1
-  :config
-  (super-save-mode +1)
-  (setq super-save-auto-save-when-idle t))
+  :hook (after-init . super-save-mode)
+  :custom
+  (super-save-auto-save-when-idle t))
 
 ;; Quick access to recently edited files
 (use-package recentf
   :bind
   (("C-x C-r" . consult-recent-file))
-  :init
-  (recentf-mode t)
+  :hook (after-init . recentf-mode)
   :custom
   (recentf-max-saved-items 50))
 
 ;; Save history in minibuffer
 (use-package savehist
-  :config
-  (setq history-length 200)
-  (setq savehist-additional-variables '(register-alist kill-ring))
-  :hook (after-init . savehist-mode))
+  :hook (after-init . savehist-mode)
+  :custom
+  (history-length 200)
+  (savehist-additional-variables '(register-alist kill-ring)))
 
 ;; Remember and restore the last cursor location of opened files
 (save-place-mode 1)
@@ -73,11 +71,10 @@
 
 ;; Avy for quick navigation
 (use-package avy
-  :commands (avy-goto-char-timer avy-goto-word-0 avy-goto-line)
   :bind
   ("M-j" . avy-goto-char-timer)
-  :config
-  (setq avy-timeout-seconds 0.20))
+  :custom
+  (avy-timeout-seconds 0.20))
 
 ;; Replace Dabbrev with Hippie expand
 (use-package dabbrev

@@ -12,8 +12,8 @@
 ;; npm install typescript-eslint-language-service -D
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :config
-  (setq typescript-indent-level 2))
+  :custom
+  (typescript-indent-level 2))
 
 ;; smart auto-format source code files on save
 (use-package apheleia

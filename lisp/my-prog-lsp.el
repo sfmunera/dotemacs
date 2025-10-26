@@ -197,8 +197,7 @@ handle it. If it is not a jar call ORIGINAL-FN."
 
 (use-package jarchive
   :after eglot
-  :config
-  (jarchive-mode 1))
+  :hook (after-init . jarchive-mode))
 
 ;;;; Alternative: LSP Mode (Commented Out)
 
