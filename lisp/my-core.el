@@ -45,12 +45,17 @@
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
+    (condition-case err
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp))
+      (error
+       (message "Failed to bootstrap straight.el: %s" err)
+       (message "Please check your network connection and try again")
+       (signal (car err) (cdr err)))))
   (load bootstrap-file nil 'nomessage))
 
 (setq use-package-always-ensure nil)
