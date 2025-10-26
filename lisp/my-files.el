@@ -16,7 +16,9 @@
   :bind
   (("C-x C-j" . dired-jump)
    (:map dired-mode-map
-         ("C-+" . dired-create-empty-file)))
+         ("C-+" . dired-create-empty-file)
+         ("% l" . prot-dired-limit-regexp)
+         ("C-c g" . prot-dired-grep-marked-files)))
   :custom
   ;; Keep only one dired buffer
   (dired-kill-when-opening-new-dired-buffer t)
