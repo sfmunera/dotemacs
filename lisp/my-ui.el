@@ -10,6 +10,7 @@
 ;;;; Note: tool-bar, tooltip, menu-bar, and visible-bell are set in early-init.el
 
 ;; Additional UI customizations
+(pixel-scroll-precision-mode 1)
 ;;(scroll-bar-mode -1)
 (set-fringe-mode 10)
 
