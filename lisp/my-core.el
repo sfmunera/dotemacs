@@ -9,7 +9,7 @@
 (setq user-emacs-directory (expand-file-name "~/.emacs.d"))
 
 ;; Move customization variables to a separate file and load it
-(setq custom-file (locate-user-emacs-file "custom.el"))
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
 (load custom-file :no-error-if-file-is-missing)
 
 ;; Disable creating backup and lock files
