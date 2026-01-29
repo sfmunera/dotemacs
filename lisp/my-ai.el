@@ -93,15 +93,11 @@
 ;;   :hook
 ;;   (prog-mode . copilot-mode))
 
-;;;; agent-shell
-(use-package shell-maker
-  :straight (shell-maker :type git :host github :repo "xenodium/shell-maker"))
-
-(use-package acp
-  :straight (acp :type git :host github :repo "xenodium/acp.el" :files ("*.el")))
-
 (use-package agent-shell
-  :straight (agent-shell :type git :host github :repo "xenodium/agent-shell")
+  :ensure-system-package
+    ;; Add agent installation configs here
+    ((claude . "brew install claude-code")
+     (claude-code-acp . "npm install -g @zed-industries/claude-code-acp"))
   :custom
   (agent-shell-anthropic-authentication
    (agent-shell-anthropic-make-authentication :login t)))
