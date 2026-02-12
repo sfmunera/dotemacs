@@ -11,7 +11,7 @@
 
 ;; Additional UI customizations
 (pixel-scroll-precision-mode 1)
-;;(scroll-bar-mode -1)
+(scroll-bar-mode -1)
 (set-fringe-mode 10)
 
 ;; Don't show UI dialogs when prompting
