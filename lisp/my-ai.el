@@ -100,7 +100,8 @@
      (claude-code-acp . "npm install -g @zed-industries/claude-code-acp"))
   :custom
   (agent-shell-anthropic-authentication
-   (agent-shell-anthropic-make-authentication :login t)))
+   (agent-shell-anthropic-make-authentication :login t))
+  (agent-shell-prefer-viewport-interaction t))
 
  (provide 'my-ai)
 ;;; my-ai.el ends here
