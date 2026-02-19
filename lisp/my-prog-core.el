@@ -73,11 +73,13 @@
   :config
   (mp-setup-install-grammars)
   (use-package combobulate
-    :straight nil
+    :straight (combobulate
+               :type git
+               :host github
+               :repo "mickeynp/combobulate")
     :custom
     (combobulate-key-prefix "C-c o")
-    :hook ((prog-mode . combobulate-mode))
-    :load-path ("~/.emacs.d/combobulate")))
+    :hook ((prog-mode . combobulate-mode))))
 
 (provide 'my-prog-core)
 ;;; my-prog-core.el ends here
