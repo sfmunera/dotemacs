@@ -85,7 +85,7 @@
 
   (gptel-make-anthropic "Claude"
     :stream t
-    :key (my/auth-source-get-api-key "claude.anthropic.com")))
+    :key (my/auth-source-get-api-key "api.anthropic.com")))
 
 ;; ;; Github Copilot
 ;; (use-package copilot
