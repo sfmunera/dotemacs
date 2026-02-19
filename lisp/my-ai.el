@@ -101,7 +101,8 @@
   :custom
   (agent-shell-anthropic-authentication
    (agent-shell-anthropic-make-authentication :login t))
-  (agent-shell-prefer-viewport-interaction t))
+  (agent-shell-prefer-viewport-interaction t)
+  (agent-shell-display-action '(display-buffer-in-previous-window)))
 
  (provide 'my-ai)
 ;;; my-ai.el ends here
