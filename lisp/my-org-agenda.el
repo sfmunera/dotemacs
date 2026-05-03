@@ -15,6 +15,21 @@
 
 (require 'org)
 
+;;;; Helpers
+
+(defun my/org-agenda-item-date ()
+  "Return scheduled or deadline date string for use in agenda prefix."
+  (let* ((stamp (or (org-entry-get nil "SCHEDULED")
+                    (org-entry-get nil "DEADLINE"))))
+    (format "%-13s"
+            (if stamp
+                (let* ((abs (org-time-string-to-absolute stamp))
+                       (diff (- (org-today) abs)))
+                  (if (> diff 0)
+                      (format "%dd ago" diff)
+                    (format-time-string "%b %d" (org-time-string-to-time stamp))))
+              ""))))
+
 ;;;; Agenda Custom Commands
 
 (setq org-agenda-custom-commands
@@ -45,94 +60,47 @@
                                 )
                           :order 5)
                          (:discard (:anything t))))))))
-        ("h" . "House Manual Views")
-        ("hd" "🏠 House Dashboard"
-         ((tags-todo "urgent"
-                     ((org-agenda-overriding-header "🚨 URGENT TASKS")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  %-12c: ")
-                      (org-agenda-remove-tags t)
-                      (org-agenda-sorting-strategy '(priority-down))
-                      ))
-          (tags-todo "repair"
-                     ((org-agenda-overriding-header "🔧 REPAIRS NEEDED")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  %-12c: ")
-                      (org-agenda-tag-filter-preset '("+repair"))
-                      (org-agenda-sorting-strategy '(priority-down))))
-          (tags-todo "improvement"
-                     ((org-agenda-overriding-header "⬆️  IMPROVEMENTS & UPGRADES")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  %-12c: ")
-                      (org-agenda-tag-filter-preset '("+improvement"))
-                      (org-agenda-sorting-strategy '(priority-down))))
-          (agenda ""
-                  ((org-agenda-overriding-header "📅 THIS WEEK'S MAINTENANCE")
-                   (org-agenda-span 7)
-                   (org-agenda-start-on-weekday nil)
-                   (org-agenda-start-day "today")
-                   (org-agenda-tag-filter-preset '("+maintenance"))
-                   (org-agenda-prefix-format "  %t: %-12c ")
-                   (org-agenda-todo-keyword-format ""))))
+        ("h" "🏠 House"
+         ((alltodo ""
+                   ((org-agenda-todo-keyword-format "")
+                    (org-agenda-sorting-strategy '(scheduled-up deadline-up))
+                    (org-agenda-prefix-format "  %-12c %(my/org-agenda-item-date)")
+                    (org-super-agenda-groups
+                     '((:name "🚨 Urgent"
+                        :tag "urgent"
+                        :order 1)
+                       (:name "⏰ Overdue"
+                        :scheduled past
+                        :deadline past
+                        :order 2)
+                       (:name "📅 Today"
+                        :scheduled today
+                        :deadline today
+                        :order 3)
+                       (:name "📆 This Week"
+                        :pred (lambda (item)
+                                (when-let* ((m (or (get-text-property 1 'org-marker item)
+                                                   (get-text-property 1 'org-hd-marker item)))
+                                            (stamp (or (org-entry-get m "SCHEDULED")
+                                                       (org-entry-get m "DEADLINE"))))
+                                  (let* ((abs (org-time-string-to-absolute stamp))
+                                         (today (org-today)))
+                                    (and (> abs today) (<= abs (+ today 7))))))
+                        :order 4)
+                       (:name "🗓️ This Month"
+                        :pred (lambda (item)
+                                (when-let* ((m (or (get-text-property 1 'org-marker item)
+                                                   (get-text-property 1 'org-hd-marker item)))
+                                            (stamp (or (org-entry-get m "SCHEDULED")
+                                                       (org-entry-get m "DEADLINE"))))
+                                  (let* ((abs (org-time-string-to-absolute stamp))
+                                         (today (org-today)))
+                                    (and (> abs (+ today 7)) (<= abs (+ today 30))))))
+                        :order 5)
+                       (:discard (:anything t)))))))
          ((org-agenda-files '("Notes/Personal/House.org"))
           (org-agenda-compact-blocks t)
           (org-agenda-block-separator ?─)))
-
-        ;; Weekly Planning View
-        ("hw" "📅 Weekly Maintenance Plan"
-         ((agenda ""
-                  ((org-agenda-overriding-header "🗓️  NEXT 7 DAYS")
-                   (org-agenda-span 7)
-                   (org-agenda-start-on-weekday nil)
-                   (org-agenda-start-day "today")
-                   (org-agenda-tag-filter-preset '("+maintenance"))
-                   (org-agenda-prefix-format "  %t: %-15c %s")
-                   (org-agenda-todo-keyword-format "")
-                   (org-agenda-scheduled-leaders '("📋 " "📋 "))
-                   (org-agenda-time-grid nil))))
-         ((org-agenda-files '("Notes/Personal/House.org"))
-          (org-agenda-compact-blocks t)))
-
-        ;; Monthly Planning View
-        ("hm" "📆 Monthly Maintenance Plan"
-         ((agenda ""
-                  ((org-agenda-overriding-header "🗓️  NEXT 30 DAYS")
-                   (org-agenda-span 30)
-                   (org-agenda-start-on-weekday nil)
-                   (org-agenda-start-day "today")
-                   (org-agenda-tag-filter-preset '("+maintenance"))
-                   (org-agenda-prefix-format "  %t: %-15c %s")
-                   (org-agenda-todo-keyword-format "")
-                   (org-agenda-scheduled-leaders '("📋 " "📋 "))
-                   (org-agenda-time-grid nil))))
-         ((org-agenda-files '("Notes/Personal/House.org"))
-          (org-agenda-compact-blocks t)))
-
-        ;; Quarterly Planning View
-        ("hq" "📊 Quarterly Maintenance Plan"
-         ((agenda ""
-                  ((org-agenda-overriding-header "🗓️  NEXT 90 DAYS")
-                   (org-agenda-span 90)
-                   (org-agenda-start-on-weekday nil)
-                   (org-agenda-start-day "today")
-                   (org-agenda-tag-filter-preset '("+maintenance"))
-                   (org-agenda-prefix-format "  %t: %-15c %s")
-                   (org-agenda-todo-keyword-format "")
-                   (org-agenda-scheduled-leaders '("📋 " "📋 "))
-                   (org-agenda-time-grid nil)
-                   (org-agenda-show-all-dates nil))))
-         ((org-agenda-files '("Notes/Personal/House.org"))
-          (org-agenda-compact-blocks t)))
-
-        ;; Seasonal View
-        ("hs" "🌅 Seasonal Maintenance"
-         ((tags-todo "seasonal"
-                     ((org-agenda-overriding-header "🌱 SEASONAL TASKS")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  %-15c: %s")
-                      (org-agenda-sorting-strategy '(priority-down)))))
-         ((org-agenda-files '("Notes/Personal/House.org"))
-          (org-agenda-compact-blocks t)))
 
         ;; Cost Planning View
         ("hc" "💰 Cost Planning"
@@ -141,27 +109,10 @@
                       (org-agenda-todo-keyword-format "")
                       (org-agenda-prefix-format "  $%-4(org-entry-get nil \"COST\"): %-15c %s")
                       (org-agenda-sorting-strategy '(user-defined-down))))
-
           (tags-todo "urgent+COST>0"
                      ((org-agenda-overriding-header "🚨 URGENT TASKS WITH COSTS")
                       (org-agenda-todo-keyword-format "")
                       (org-agenda-prefix-format "  $%-4(org-entry-get nil \"COST\"): %-15c %s"))))
-         ((org-agenda-files '("Notes/Personal/House.org"))
-          (org-agenda-compact-blocks t)))
-
-        ;; All Repairs & Improvements
-        ("hr" "🔧 All Repairs & Improvements"
-         ((tags-todo "repair+TODO=\"TODO\""
-                     ((org-agenda-overriding-header "🔧 ALL REPAIRS")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  %-15c: %s")
-                      (org-agenda-sorting-strategy '(priority-down))))
-
-          (tags-todo "improvement+TODO=\"TODO\""
-                     ((org-agenda-overriding-header "⬆️  ALL IMPROVEMENTS")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  %-15c: %s")
-                      (org-agenda-sorting-strategy '(priority-down)))))
          ((org-agenda-files '("Notes/Personal/House.org"))
           (org-agenda-compact-blocks t)))
 
