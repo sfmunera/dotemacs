@@ -21,13 +21,9 @@
   "Return scheduled or deadline date string for use in agenda prefix."
   (let* ((stamp (or (org-entry-get nil "SCHEDULED")
                     (org-entry-get nil "DEADLINE"))))
-    (format "%-13s"
+    (format "%-14s"
             (if stamp
-                (let* ((abs (org-time-string-to-absolute stamp))
-                       (diff (- (org-today) abs)))
-                  (if (> diff 0)
-                      (format "%dd ago" diff)
-                    (format-time-string "%b %d" (org-time-string-to-time stamp))))
+                (format-time-string "%b %d %Y" (org-time-string-to-time stamp))
               ""))))
 
 ;;;; Agenda Custom Commands
@@ -60,7 +56,8 @@
                                 )
                           :order 5)
                          (:discard (:anything t))))))))
-        ("h" "🏠 House"
+        ("h" . "🏠 House")
+        ("hh" "🏠 Dashboard"
          ((alltodo ""
                    ((org-agenda-todo-keyword-format "")
                     (org-agenda-sorting-strategy '(scheduled-up deadline-up))
@@ -97,22 +94,21 @@
                                          (today (org-today)))
                                     (and (> abs (+ today 7)) (<= abs (+ today 30))))))
                         :order 5)
+                       (:name "🛠️ Improvements"
+                        :tag "improvement"
+                        :order 6)
                        (:discard (:anything t)))))))
          ((org-agenda-files '("Notes/Personal/House.org"))
           (org-agenda-compact-blocks t)
           (org-agenda-block-separator ?─)))
 
-        ;; Cost Planning View
-        ("hc" "💰 Cost Planning"
-         ((tags-todo "+TODO=\"TODO\"+COST>0"
-                     ((org-agenda-overriding-header "💸 TASKS WITH COSTS")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  $%-4(org-entry-get nil \"COST\"): %-15c %s")
-                      (org-agenda-sorting-strategy '(user-defined-down))))
-          (tags-todo "urgent+COST>0"
-                     ((org-agenda-overriding-header "🚨 URGENT TASKS WITH COSTS")
-                      (org-agenda-todo-keyword-format "")
-                      (org-agenda-prefix-format "  $%-4(org-entry-get nil \"COST\"): %-15c %s"))))
+        ("hy" "💰 Yearly Costs"
+         ((tags-todo "COST>0"
+                     ((org-agenda-todo-keyword-format "")
+                      (org-agenda-sorting-strategy '(category-up alpha-up))
+                      (org-agenda-prefix-format "  $%-6(org-entry-get nil \"COST\") ")
+                      (org-super-agenda-groups
+                       '((:auto-category t))))))
          ((org-agenda-files '("Notes/Personal/House.org"))
           (org-agenda-compact-blocks t)))
 
