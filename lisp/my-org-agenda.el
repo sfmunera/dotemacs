@@ -56,8 +56,7 @@
                                 )
                           :order 5)
                          (:discard (:anything t))))))))
-        ("h" . "🏠 House")
-        ("hh" "🏠 Dashboard"
+        ("h" "🏠 House"
          ((alltodo ""
                    ((org-agenda-todo-keyword-format "")
                     (org-agenda-sorting-strategy '(scheduled-up deadline-up))
@@ -101,16 +100,6 @@
          ((org-agenda-files '("Notes/Personal/House.org"))
           (org-agenda-compact-blocks t)
           (org-agenda-block-separator ?─)))
-
-        ("hy" "💰 Yearly Costs"
-         ((tags-todo "COST>0"
-                     ((org-agenda-todo-keyword-format "")
-                      (org-agenda-sorting-strategy '(category-up alpha-up))
-                      (org-agenda-prefix-format "  $%-6(org-entry-get nil \"COST\") ")
-                      (org-super-agenda-groups
-                       '((:auto-category t))))))
-         ((org-agenda-files '("Notes/Personal/House.org"))
-          (org-agenda-compact-blocks t)))
 
         ("w" "Work Projects and Tasks Overview"
          ((agenda "" ((org-agenda-span 'day)
