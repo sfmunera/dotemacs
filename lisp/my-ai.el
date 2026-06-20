@@ -132,10 +132,8 @@
   :ensure-system-package
     ;; Add agent installation configs here
     ((claude . "brew install claude-code")
-     (claude-code-acp . "npm install -g @zed-industries/claude-code-acp"))
+     (claude-code-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
   :custom
-  (agent-shell-anthropic-authentication
-   (agent-shell-anthropic-make-authentication :login t))
   (agent-shell-prefer-viewport-interaction t)
   (agent-shell-display-action '(display-buffer-in-previous-window)))
 
