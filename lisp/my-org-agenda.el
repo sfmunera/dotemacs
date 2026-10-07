@@ -60,6 +60,56 @@ for lines ending in #process and link each one back to its source."
                               'org-hd-marker marker
                               'mouse-face 'highlight)))))))
 
+(defun my/org-agenda-people-waiting-block (&optional _match)
+  "Agenda block listing open `Waiting on:' items under * People in daily.org.
+Items are `- [YYYY-MM-DD] text' lines; received ones move to History, so
+everything listed here is still open. Oldest first; over a week is flagged."
+  (org-agenda-prepare "Waiting on")
+  (let ((file (expand-file-name "daily.org" org-directory))
+        (inhibit-read-only t)
+        items)
+    (with-current-buffer (find-file-noselect file)
+      (org-with-wide-buffer
+       (goto-char (point-min))
+       (when (re-search-forward "^\\* People$" nil t)
+         (let ((end (save-excursion (org-end-of-subtree t t))))
+           (while (re-search-forward "^\\*\\* \\(.+\\)$" end t)
+             (let ((person (match-string-no-properties 1))
+                   (person-end (save-excursion (org-end-of-subtree t t))))
+               (when (re-search-forward "^Waiting on:$" person-end t)
+                 (forward-line 1)
+                 ;; Every "-" line until the next label; bare "-" placeholders
+                 ;; are skipped rather than ending the list.
+                 (while (looking-at "^-\\(?:[ \t]+\\(.*\\)\\)?$")
+                   (let ((body (string-trim (or (match-string-no-properties 1) "")))
+                         date)
+                     (when (string-match "^\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)\\][ \t]*" body)
+                       (setq date (match-string 1 body)
+                             body (substring body (match-end 0))))
+                     (unless (string-empty-p body)
+                       (push (list (copy-marker (point)) person date
+                                   (org-link-display-format body))
+                             items)))
+                   (forward-line 1)))
+               (goto-char person-end)))))))
+    ;; Undated items sort first: they're the ones nobody knows the age of.
+    (setq items (sort items (lambda (a b) (string< (or (nth 2 a) "") (or (nth 2 b) "")))))
+    (insert (propertize (format "🤝 Waiting on (People) (%d)\n" (length items))
+                        'face 'org-agenda-structure))
+    (if (null items)
+        (insert "  Nothing outstanding\n")
+      (dolist (item items)
+        (pcase-let* ((`(,marker ,person ,date ,text) item)
+                     (age (when date
+                            (- (org-today) (org-time-string-to-absolute date)))))
+          (insert (propertize (format "  %-10s %-11s %-60s %s\n"
+                                      person (or date "") (truncate-string-to-width text 60)
+                                      (if age (format "%dd" age) ""))
+                              'face (when (and age (> age 7)) 'org-warning)
+                              'org-marker marker
+                              'org-hd-marker marker
+                              'mouse-face 'highlight)))))))
+
 ;;;; Agenda Custom Commands
 
 (setq org-agenda-custom-commands
@@ -72,6 +122,7 @@ for lines ending in #process and link each one back to its source."
           (todo "WAITING|FOLLOW-UP"
                 ((org-agenda-overriding-header "⏳ Waiting on someone / follow up")
                  (org-agenda-prefix-format "  %(my/org-agenda-item-date)")))
+          (my/org-agenda-people-waiting-block)
           (todo "IN-PROGRESS|NEXT"
                 ((org-agenda-overriding-header "➡️ In progress / next")
                  (org-agenda-prefix-format "  ")))
