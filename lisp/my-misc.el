@@ -31,7 +31,8 @@
   ((org-mode . olivetti-mode)
    (markdown-mode . olivetti-mode)
    (eww-mode . olivetti-mode)
-   (nov-mode . olivetti-mode))
+   (nov-mode . olivetti-mode)
+   (agent-shell-viewport-view-mode . olivetti-mode))
   :custom
   (olivetti-body-width 125))
 

@@ -135,7 +135,9 @@
      (claude-code-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
   :custom
   (agent-shell-prefer-viewport-interaction t)
-  (agent-shell-display-action '(display-buffer-in-previous-window)))
+  (agent-shell-display-action '(display-buffer-in-previous-window))
+  (agent-shell-session-restore-verbosity 'first-last)
+  (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config)))
 
  (provide 'my-ai)
 ;;; my-ai.el ends here
