@@ -15,6 +15,13 @@
 
 (use-package org
   :hook (org-mode . my/org-mode-setup)
+  :config
+  (require 'org-protocol)
+  (add-to-list 'org-protocol-protocol-alist
+  '("org-capture"
+    :protocol "capture"
+    :function org-protocol-capture
+    :kill-client t))
   :custom
   ;; Edit settings
   (org-auto-align-tags nil)
@@ -26,7 +33,8 @@
   (org-hide-emphasis-markers t)
   (org-pretty-entities t)
   (org-ellipsis " ▾")
-  (org-startup-folded 'content)
+  (org-startup-folded 'fold)
+  (org-cycle-include-plain-lists 'integrate)
   ;; Agenda styling
   (org-agenda-tags-column 0)
   (org-agenda-block-separator ?─)
@@ -72,6 +80,28 @@
   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+;;;; Inline Workflow Tags
+
+;; Inline tags used in daily.org (see ~/Org/workflow.org → Capture System).
+;; \_> stops matches inside longer words, e.g. #logsV2 in console URLs.
+(require 'hi-lock)
+
+(defun my/org-highlight-workflow-tags ()
+  "Highlight inline workflow tags like #process and #log."
+  (font-lock-add-keywords
+   nil
+   '(("#note\\_>" 0 'hi-pink prepend)
+     ("#process\\_>" 0 'hi-red-b prepend)
+     ("#log\\_>" 0 'hi-green prepend)
+     ("#done\\_>" 0 'hi-green prepend)
+     ("#filed\\_>" 0 'menu prepend)
+     ("#decision\\_>" 0 'hi-blue prepend)
+     ("#waiting\\_>" 0 'hi-yellow prepend)
+     ("#feedback\\_>" 0 'hi-aquamarine prepend))
+   'append))
+
+(add-hook 'org-mode-hook #'my/org-highlight-workflow-tags)
 
 ;;;; Helper Functions
 
@@ -137,17 +167,6 @@
 
 (use-package org-appear
   :hook (org-mode . org-appear-mode))
-
-(use-package org-timeblock
-  :straight (org-timeblock :type git
-              :host github
-              :repo "ichernyshovvv/org-timeblock")
-  :after org
-  :custom
-  (org-timeblock-inbox-file (expand-file-name "daily.org" org-directory))
-  (org-timeblock-show-outline-path t)
-  (org-timeblock-span 1)
-  (org-timeblock-scale-options '(8 . 18)))
 
 ;;;; Table of Contents
 

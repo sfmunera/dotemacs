@@ -1,0 +1,23 @@
+** %(my/week-id)
+*** Goals
+/Max 3 outcomes, not activities. Each one gets at least one [D] block./
+1. [ ]
+2. [ ]
+3. [ ]
+
+*** Heuristics
+/Recurring blocks to keep this week, any workflow changes/
+-
+
+*** Notes
+-
+
+*** Review
+/Friday: ✓/✗ per goal with one line why/
+- G1:
+- G2:
+- G3:
+- [D] blocks held: /5
+- Biggest source of reactive time:
+
+%(my/week-days)

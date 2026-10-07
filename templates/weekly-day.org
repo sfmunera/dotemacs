@@ -1,0 +1,18 @@
+Today: /one sentence (G#)/
+
+**** Plan
+- 09:00-10:00 Startup: triage # process, project Read items
+- [M] Meeting
+- [D] Task (G#)
+  - [ ]
+- [A] Admin, ops, rapid fire
+  - [ ]
+- 17:00-17:30 Shutdown
+
+**** Log
+
+**** Shutdown
+- [D] held: ✓/✗ — why:
+- Reactive time: ~h
+- # process at zero:
+- Tomorrow's [D]:

@@ -26,10 +26,61 @@
                 (format-time-string "%b %d %Y" (org-time-string-to-time stamp))
               ""))))
 
+(defun my/org-agenda-process-block (&optional _match)
+  "Agenda block listing untriaged #process captures in daily.org.
+The built-in agenda only lists headings; captures are list items, so scan
+for lines ending in #process and link each one back to its source."
+  (org-agenda-prepare "#process")
+  (let ((file (expand-file-name "daily.org" org-directory))
+        (inhibit-read-only t)
+        items)
+    (with-current-buffer (find-file-noselect file)
+      (org-with-wide-buffer
+       (goto-char (point-min))
+       ;; End-of-line anchor skips the template's "triage #process, ..."
+       ;; and "#process at zero:" lines, and the Hi-lock config.
+       (while (re-search-forward "#process[ \t]*$" nil t)
+         (let ((marker (copy-marker (line-beginning-position)))
+               (text (string-trim
+                      (replace-regexp-in-string
+                       "^[ \t]*- \\|[ \t]*#process[ \t]*$" ""
+                       (buffer-substring (line-beginning-position) (line-end-position)))))
+               (day (save-excursion
+                      (when (re-search-backward "^\\*\\*\\* \\([0-9]\\{4\\}-[0-9-]+ [A-Za-z]+\\)" nil t)
+                        (match-string-no-properties 1)))))
+           (push (list marker (org-link-display-format text) day) items)))))
+    (insert (propertize (format "📥 Untriaged #process (%d)\n" (length items))
+                        'face 'org-agenda-structure))
+    (if (null items)
+        (insert "  Inbox zero\n")
+      (dolist (item (nreverse items))
+        (pcase-let ((`(,marker ,text ,day) item))
+          (insert (propertize (format "  %-16s %s\n" (or day "") text)
+                              'org-marker marker
+                              'org-hd-marker marker
+                              'mouse-face 'highlight)))))))
+
 ;;;; Agenda Custom Commands
 
 (setq org-agenda-custom-commands
-      '(("r" "Reading List Overview"
+      '(("d" "Daily dashboard"
+         ;; Old day sections have keyword-less meeting headings with past
+         ;; SCHEDULED stamps; without the skip they flood the day view.
+         ((agenda "" ((org-agenda-span 'day)
+                      (org-agenda-skip-function
+                       '(org-agenda-skip-entry-if 'nottodo 'any))))
+          (todo "WAITING|FOLLOW-UP"
+                ((org-agenda-overriding-header "⏳ Waiting on someone / follow up")
+                 (org-agenda-prefix-format "  %(my/org-agenda-item-date)")))
+          (todo "IN-PROGRESS|NEXT"
+                ((org-agenda-overriding-header "➡️ In progress / next")
+                 (org-agenda-prefix-format "  ")))
+          (my/org-agenda-process-block))
+         ((org-agenda-files '("~/Org/daily.org"))
+          (org-super-agenda-groups nil)
+          (org-agenda-compact-blocks t)))
+
+        ("r" "Reading List Overview"
            ((tags "CATEGORY=\"Technical\"|CATEGORY=\"Non-Technical\""
                      ((org-agenda-files '("Books.org"))
                       (org-agenda-prefix-format "  %-12c: ")

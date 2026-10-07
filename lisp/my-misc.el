@@ -11,6 +11,9 @@
       "Pulse the current line."
       (pulse-momentary-highlight-one-line (point)))
 
+(global-hi-lock-mode 1)
+(setq hi-lock-file-patterns-policy (lambda (patterns) t))
+
 (dolist (command '(scroll-up-command scroll-down-command
                    recenter-top-bottom other-window))
   (advice-add command :after #'pulse-line))
