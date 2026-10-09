@@ -19,5 +19,6 @@
 - G3:
 - [D] blocks held: /5
 - Biggest source of reactive time:
+- Late days (ended after 17:30):
 
 %(my/week-days)

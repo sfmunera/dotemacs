@@ -16,3 +16,4 @@ Today: /one sentence (G#)/
 - Reactive time: ~h
 - # process at zero:
 - Tomorrow's [D]:
+- Ended:

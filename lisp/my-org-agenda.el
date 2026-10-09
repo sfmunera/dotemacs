@@ -203,42 +203,6 @@ everything listed here is still open. Oldest first; over a week is flagged."
           (org-agenda-compact-blocks t)
           (org-agenda-block-separator ?─)))
 
-        ("w" "Work Projects and Tasks Overview"
-         ((agenda "" ((org-agenda-span 'day)
-                      (org-super-agenda-groups
-                       '((:name "🗓️ Today"
-                                :time-grid t
-                                :date today
-                                :todo "TODAY"
-                                :scheduled today
-                                :order 1)))))
-          (alltodo "" ((org-agenda-overriding-header "\n\n Work Tasks Overview \n━━━━━━━━━━━━━━━━━━━━━━━━━")
-                       (org-super-agenda-groups
-                        '((:name "⭐ Important Tasks"
-                                 :priority "A"
-                                 :order 1)
-                          (:name "🔥 Active Tasks"
-                                 :todo "IN-PROGRESS"
-                                 :order 2)
-                          (:name "➡️ Ready Tasks"
-                                 :todo "NEXT"
-                                 :order 3)
-                          (:name "Follow Up"
-                                 :todo ("FOLLOW-UP")
-                                 :order 4)
-                          (:name "Tasks waiting for something"
-                                 :todo "WAITING"
-                                 :order 5)
-                          (:name "Nice to Have Tasks"
-                                 :priority "B"
-                                 :order 6)
-                          (:name "📁 Task Backlog"
-                                 :todo "TODO"
-                                 :order 7)
-                          )))))
-         ((org-agenda-files (list "~/Org/"))
-          (org-agenda-compact-blocks t)))
-
         ("p" "Personal Projects and Tasks Overview"
          ((agenda "" ((org-agenda-span 'day)
                       (org-super-agenda-groups
