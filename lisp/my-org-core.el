@@ -87,11 +87,45 @@
 ;; \_> stops matches inside longer words, e.g. #logsV2 in console URLs.
 (require 'hi-lock)
 
+;; Plan lines: "- 12:30-14:30 [D] ...". Theme faces so they follow the light/dark toggle;
+;; fixed-pitch keeps the time column aligned in variable-pitch buffers.
+(defface my/plan-time '((t :inherit fixed-pitch))
+  "Time ranges at the start of Plan lines.")
+(defface my/plan-deep '((t :inherit fixed-pitch :weight bold))
+  "[D] deep work block tag.")
+(defface my/plan-admin '((t :inherit fixed-pitch))
+  "[A] admin block tag.")
+(defface my/plan-meet '((t :inherit fixed-pitch))
+  "[M] meeting block tag.")
+
+(defconst my/plan-face-backgrounds
+  '((my/plan-time  . bg-alt)
+    (my/plan-deep  . bg-green-subtle)
+    (my/plan-admin . bg-yellow-subtle)
+    (my/plan-meet  . bg-blue-subtle))
+  "Plan faces and the modus/ef palette color used as each one's background.")
+
+(defun my/plan-set-backgrounds (&rest _)
+  "Set Plan face backgrounds from the current modus/ef theme palette."
+  (when (fboundp 'modus-themes-get-color-value)
+    (pcase-dolist (`(,face . ,color) my/plan-face-backgrounds)
+      (let ((bg (ignore-errors (modus-themes-get-color-value color))))
+        (when (stringp bg)
+          (set-face-background face bg))))))
+
+;; Re-run on every theme load so the F5 light/dark toggle updates them.
+(add-hook 'enable-theme-functions #'my/plan-set-backgrounds)
+(my/plan-set-backgrounds)
+
 (defun my/org-highlight-workflow-tags ()
-  "Highlight inline workflow tags like #process and #log."
+  "Highlight inline workflow tags like #process and #log, and Plan times and blocks."
   (font-lock-add-keywords
    nil
-   '(("#note\\_>" 0 'hi-pink prepend)
+   '(("^[ \t]*- \\([0-9]\\{1,2\\}:[0-9]\\{2\\}-[0-9]\\{1,2\\}:[0-9]\\{2\\}\\)" 1 'my/plan-time prepend)
+     ("\\[D\\]" 0 'my/plan-deep prepend)
+     ("\\[A\\]" 0 'my/plan-admin prepend)
+     ("\\[M\\]" 0 'my/plan-meet prepend)
+     ("#note\\_>" 0 'hi-pink prepend)
      ("#process\\_>" 0 'hi-red-b prepend)
      ("#log\\_>" 0 'hi-green prepend)
      ("#done\\_>" 0 'hi-green prepend)
