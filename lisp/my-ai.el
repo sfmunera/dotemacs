@@ -137,7 +137,16 @@
   (agent-shell-prefer-viewport-interaction t)
   (agent-shell-display-action '(display-buffer-in-previous-window))
   (agent-shell-session-restore-verbosity 'first-last)
-  (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config)))
+  (agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config)))
+
+(use-package agent-shell-manager
+  :straight (:host github :repo "jethrokuan/agent-shell-manager")
+  :after agent-shell
+  :custom
+  (agent-shell-manager-side 'right)
+  :bind
+  (("C-c A m" . agent-shell-manager-toggle)
+   ("C-c A s" . agent-shell-switch-buffer)))
 
  (provide 'my-ai)
 ;;; my-ai.el ends here
